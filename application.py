@@ -21,7 +21,11 @@ simulations = [
     {"text": "FODO", "value": "FODO"},
     {"text": "Chicane", "value": "Chicane"},
     {"text": "Cyclotron", "value": "Cyclotron"},
-    {"text": "Simulation4", "value": "Simulation4"},
+    {"text": "Quadrupole", "value": "Quadrupole"},
+    {"text": "Solenoid", "value": "Solenoid"},
+    {"text": "...", "value": "..."},
+
+
 ]
 state.simulations_dropdown_options = simulations
 
@@ -35,6 +39,21 @@ distributions = [
 ]
 state.distributions_dropdown_options = distributions
 
+#Sections
+state.expand_section = True
+state.expand_section2 = True
+state.expand_section3 = True
+
+# -----------------------------------------------------------------------------
+# Functions
+# -----------------------------------------------------------------------------
+def create_section(title, content, expand_section_index):
+    with vuetify.VExpansionPanels(v_model=(expand_section_index,), accordion=True):
+        with vuetify.VExpansionPanel():
+            with vuetify.VExpansionPanelHeader():
+                vuetify.VCardText(title)
+            with vuetify.VExpansionPanelContent():
+                vuetify.VCardText(content)
 # -----------------------------------------------------------------------------
 # Layout
 # -----------------------------------------------------------------------------
@@ -47,6 +66,10 @@ with SinglePageWithDrawerLayout(server) as layout:
         with vuetify.VCard():
             vuetify.VCardTitle("Settings")
 
+            create_section("Section1", "Content for section 1", "expand_section")
+            create_section("Section2", "Content for section 2", "expand_section2")
+            create_section("Numerical Parameters", "Content for section 3", "expand_section3")
+            
             with vuetify.VCardText():
                 vuetify.VSlider(
                     v_model=("kin_energy_MeV", state.kin_energy_MeV),
