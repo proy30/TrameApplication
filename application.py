@@ -15,19 +15,18 @@ state, ctrl = server.state, server.controller
 # Default values
 # -----------------------------------------------------------------------------
 
-# Simulations
-state.selected_simulations = None
-simulations = [
+# Lattice
+state.selected_lattice = None
+state.selected_lattices = []
+lattices = [
     {"text": "FODO", "value": "FODO"},
     {"text": "Chicane", "value": "Chicane"},
     {"text": "Cyclotron", "value": "Cyclotron"},
     {"text": "Quadrupole", "value": "Quadrupole"},
     {"text": "Solenoid", "value": "Solenoid"},
     {"text": "...", "value": "..."},
-
-
 ]
-state.simulations_dropdown_options = simulations
+state.lattice_dropdown_options = lattices
 
 # Distributions
 state.selected_distribution = None
@@ -54,6 +53,25 @@ def create_section(title, content, expand_section_index):
                 vuetify.VCardText(title)
             with vuetify.VExpansionPanelContent():
                 vuetify.VCardText(content)
+
+# def create_slider(label_input, v_model, state, min_value, max_value, step_value):
+#     with vuetify.VCardText():
+#         vuetify.VSlider(
+#             v_model=(v_model, state),
+#             thumb_label=True,
+#             min=min_value,
+#             max=max_value,
+#             step=step_value,
+#             label=label_input,
+#         )
+
+
+@ctrl.add("add_lattice_to_list")
+def add_lattice_to_list():
+    selected_lattice = state.selected_lattice
+    if selected_lattice:
+        state.selected_lattices = state.selected_lattices + [selected_lattice]
+        state.selected_lattice = None
 # -----------------------------------------------------------------------------
 # Layout
 # -----------------------------------------------------------------------------
@@ -66,9 +84,8 @@ with SinglePageWithDrawerLayout(server) as layout:
         with vuetify.VCard():
             vuetify.VCardTitle("Settings")
 
-            create_section("Section1", "Content for section 1", "expand_section")
-            create_section("Section2", "Content for section 2", "expand_section2")
-            create_section("Numerical Parameters", "Content for section 3", "expand_section3")
+            # Test section
+            # create_section("Section1", "Content for section 1", "expand_section")
             
             with vuetify.VCardText():
                 vuetify.VSlider(
@@ -89,25 +106,44 @@ with SinglePageWithDrawerLayout(server) as layout:
                     label="Bunch Charge C",
                 )
 
-                vuetify.VSelect(
-                    v_model=("selected_simulations",state.selected_simulations),
-                    items=("simulations_dropdown_options",state.simulations_dropdown_options),
-                    label="Select type of simulation",
-                    outlined=True,
-                    dense=True,
-                    style="width: 300px; background: transparent; border: none;",
-                    classes="custom-select"
-                )
+                with vuetify.VRow():
+                    with vuetify.VCol(cols=7):
+                        vuetify.VCombobox(
+                            label="Select Accelerator Lattice",
+                            v_model=("selected_lattice",state.selected_lattice),
+                            items=("selected_lattice_dropdown_options",state.lattice_dropdown_options),
+                            clearable=True,
+                            solo=True
+                        )
+                    with vuetify.VCol(cols=2):
+                        vuetify.VBtn(
+                            "Add",
+                            click=add_lattice_to_list,
+                        )
+                with vuetify.VList():
+                    with vuetify.VListItem(v_for="(item, index) in selected_lattices", key="index"):
+                        vuetify.VListItemContent('{{ item }}')
+  
 
-                vuetify.VSelect(
-                    v_model=("selected_option",state.selected_distribution),
-                    items=("dropdown_options",state.distributions_dropdown_options),
-                    label="Select a distribution",
-                    outlined=True,
-                    dense=True,
-                    style="width: 300px; background: transparent; border: none;",
-                    classes="custom-select"
-                )
+                # vuetify.VSelect(
+                #     v_model=("selected_simulations",state.selected_simulations),
+                #     items=("simulations_dropdown_options",state.simulations_dropdown_options),
+                #     label="Select type of simulation",
+                #     outlined=True,
+                #     dense=True,
+                #     style="width: 300px; background: transparent; border: none;",
+                #     classes="custom-select"
+                # )
+               
+                # vuetify.VSelect(
+                #     v_model=("selected_option",state.selected_distribution),
+                #     items=("dropdown_options",state.distributions_dropdown_options),
+                #     label="Select a distribution",
+                #     outlined=True,
+                #     dense=True,
+                #     style="width: 300px; background: transparent; border: none;",
+                #     classes="custom-select"
+                # )
 
     with layout.content:
         with vuetify.VContainer(
