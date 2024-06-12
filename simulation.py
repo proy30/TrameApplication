@@ -124,10 +124,10 @@ def run_simulation(save_png=True):
         # fig.savefig("phase_space.png")
         image_base64 = fig_to_base64(fig)
         state.image_data =  f"data:image/png;base64, {image_base64}"
-        if save_png:
-            fig.savefig("phase_space.png")
-        else:
-            plt.show()
+        # if save_png:
+        #     fig.savefig("phase_space.png")
+        # else:
+        #     plt.show()
 
     # finalize simulation
     sim.finalize()
