@@ -14,11 +14,9 @@ import pytest
 
 from impactx import ImpactX, amr, distribution, elements
 
-
 ## New - parthib
 from trame.app import get_server
-from trame.ui.vuetify import SinglePageWithDrawerLayout
-from trame.widgets import vuetify
+import base64, io
 
 # -----------------------------------------------------------------------------
 # Trame setup
@@ -29,6 +27,13 @@ server = get_server(client_type="vue2")
 state, ctrl = server.state, server.controller
 
 state.npart = 10000
+state.image_data=None
+
+def fig_to_base64(fig):
+    buf = io.BytesIO()
+    fig.savefig(buf, format="png")
+    buf.seek(0)
+    return base64.b64encode(buf.read()).decode('utf-8')
 ##
 
 @pytest.mark.skipif(
@@ -113,7 +118,9 @@ def run_simulation(save_png=True):
 
     #   note: figure data available on MPI rank zero
     if fig is not None:
-        fig.savefig("phase_space.png")
+        # fig.savefig("phase_space.png")
+        image_base64 = fig_to_base64(fig)
+        state.image_data =  f"data:image/png;base64, {image_base64}"
         if save_png:
             fig.savefig("phase_space.png")
         else:

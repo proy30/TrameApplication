@@ -83,9 +83,6 @@ def add_lattice_to_list():
 def on_npart_change(npart, **kwargs):
     state.npart = npart
     print(f"npart changed to {npart}")
-    
-
-
 # -----------------------------------------------------------------------------
 # Layout
 # -----------------------------------------------------------------------------
@@ -157,7 +154,7 @@ with SinglePageWithDrawerLayout(server) as layout:
             classes="pa-0 fill-height",
         ):
             # Add your UI components here
-            vuetify.VBtn("Click Me", click=ctrl.your_function_name)
+            vuetify.VImg(v_if=("image_data",), src=("image_data",))
 
 # -----------------------------------------------------------------------------
 # Main
