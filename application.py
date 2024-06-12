@@ -60,7 +60,7 @@ def create_section(title, content, expand_section_index):
             with vuetify.VExpansionPanelContent():
                 vuetify.VCardText(content)
 
-def create_slider(label_input, v_model, state, min_value, max_value, step_value):
+def create_slider(label_input, v_model, min_value, max_value, step_value):
     with vuetify.VCardText():
         vuetify.VSlider(
             v_model=(v_model, state),
@@ -70,6 +70,7 @@ def create_slider(label_input, v_model, state, min_value, max_value, step_value)
             step=step_value,
             label=label_input,
         )
+
 
 
 @ctrl.add("add_lattice_to_list")
@@ -83,6 +84,21 @@ def add_lattice_to_list():
 def on_npart_change(npart, **kwargs):
     state.npart = npart
     print(f"npart changed to {npart}")
+
+@state.change("kin_energy_MeV")
+def on_kin_energy_MeV_change(kin_energy_MeV, **kwargs):
+    state.kin_energy_MeV = kin_energy_MeV
+    print(f"Kinetic Energy (MeV) changed to {kin_energy_MeV}")
+
+@state.change("bunch_charge_C")
+def on_bunch_charge_C_change(bunch_charge_C, **kwargs):
+    state.bunch_charge_C = bunch_charge_C
+    print(f"Bunch Charge (C) changed to {bunch_charge_C}")
+
+@state.change("particle_shape")
+def on_bunch_charge_C_change(particle_shape, **kwargs):
+    state.particle_shape = particle_shape
+    print(f"Particle Shape changed to {particle_shape}")
 # -----------------------------------------------------------------------------
 # Layout
 # -----------------------------------------------------------------------------
@@ -100,7 +116,21 @@ with SinglePageWithDrawerLayout(server) as layout:
             
             with vuetify.VCardText():
 
-                create_slider("Number of Particles", "npart", state, 1, 10000, 99)
+                # create_slider("Particle Shape", "npart", 1, 3, 1)
+                create_slider("[WORKS] Number of Particles", "npart", 1, 10000, 99)
+                create_slider("Kinetic Energy (MeV)", "kin_energy_MeV", 1, 4000, 99)
+                create_slider("Bunch_ Charge (C)", "bunch_charge_C", .000000001, 1, .000000001)
+                create_slider("Particle Shape", "particle_shape", 1, 3, 1)
+                
+
+
+# state.particle_shape = 2
+# state.npart = 10000
+# state.kin_energy_MeV = 2.0e3
+# state.bunch_charge_C = 1.0e-9
+
+# state.space_charge = False
+# state.slice_step_diagnostics = False
                 # create_slider("Knetic Energy (MeV)", "kin_energy_MeV", state.kin_energy_MeV, 5,10,1)
                 # create_slider("Bunch Charge C", "bunch_charge_C", state.bunch_charge_C, 5, 10, 1)
 
@@ -114,19 +144,13 @@ with SinglePageWithDrawerLayout(server) as layout:
                             solo=True
                         )
                     with vuetify.VCol(cols=2):
-                        vuetify.VBtn(
-                            "Add",
-                            click=add_lattice_to_list,
-                        )
+                        vuetify.VBtn("Add", click=add_lattice_to_list)
                 with vuetify.VList():
                     with vuetify.VListItem(v_for="(item, index) in selected_lattices", key="index"):
                         vuetify.VListItemContent('{{ item.text }}')
                 
-                with vuetify.VCol(cols=10):
-                    vuetify.VBtn(
-                        "Run Simulation",
-                        click=run_simulation,
-                    )
+                    with vuetify.VCol(cols=10):
+                        vuetify.VBtn("Run Simulation", click=run_simulation)
   
                 # vuetify.VSelect(
                 #     v_model=("selected_simulations",state.selected_simulations),
@@ -149,11 +173,7 @@ with SinglePageWithDrawerLayout(server) as layout:
                 # )
 
     with layout.content:
-        with vuetify.VContainer(
-            fluid=True,
-            classes="pa-0 fill-height",
-        ):
-            # Add your UI components here
+        with vuetify.VContainer(fluid=True,classes="pa-0 fill-height",):
             vuetify.VImg(v_if=("image_data",), src=("image_data",))
 
 # -----------------------------------------------------------------------------

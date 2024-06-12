@@ -24,7 +24,14 @@ from mpi4py import MPI
 server = get_server(client_type="vue2")
 state, ctrl = server.state, server.controller
 
+# Default values
+# -----------------------------------------------------------------------------
+state.particle_shape = 1
+state.space_charge = False
+state.slice_step_diagnostics = False
 state.npart = 10000
+state.kin_energy_MeV = 2.0e3
+state.bunch_charge_C = 1.0e-9
 state.image_data=None
 
 # Functions
@@ -48,15 +55,16 @@ def run_simulation(save_png=True):
     """
     sim = ImpactX()
 
-    sim.particle_shape = 2
-    sim.space_charge = False
-    sim.slice_step_diagnostics = False
+    sim.particle_shape = state.particle_shape
+    sim.space_charge = state.space_charge
+    sim.slice_step_diagnostics = state.slice_step_diagnostics
     sim.init_grids()
     npart  = state.npart
 
     # init particle beam
-    kin_energy_MeV = 2.0e3
-    bunch_charge_C = 1.0e-9
+    kin_energy_MeV = state.kin_energy_MeV
+    # kin_energy_MeV = 2.0e100
+    bunch_charge_C = state.bunch_charge_C
 
     #   reference particle
     pc = sim.particle_container()
