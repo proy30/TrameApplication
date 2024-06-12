@@ -16,32 +16,26 @@ state, ctrl = server.state, server.controller
 # Default values (Simulation test)
 # -----------------------------------------------------------------------------
 
-# Lattice
-state.selected_lattice = None
-state.selected_lattices = []
-def read_lattices():
-    lattices = []
+def read_file(file_name):
+    file_list = []
     try:
-        with open('latticeList.txt', 'r') as file:
+        with open(file_name,'r') as file:
             for line in file:
                 line = line.strip()
                 if line:
-                    lattices.append({"text": line, "value": line})
+                    file_list.append({"text": line, "value": line})
     except FileNotFoundError:
-        print("lattice.txt file is not found")
-    return lattices
+        print(f"{file_name} file was not found")
+    return file_list
 
-state.lattice_dropdown_options = read_lattices()
 
-# Distributions
+state.selected_lattice = None
+state.selected_lattices = []
+state.lattice_dropdown_options = read_file("latticeList.txt")
+
 state.selected_distribution = None
-distributions = [
-    {"text": "Waterbag", "value": "Waterbag"},
-    {"text": "Distribution2", "value": "Distribution2"},
-    {"text": "Distribution3", "value": "Distribution3"},
-    {"text": "Distribution4", "value": "Distribution4"},
-]
-state.distributions_dropdown_options = distributions
+state.distribution_dropdown_options = read_file("distributions.txt")
+
 
 #Sections
 state.expand_section = True
@@ -70,7 +64,17 @@ def create_slider(label_input, v_model, min_value, max_value, step_value):
             step=step_value,
             label=label_input,
         )
-
+def create_comboBox(label_input, v_model, items):
+    with vuetify.VCardText():
+        vuetify.VCombobox(
+                label=label_input,
+                v_model=(v_model,state),
+                items=(items,state),
+                clearable=True,
+                solo=True
+            )
+def create_Button(label_input, action_call_on_click):
+     vuetify.VBtn(label_input, click=action_call_on_click)
 
 
 @ctrl.add("add_lattice_to_list")
@@ -80,28 +84,10 @@ def add_lattice_to_list():
         state.selected_lattices = state.selected_lattices + [selected_lattice]
         state.selected_lattice = None
 
-@state.change("npart")
-def on_npart_change(npart, **kwargs):
-    state.npart = npart
-    print(f"npart changed to {npart}")
-
-@state.change("kin_energy_MeV")
-def on_kin_energy_MeV_change(kin_energy_MeV, **kwargs):
-    state.kin_energy_MeV = kin_energy_MeV
-    print(f"Kinetic Energy (MeV) changed to {kin_energy_MeV}")
-
-@state.change("bunch_charge_C")
-def on_bunch_charge_C_change(bunch_charge_C, **kwargs):
-    state.bunch_charge_C = bunch_charge_C
-    print(f"Bunch Charge (C) changed to {bunch_charge_C}")
-
-@state.change("particle_shape")
-def on_bunch_charge_C_change(particle_shape, **kwargs):
-    state.particle_shape = particle_shape
-    print(f"Particle Shape changed to {particle_shape}")
 # -----------------------------------------------------------------------------
 # Layout
 # -----------------------------------------------------------------------------
+state.trame__title="impactX Visualizer"
 
 with SinglePageWithDrawerLayout(server) as layout:
     layout.title.set_text("impactX Visualization Tool")
@@ -115,62 +101,22 @@ with SinglePageWithDrawerLayout(server) as layout:
             # create_section("Section1", "Content for section 1", "expand_section")
             
             with vuetify.VCardText():
-
-                # create_slider("Particle Shape", "npart", 1, 3, 1)
+                # create_slider("Particle Shape", "particle_shape", 1, 3, 1)
                 create_slider("[WORKS] Number of Particles", "npart", 1, 10000, 99)
                 create_slider("Kinetic Energy (MeV)", "kin_energy_MeV", 1, 4000, 99)
                 create_slider("Bunch_ Charge (C)", "bunch_charge_C", .000000001, 1, .000000001)
                 create_slider("Particle Shape", "particle_shape", 1, 3, 1)
-                
-
-
-# state.particle_shape = 2
-# state.npart = 10000
-# state.kin_energy_MeV = 2.0e3
-# state.bunch_charge_C = 1.0e-9
-
-# state.space_charge = False
-# state.slice_step_diagnostics = False
-                # create_slider("Knetic Energy (MeV)", "kin_energy_MeV", state.kin_energy_MeV, 5,10,1)
-                # create_slider("Bunch Charge C", "bunch_charge_C", state.bunch_charge_C, 5, 10, 1)
 
                 with vuetify.VRow():
-                    with vuetify.VCol(cols=7):
-                        vuetify.VCombobox(
-                            label="Select Accelerator Lattice",
-                            v_model=("selected_lattice",state.selected_lattice),
-                            items=("selected_lattice_dropdown_options",state.lattice_dropdown_options),
-                            clearable=True,
-                            solo=True
-                        )
-                    with vuetify.VCol(cols=2):
-                        vuetify.VBtn("Add", click=add_lattice_to_list)
+                    with vuetify.VCol(cols=7): create_comboBox("Select Accelerator Lattice", "selected_lattice", "lattice_dropdown_options")
+                    with vuetify.VCol(cols=2): create_Button("Add", add_lattice_to_list)
+
                 with vuetify.VList():
                     with vuetify.VListItem(v_for="(item, index) in selected_lattices", key="index"):
                         vuetify.VListItemContent('{{ item.text }}')
-                
-                    with vuetify.VCol(cols=10):
-                        vuetify.VBtn("Run Simulation", click=run_simulation)
-  
-                # vuetify.VSelect(
-                #     v_model=("selected_simulations",state.selected_simulations),
-                #     items=("simulations_dropdown_options",state.simulations_dropdown_options),
-                #     label="Select type of simulation",
-                #     outlined=True,
-                #     dense=True,
-                #     style="width: 300px; background: transparent; border: none;",
-                #     classes="custom-select"
-                # )
-               
-                # vuetify.VSelect(
-                #     v_model=("selected_option",state.selected_distribution),
-                #     items=("dropdown_options",state.distributions_dropdown_options),
-                #     label="Select a distribution",
-                #     outlined=True,
-                #     dense=True,
-                #     style="width: 300px; background: transparent; border: none;",
-                #     classes="custom-select"
-                # )
+
+                    create_comboBox("Select a Distribution", "selected_distribution", "distribution_dropdown_options")
+                    with vuetify.VCol(cols=10): create_Button("Run Simulation", run_simulation)
 
     with layout.content:
         with vuetify.VContainer(fluid=True,classes="pa-0 fill-height",):
