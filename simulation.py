@@ -14,28 +14,31 @@ import pytest
 
 from impactx import ImpactX, amr, distribution, elements
 
-## New - parthib
+# -----------------------------------------------------------------------------
+# New Code - Parthib
+# -----------------------------------------------------------------------------
 from trame.app import get_server
 import base64, io
+from mpi4py import MPI
 
-# -----------------------------------------------------------------------------
-# Trame setup
-# -----------------------------------------------------------------------------
-
-# Specify the client type as "vue2"
 server = get_server(client_type="vue2")
 state, ctrl = server.state, server.controller
 
 state.npart = 10000
 state.image_data=None
 
+# Functions
+# -----------------------------------------------------------------------------
+
 def fig_to_base64(fig):
     buf = io.BytesIO()
     fig.savefig(buf, format="png")
     buf.seek(0)
     return base64.b64encode(buf.read()).decode('utf-8')
-##
 
+# -----------------------------------------------------------------------------
+# Simulation code (variables now reference state and figure is not converted to base64)
+# -----------------------------------------------------------------------------
 @pytest.mark.skipif(
     importlib.util.find_spec("pandas") is None, reason="pandas is not available"
 )
