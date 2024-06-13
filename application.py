@@ -1,6 +1,7 @@
 from trame.app import get_server
 from trame.ui.vuetify import SinglePageWithDrawerLayout
-from trame.widgets import vuetify
+from trame.widgets import vuetify, router
+from trame.ui.router import RouterViewLayout
 
 from simulation import run_simulation
 from impactx import distribution, elements
@@ -84,6 +85,15 @@ def create_comboBox(label_input, v_model, items):
 def create_Button(label_input, action_call_on_click):
      vuetify.VBtn(label_input, click=action_call_on_click)
 
+def create_route(label_input, mdi_icon, click_action_name, show_route):
+    to = f"/{label_input}"
+    click =  f"{click_action_name} = {str(show_route).lower()}"
+    with vuetify.VListItem(to=to, click=click):
+        with vuetify.VListItemIcon():
+            vuetify.VIcon(mdi_icon)
+        with vuetify.VListItemContent():
+            vuetify.VListItemTitle(label_input)
+
 
 @ctrl.add("add_lattice_to_list")
 def add_lattice_to_list():
@@ -92,6 +102,12 @@ def add_lattice_to_list():
         state.selected_lattices = state.selected_lattices + [selected_lattice]
         state.selected_lattice = None
 
+
+@state.change("selectedRoute")
+def on_route_change(**kwargs):
+    selected_route = kwargs.get('selectedRoute')
+    if selected_route !=  "/Settings":
+        state.showSettingsDrawer = False
 # -----------------------------------------------------------------------------
 # Layout
 # -----------------------------------------------------------------------------
@@ -101,34 +117,40 @@ with SinglePageWithDrawerLayout(server) as layout:
     layout.title.set_text("impactX Visualization Tool")
 
     with layout.drawer as drawer:
-        drawer.width = 500
-        with vuetify.VCard():
-            vuetify.VCardTitle("Settings")
-
-            # Test section
-            # create_section("Section1", "Content for section 1", "expand_section")
-            
-            with vuetify.VCardText():
-                # create_slider("Particle Shape", "particle_shape", 1, 3, 1)
-                create_slider("[WORKS] Number of Particles", "npart", 1, 10000, 99)
-                create_slider("Kinetic Energy (MeV)", "kin_energy_MeV", 1, 4000, 99)
-                create_slider("Bunch_ Charge (C)", "bunch_charge_C", .000000001, 1, .000000001)
-                create_slider("Particle Shape", "particle_shape", 1, 3, 1)
-
-                with vuetify.VRow():
-                    with vuetify.VCol(cols=7): create_comboBox("Select Accelerator Lattice", "selected_lattice", "lattice_dropdown_options")
-                    with vuetify.VCol(cols=2): create_Button("Add", add_lattice_to_list)
-
-                with vuetify.VList():
-                    with vuetify.VListItem(v_for="(item, index) in selected_lattices", key="index"):
-                        vuetify.VListItemContent('{{ item.text }}')
-
-                    create_comboBox("Select a Distribution", "selected_distribution", "distribution_dropdown_options")
-                    with vuetify.VCol(cols=10): create_Button("Run Simulation", run_simulation)
+        drawer.width = 300
+        router.RouterView()
+        
+        with vuetify.VList(shaped=True, v_model=("selectedRoute", 0)):
+            vuetify.VSubheader("Directories")
+            create_route("Settings","mdi-cogs","showSettingsDrawer","true")
+            # create_route("Status", "mdi-list-status")
 
     with layout.content:
-        with vuetify.VContainer(fluid=True,classes="pa-0 fill-height",):
-            vuetify.VImg(v_if=("image_data",), src=("image_data",))
+        with vuetify.VRow():
+            with vuetify.VCol(cols=4):
+                with vuetify.VNavigationDrawer(v_model=("showSettingsDrawer",False),width=500):
+                    vuetify.VCardTitle("Settings")
+                    
+                    with vuetify.VCardText():
+                        # create_slider("Particle Shape", "particle_shape", 1, 3, 1)
+                        create_slider("[WORKS] Number of Particles", "npart", 1, 10000, 99)
+                        create_slider("Kinetic Energy (MeV)", "kin_energy_MeV", 1, 4000, 99)
+                        create_slider("Bunch_ Charge (C)", "bunch_charge_C", .000000001, 1, .000000001)
+                        create_slider("Particle Shape", "particle_shape", 1, 3, 1)
+
+                        with vuetify.VRow():
+                            with vuetify.VCol(cols=7): create_comboBox("Select Accelerator Lattice", "selected_lattice", "lattice_dropdown_options")
+                            with vuetify.VCol(cols=2): create_Button("Add", add_lattice_to_list)
+
+                        with vuetify.VList():
+                            with vuetify.VListItem(v_for="(item, index) in selected_lattices", key="index"):
+                                vuetify.VListItemContent('{{ item.text }}')
+
+                            create_comboBox("Select a Distribution", "selected_distribution", "distribution_dropdown_options")
+                            with vuetify.VCol(cols=10): create_Button("Run Simulation", run_simulation)
+                            
+            with vuetify.VCol(cols=7):
+                vuetify.VImg(v_if=("image_data",), src=("image_data",))
 
 # -----------------------------------------------------------------------------
 # Main
