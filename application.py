@@ -3,7 +3,7 @@ from trame.ui.vuetify import SinglePageWithDrawerLayout
 from trame.widgets import vuetify
 
 from simulation import run_simulation
-
+from impactx import distribution, elements
 # -----------------------------------------------------------------------------
 # Trame setup
 # -----------------------------------------------------------------------------
@@ -33,8 +33,16 @@ state.selected_lattice = None
 state.selected_lattices = []
 state.lattice_dropdown_options = read_file("latticeList.txt")
 
+def find_all_classes(module):
+    class_list = []
+    for classes in dir(module):
+        if isinstance(getattr(module, classes), type):
+            class_list.append(classes)
+    return class_list
+
 state.selected_distribution = None
-state.distribution_dropdown_options = read_file("distributions.txt")
+state.distribution_dropdown_options = find_all_classes(distribution)
+state.lattice_dropdown_options = find_all_classes(elements)
 
 
 #Sections
