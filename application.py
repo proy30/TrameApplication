@@ -108,6 +108,15 @@ def on_route_change(**kwargs):
     selected_route = kwargs.get('selectedRoute')
     if selected_route !=  "/Settings":
         state.showSettingsDrawer = False
+
+def reset_parameters():
+    state.particle_shape = 1
+    state.space_charge = False
+    state.slice_step_diagnostics = False
+    state.npart = 10000
+    state.kin_energy_MeV = 2.0e3
+    state.bunch_charge_C = 1.0e-9
+    state.image_data=None
 # -----------------------------------------------------------------------------
 # Layout
 # -----------------------------------------------------------------------------
@@ -158,3 +167,7 @@ with SinglePageWithDrawerLayout(server) as layout:
 
 if __name__ == "__main__":
     server.start()
+                        with vuetify.VRow():
+                            vuetify.VCardTitle("Settings")
+                            vuetify.VSpacer()
+                            vuetify.VIcon("mdi-refresh", click=reset_parameters)    
