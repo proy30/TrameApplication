@@ -139,6 +139,13 @@ state.trame__title="impactX Visualizer"
 with SinglePageWithDrawerLayout(server) as layout:
     layout.title.set_text("🚀 impactX Visualization Tool")
 
+    with layout.toolbar as toolbar:
+        vuetify.VSpacer()
+        vuetify.VSwitch(
+            v_model="$vuetify.theme.dark",
+            hide_details=True,
+        )
+
     with layout.drawer as drawer:
         drawer.width = 200
         router.RouterView()
