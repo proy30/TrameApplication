@@ -1,4 +1,0 @@
-FODO
-Chicane
-Quadrupole
-Solenoid

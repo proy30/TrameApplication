@@ -49,7 +49,7 @@ def fig_to_base64(fig):
 @pytest.mark.skipif(
     importlib.util.find_spec("pandas") is None, reason="pandas is not available"
 )
-def run_simulation(save_png=True):
+def run_impactX_simulation(save_png=True):
     """
     This tests using ImpactX and Pandas Dataframes
     """
@@ -59,12 +59,11 @@ def run_simulation(save_png=True):
     sim.space_charge = state.space_charge
     sim.slice_step_diagnostics = state.slice_step_diagnostics
     sim.init_grids()
-    npart  = state.npart
+    npart  = int(state.npart)
 
     # init particle beam
-    kin_energy_MeV = state.kin_energy_MeV
-    # kin_energy_MeV = 2.0e100
-    bunch_charge_C = state.bunch_charge_C
+    kin_energy_MeV = int(state.kin_energy_MeV)
+    bunch_charge_C = int(state.bunch_charge_C)
 
     #   reference particle
     pc = sim.particle_container()
@@ -139,6 +138,7 @@ def run_simulation(save_png=True):
 
     # finalize simulation
     sim.finalize()
+    # return fig
 
 
 if __name__ == "__main__":

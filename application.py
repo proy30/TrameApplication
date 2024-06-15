@@ -3,39 +3,30 @@ from trame.ui.vuetify import SinglePageWithDrawerLayout
 from trame.widgets import vuetify, router
 from trame.ui.router import RouterViewLayout
 
-from simulation import run_simulation
+from simulation import run_impactX_simulation
 from impactx import distribution, elements
+
 # -----------------------------------------------------------------------------
 # Trame setup
 # -----------------------------------------------------------------------------
 
-# Specify the client type as "vue2"
 server = get_server(client_type="vue2")
 state, ctrl = server.state, server.controller
 
 # -----------------------------------------------------------------------------
-# Default values (Simulation test)
-# -----------------------------------------------------------------------------
-
-def read_file(file_name):
-    file_list = []
-    try:
-        with open(file_name,'r') as file:
-            for line in file:
-                line = line.strip()
-                if line:
-                    file_list.append({"text": line, "value": line})
-    except FileNotFoundError:
-        print(f"{file_name} file was not found")
-    return file_list
-
-
-state.selected_lattice = None
-state.selected_lattices = []
-state.lattice_dropdown_options = read_file("latticeList.txt")
-
-# -----------------------------------------------------------------------------
 # Retrieve necessary default values (distirbutions, lattices)
+# -----------------------------------------------------------------------------
+def reset_parameters():
+    state.particle_shape = 1
+    state.npart = 10000
+    state.kin_energy_MeV = 2.0e3
+    state.bunch_charge_C = 1.0e-9
+    state.image_data = None
+    state.slice_step_diagnostics = False   
+    state.space_charge = False
+
+# -----------------------------------------------------------------------------
+# Functions
 # -----------------------------------------------------------------------------
 def find_all_classes(module):
     class_list = []
@@ -43,27 +34,7 @@ def find_all_classes(module):
         if isinstance(getattr(module, classes), type):
             class_list.append(classes)
     return class_list
-    # return [cls for cls in dir(module) if isinstance(getattr(module, cls), type)]
-
-
-
-state.selected_lattice = None
-state.selected_distribution = None
-state.lattice_dropdown_options = find_all_classes(elements)
-state.distribution_dropdown_options = find_all_classes(distribution)
-
-state.selected_lattices = []
-
-#Sections
-state.expand_section = True
-
-#Drawer statices
-state.showSettingsDrawer = False
-state.showStatusDrawer = False
-
-# -----------------------------------------------------------------------------
-# Functions
-# -----------------------------------------------------------------------------
+# return [cls for cls in dir(module) if isinstance(getattr(module, cls), type)]
 
 def create_section(title, content, expand_section_index):
     with vuetify.VExpansionPanels(v_model=(expand_section_index,), accordion=True):
@@ -89,12 +60,13 @@ def create_comboBox(label_input, v_model, items):
                 v_model=(v_model,state),
                 items=(items,state),
                 clearable=True,
-                solo=True
+                solo=True,
             )
 def create_checkbox(label_input, v_model):
         vuetify.VCheckbox(
                 label=label_input,
                 v_model=(v_model,state),
+                style="padding: 0; margin: 0;",
             )
 def create_Button(label_input, action_call_on_click):
      vuetify.VBtn(label_input, click=action_call_on_click)
@@ -108,34 +80,124 @@ def create_route(label_input, mdi_icon, click_action_name):
         with vuetify.VListItemContent():
             vuetify.VListItemTitle(label_input)
 
-
 @ctrl.add("add_lattice_to_list")
-def add_lattice_to_list():
-    selected_lattice = state.selected_lattice
-    if selected_lattice:
-        state.selected_lattices = state.selected_lattices + [selected_lattice]
+def on_add_lattice_click():
+    if state.selected_lattice:
+        state.selected_lattices = state.selected_lattices + [state.selected_lattice]
         state.selected_lattice = None
 
+@ctrl.add("clear_lattices")
+def on_clear_lattice_click():
+    state.selected_lattices = []
 
-@state.change("selectedRoute")
-def on_route_change(**kwargs):
-    selected_route = kwargs.get('selectedRoute')
-    if selected_route !=  "/Settings":
-        state.showSettingsDrawer = False
+#Drawer statices
+state.showInputDrawer = False
+state.showRunDrawer = False
+state.showAnalyzeDrawer = False
 
-def reset_parameters():
-    state.particle_shape = 1
-    state.space_charge = False
-    state.slice_step_diagnostics = False
-    state.npart = 10000
-    state.kin_energy_MeV = 2.0e3
-    state.bunch_charge_C = 1.0e-9
-    state.image_data=None
+state.selected_lattice = None
+state.selected_distribution = None
+state.lattice_dropdown_options = find_all_classes(elements)
+state.distribution_dropdown_options = find_all_classes(distribution)
+
+state.selected_lattices = []
+
+#Sections
+state.expand_section = True
 # -----------------------------------------------------------------------------
-# Layout
+# Content
+# -----------------------------------------------------------------------------
+with RouterViewLayout(server, "/Input"):
+    with vuetify.VRow():
+        with vuetify.VCol(cols=4.5):
+            
+            with vuetify.VRow():
+                    vuetify.VCardTitle("Inputs", class_="pa-0")
+                    vuetify.VSpacer()
+                    vuetify.VIcon("mdi-refresh", click=reset_parameters)
+
+            with vuetify.VRow():
+                vuetify.VCol(cols=1)
+                vuetify.VSelect(
+                    label="Particle Shape",
+                    items=("Options",["1","2","3"]),
+                )
+
+            with vuetify.VRow():
+                vuetify.VCol(cols=1)
+                vuetify.VTextField(
+                        label="Number of Particles",
+                        v_model=("npart",state),
+                        underlined = True,
+                        type="number",
+                )
+            with vuetify.VRow():
+                vuetify.VCol(cols=1)
+                vuetify.VTextField(
+                    label="Kinetic Energy",
+                    v_model=("kin_energy_MeV","kin_energy_MeV"),
+                    underlined = True,
+                    clearable=True,
+                )
+                vuetify.VCol(cols="auto")
+                vuetify.VSelect(
+                    compact=True,
+                    items=("Units",["eV","meV","MeV","GeV","TeV"]),
+                    placeholder="MeV",
+                    style="width: 25px;"
+                )
+            with vuetify.VRow():
+                vuetify.VCol(cols=1)
+                vuetify.VTextField(
+                    label="Bunch Charge (C)",
+                    v_model=("bunch_charge_C","bunch_charge_C"),
+                    underlined = True,
+                    clearable=True,
+                    type="number",
+                )
+                        
+            with vuetify.VRow(justify="center",style="padding: 0; margin: 0;"):
+                with vuetify.VCol(cols="auto"):
+                    create_checkbox("Space charge", "space_charge")
+                with vuetify.VCol(cols="auto"):
+                    create_checkbox("Slice Step Diagnostics", "slice_step_diagnostics")
+
+            with vuetify.VRow():
+                vuetify.VCol(cols=1)
+                create_comboBox("Select Accelerator Lattice", "selected_lattice", "lattice_dropdown_options")
+                vuetify.VCol(cols="auto")
+                create_Button("Add", on_add_lattice_click)
+                vuetify.VCol(cols="auto")
+                create_Button("Clear",on_clear_lattice_click)
+            with vuetify.VRow():
+                vuetify.VCol(cols=1)
+                # for item,index in selected_lattices:
+                #     print {{ item}}
+                #     vuetify.VTextField(
+                #         placeholder="0.5",
+                #         style="width: 25px;"
+                #     )
+            with vuetify.VRow():
+                vuetify.VCol(cols=1)
+                create_comboBox("Select a Distribution", "selected_distribution", "distribution_dropdown_options")
+            with vuetify.VRow():
+                vuetify.VSpacer()
+                create_Button("Run Simulation", run_impactX_simulation)
+        
+        with vuetify.VCol(cols=7):
+            with vuetify.VContainer():
+                with vuetify.VCard(elevation=2):
+                    vuetify.VTextField(label="Hello")
+            #             vuetify.VImg(v_if=("image_data",), src=("image_data",))
+
+with RouterViewLayout(server, "/Run"):
+    with vuetify.VContainer():
+        with vuetify.VCard(elevation=2):
+                vuetify.VImg(v_if=("image_data",), src=("image_data",))
+# -----------------------------------------------------------------------------
+# GUI
 # -----------------------------------------------------------------------------
 state.trame__title="impactX Visualizer"
-
 with SinglePageWithDrawerLayout(server) as layout:
     layout.title.set_text("🚀 impactX Visualization Tool")
 
@@ -148,65 +210,15 @@ with SinglePageWithDrawerLayout(server) as layout:
 
     with layout.drawer as drawer:
         drawer.width = 200
-        router.RouterView()
-    
-        with vuetify.VList():
-            vuetify.VSubheader("Directories")
-            create_route("Settings","mdi-cogs","showSettingsDrawer")
-            create_route("Status", "mdi-list-status","showStatusDrawer")
+        # with vuetify.VList():
+            # vuetify.VSubheader("Simulation")
+        create_route("Input","mdi-file-edit","showInputDrawer")
+        create_route("Run", "mdi-play","showRunDrawer")
+        create_route("Analyze", "mdi-chart-box-multiple","showAnalyzeDrawer")
+
 
     with layout.content:
-            with vuetify.VRow():
-                with vuetify.VCol(cols=4):
-                    with vuetify.VNavigationDrawer(v_model=("showSettingsDrawer"),width=500):
-                        with vuetify.VCardText():
-                            with vuetify.VRow():
-                                vuetify.VCardTitle("Settings")
-                                vuetify.VSpacer()
-                                vuetify.VIcon("mdi-refresh", click=reset_parameters)    
-                        
-                            create_slider("Particle Shape", "particle_shape", 1, 3, 1)
-                            create_slider("[WORKS] Number of Particles", "npart", 1, 10000, 99)
-                            create_slider("Kinetic Energy (MeV)", "kin_energy_MeV", 1, 4000, 99)
-                            create_slider("Bunch Charge (C)", "bunch_charge_C", .000000001, 1, .000000001)
-                            
-                            # create_slider("Particle Shape", "particle_shape", 1, 3, 1)
-                            with vuetify.VCardText():
-                                with vuetify.VRow(justify="center"):
-                                    vuetify.VCol(cols="auto")
-                                    create_checkbox("Space charge","space_charge")
-                                    vuetify.VCol(cols="auto")
-                                    create_checkbox("Slice Step Diagnostics","slice_step_diagnostics")
-                                with vuetify.VRow():
-                                    with vuetify.VCol(cols=7): 
-                                        create_comboBox("Select Accelerator Lattice", "selected_lattice", "lattice_dropdown_options")
-                                    with vuetify.VCol(cols=2): 
-                                        create_Button("Add", add_lattice_to_list)
-                                    with vuetify.VCol(cols=2): 
-                                        create_Button("Clear",clear_lattices)
-                                with vuetify.VRow():
-                                        with vuetify.VListItem(v_for="(item, index) in selected_lattices", key="index"):
-                                            vuetify.VListItemContent('{{ item }}')
-                                            with vuetify.VCol(cols=4):  # Adjust column width as needed
-                                                vuetify.VTextField(
-                                                    label="Enter value",
-                                                    dense=True,
-                                                    outlined=True,
-                                            )
-                                with vuetify.VRow():
-                                    create_comboBox("Select a Distribution", "selected_distribution", "distribution_dropdown_options")
-                                with vuetify.VRow():
-                                    vuetify.VSpacer()
-                                    create_Button("Run Simulation", run_impactX_simulation)
-                    
-                with vuetify.VCol(cols=8):
-                    with vuetify.VContainer():
-                        with vuetify.VCard(elevation=2):
-                                vuetify.VImg(v_if=("image_data",), src=("image_data",))
-                                        # with trame.SizeObserver("figure_size"):
-                                        #     html_figure = matplotlib.Figure(style="position: absolute",v_if="show_plot")
-                                        #     ctrl.update_figure = html_figure.update
-
+        router.RouterView()
 
 # -----------------------------------------------------------------------------
 # Main
