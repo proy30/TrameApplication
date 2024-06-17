@@ -5,7 +5,7 @@ from trame.ui.router import RouterViewLayout
 
 from simulation import run_impactX_simulation
 from impactx import distribution, elements
-import json
+import json, re
 
 # -----------------------------------------------------------------------------
 # Trame setup
@@ -25,18 +25,12 @@ def reset_parameters():
     state.image_data = None
     state.slice_step_diagnostics = False   
     state.space_charge = False
+    state.selected_lattice = None
+    state.selected_distribution = "waterbag"
 
 # -----------------------------------------------------------------------------
-# Functions
+# Vuetify feature functions
 # -----------------------------------------------------------------------------
-def find_all_classes(module):
-    class_list = []
-    for classes in dir(module):
-        if isinstance(getattr(module, classes), type):
-            class_list.append(classes)
-    return class_list
-# return [cls for cls in dir(module) if isinstance(getattr(module, cls), type)]
-
 def create_section(title, content, expand_section_index):
     with vuetify.VExpansionPanels(v_model=(expand_section_index,), accordion=True):
         with vuetify.VExpansionPanel():
@@ -92,25 +86,49 @@ def on_clear_lattice_click():
 # -----------------------------------------------------------------------------
 # Functions
 # -----------------------------------------------------------------------------
-state.parameters = []
-state.parameter_values = {}  # Initialize an empty dictionary for parameter values
+def find_all_classes(module):
+    """
+    Finds all class names in the given module.
 
-def load_distributions_from_file(filename):
-    with open(filename, 'r') as file:
-        return json.load(file)
+    Arguments:
+        module: The module to inspect
+    Returns:
+        A list of class names defined in the module
+    """
+    list_of_classes = [name for name in dir(module) if isinstance(getattr(module, name), type)]
+    return list_of_classes
 
-# Load distributions from output.txt
-distributions_data = load_distributions_from_file('output.txt')
+def get_class_info(cls):
+    init_documentation = getattr(cls, '__init__', None).__doc__
+    if not init_documentation:
+        raise ValueError(f"__init__ documentation not found")
+    
+    param_str = re.search(r'\((.*?)\)', init_documentation)
+    init_params = [param.strip() for param in param_str.group(1).split(',') if not param.strip().startswith('self')] if param_str else []
+    
+    return {
+        "name": cls.__name__,
+        "init_doc": init_documentation,
+        "init_params": init_params
+    }
 
+def find_classes(module):
+    return [get_class_info(getattr(module, name)) for name in dir(module) if isinstance(getattr(module, name), type)]
+
+distributions_data = find_classes(distribution)
 
 @ctrl.add("on_selectDistribution_click")
 def selected_distribution(*args):
     if state.selected_distribution:
-        for dist in distributions_data:
-            if dist['name'] == state.selected_distribution:
-                state.parameters = [param.split(':')[0] for param in dist['init_params']]
-                state.parameter_values = {param: None for param in state.parameters}  # Reset parameter values
+        distribution_info = None
+        for distribution in distributions_data:
+            if distribution['name'] == state.selected_distribution:
+                distribution_info = distribution
                 break
+        if distribution_info:
+            state.parameters = [param.split(':')[0] for param in distribution_info['init_params']]
+            state.parameter_values = {param: None for param in state.parameters}  # Reset parameter values
+
 @ctrl.add("on_clearParameters_click")
 def reset_distribution_values(*args):
     state.parameters = []
@@ -125,7 +143,12 @@ state.selected_distribution = None
 state.lattice_dropdown_options = find_all_classes(elements)
 state.distribution_dropdown_options = find_all_classes(distribution)
 
+
+state.selected_lattice = None
+state.selected_distribution = "Waterbag"
 state.lattice_list = []
+state.parameters = []
+state.parameter_values = {}  # Initialize an empty dictionary for parameter values
 
 #Sections
 state.expand_section = True
