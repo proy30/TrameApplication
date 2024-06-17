@@ -5,6 +5,7 @@ from trame.ui.router import RouterViewLayout
 
 from simulation import run_impactX_simulation
 from impactx import distribution, elements
+import json
 
 # -----------------------------------------------------------------------------
 # Trame setup
@@ -80,15 +81,39 @@ def create_route(label_input, mdi_icon, click_action_name):
         with vuetify.VListItemContent():
             vuetify.VListItemTitle(label_input)
 
-@ctrl.add("add_lattice_to_list")
 def on_add_lattice_click():
     if state.selected_lattice:
-        state.selected_lattices = state.selected_lattices + [state.selected_lattice]
+        state.lattice_list = state.lattice_list + [state.selected_lattice]
         state.selected_lattice = None
 
-@ctrl.add("clear_lattices")
 def on_clear_lattice_click():
-    state.selected_lattices = []
+    state.lattice_list = []
+
+# -----------------------------------------------------------------------------
+# Functions
+# -----------------------------------------------------------------------------
+state.parameters = []
+state.parameter_values = {}  # Initialize an empty dictionary for parameter values
+
+def load_distributions_from_file(filename):
+    with open(filename, 'r') as file:
+        return json.load(file)
+
+# Load distributions from output.txt
+distributions_data = load_distributions_from_file('output.txt')
+
+
+@ctrl.add("on_selectDistribution_click")
+def selected_distribution(*args):
+    if state.selected_distribution:
+        for dist in distributions_data:
+            if dist['name'] == state.selected_distribution:
+                state.parameters = [param.split(':')[0] for param in dist['init_params']]
+                state.parameter_values = {param: None for param in state.parameters}  # Reset parameter values
+                break
+@ctrl.add("on_clearParameters_click")
+def reset_distribution_values(*args):
+    state.parameters = []
 
 #Drawer statices
 state.showInputDrawer = False
@@ -100,7 +125,7 @@ state.selected_distribution = None
 state.lattice_dropdown_options = find_all_classes(elements)
 state.distribution_dropdown_options = find_all_classes(distribution)
 
-state.selected_lattices = []
+state.lattice_list = []
 
 #Sections
 state.expand_section = True
@@ -164,22 +189,74 @@ with RouterViewLayout(server, "/Input"):
 
             with vuetify.VRow():
                 vuetify.VCol(cols=1)
-                create_comboBox("Select Accelerator Lattice", "selected_lattice", "lattice_dropdown_options")
-                vuetify.VCol(cols="auto")
-                create_Button("Add", on_add_lattice_click)
-                vuetify.VCol(cols="auto")
-                create_Button("Clear",on_clear_lattice_click)
+                with vuetify.VCol(cols="auto", style="margin-right: 8px; width: 250px; height: 40px"):
+                    vuetify.VCombobox(
+                        label="Select Accelerator Lattice",
+                        items=("lattice_dropdown_options", state),
+                        v_model=("selected_lattice", state),
+                        clearable=True,
+                        solo=True,
+                        dense=True,
+                    )
+                with vuetify.VCol(cols="auto", style="display: flex; align-items: center; margin-right: 8px"):
+                    vuetify.VBtn(
+                        "ADD",
+                        click=on_add_lattice_click,
+                        style="padding: 10px;"
+                    )
+                with vuetify.VCol(cols="auto", style="display: flex; align-items: center"):
+                    vuetify.VBtn(
+                        "CLEAR",
+                        click=on_clear_lattice_click,
+                        style="padding: 10px;"
+                    )
             with vuetify.VRow():
                 vuetify.VCol(cols=1)
-                # for item,index in selected_lattices:
-                #     print {{ item}}
-                #     vuetify.VTextField(
-                #         placeholder="0.5",
-                #         style="width: 25px;"
-                #     )
+                with vuetify.VList():
+                    with vuetify.VListItem(v_for="(item, i) in lattice_list", key="i", v_bind="item"):
+                        vuetify.VListItemContent("{{ item }}", style="padding-left: 5px; margin: 5px; border: 1px solid black; width: 175px;")
+                        with vuetify.VCol(cols="auto",style="display: flex; align-items: center"):
+                            vuetify.VIcon("mdi-plus", style="margin-right: 5px; cursor: pointer;")
+                            vuetify.VIcon("mdi-delete", style="cursor: pointer;")
+            with vuetify.VRow(no_gutters=True):
+                vuetify.VCol(cols=1)
+                with vuetify.VCol(cols="auto", style="margin-right: 8px; width: 250px; height: 40px"):
+                    vuetify.VCombobox(
+                        label="Select Distribution",
+                        v_model=("selected_distribution",),
+                        items=("distribution_dropdown_options",),
+                        clearable=True,
+                        solo=True,
+                        dense=True,
+                        color="primary",
+                    )
+                with vuetify.VCol(cols="auto", style="display: flex; align-items: center; margin-right: 8px"):
+                    vuetify.VBtn(
+                        "SELECT",
+                        click=ctrl.on_select_click,
+                        style="padding: 5px;"
+                    )
+                with vuetify.VCol(cols="auto", style="display: flex; align-items: center"):
+                    vuetify.VBtn(
+                        "CLEAR",
+                        click=ctrl.on_clearParameters_click,
+                        style="padding: 10px;"
+                    )
             with vuetify.VRow():
                 vuetify.VCol(cols=1)
-                create_comboBox("Select a Distribution", "selected_distribution", "distribution_dropdown_options")
+                with vuetify.VList(): 
+                    with vuetify.VListItem(v_for="(item, i) in parameters", key="i", style=""):
+                        with vuetify.VListItemContent(style="padding: 0;  margin: 0"):
+                            with vuetify.VRow():
+                                vuetify.VCol(cols=1)
+                                with vuetify.VCol(cols=13):
+                                    vuetify.VListItemTitle("{{item}}", style="padding: 0; margin: 5px")
+                                with vuetify.VCol(style="padding: 5px; margin:0"):
+                                    vuetify.VTextField(
+                                        label="Value",
+                                        type="number",
+                                        style="width: 100px; margin:0; padding:0px",
+                                    )
             with vuetify.VRow():
                 vuetify.VSpacer()
                 create_Button("Run Simulation", run_impactX_simulation)
