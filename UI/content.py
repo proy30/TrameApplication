@@ -3,6 +3,11 @@ from trame.widgets  import vuetify
 from UI.utilities import find_all_classes, find_classes
 from impactx import distribution, elements
 
+
+import webbrowser
+import subprocess
+import os
+
 # from distributionCard import reset_parameters_distributionParameters
 
 # -----------------------------------------------------------------------   ------
@@ -256,23 +261,59 @@ class latticeConfiguration:
         state.selected_lattice =  None
         state.lattice_dropdown_options = find_all_classes(elements)
         
+        
+    def lattice_documentation():
+        url = "https://impactx.readthedocs.io/en/latest/usage/python.html#lattice-elements"
+        
+        if 'WSL_DISTRO_NAME' in os.environ:
+            subprocess.run(['explorer.exe', url])
+        else:
+            webbrowser.open_new_tab(url)
+
+    def on_add_lattice_click():
+        if state.selected_lattice:
+            state.lattice_list = state.lattice_list + [state.selected_lattice]
+            state.selected_lattice = None
+    def on_clear_lattice_click():
+        state.lattice_list = []
+    
+    def dialog_lattice_elementList():
+        with vuetify.VCard(style="padding: 10px;"):
+            vuetify.VCardTitle("Elements")
+            vuetify.VDivider()
+            with vuetify.VContainer(fluid=True):
+                with vuetify.VRow(no_gutters=True, v_for="(item, i) in lattice_list", key="i", classes="mb-2"):
+                    with vuetify.VCol():
+                        vuetify.VChip(
+                                style="width: 150px; justify-content: center",
+                                dense=True,
+                                v_text="item"
+                            )
 
     def card(self):
         with vuetify.VCard(classes="ma-2", style="max-width: 712px;"):
             with vuetify.VCardTitle("Lattice Configuration", classes="d-flex justify-space-between align-center"):
+                # vuetify.VIcon(
+                #     "mdi-refresh",
+                #     classes="ml-2",
+                #     color="primary",
+                #     # click=reset_parameters
+                # )
                 vuetify.VIcon(
-                    "mdi-refresh",
+                    "mdi-information",
                     classes="ml-2",
-                    color="primary",
-                    # click=reset_parameters
+                    click=latticeConfiguration.lattice_documentation,
+                    style="color: #00313C;",
                 )
+            
             vuetify.VDivider()
             with vuetify.VCardText():
-                with vuetify.VRow(classes="mb-2 align-center", no_gutters=True):
+                with vuetify.VRow(classes="mb-1 align-center", no_gutters=True):
                     with vuetify.VCol(cols=8):
                         vuetify.VSelect(
                             label="Select Accelerator Lattice",
                             items=("lattice_dropdown_options",),
+                            v_model=("selected_lattice", None),
                             dense=True,
                             classes="mr-2 mt-6"
                         )
@@ -281,15 +322,40 @@ class latticeConfiguration:
                             "ADD",
                             classes="mr-2",
                             color="primary",
-                            # click=on_add_lattice_click,
+                            click=latticeConfiguration.on_add_lattice_click,
                             dense=True
                         )
                     with vuetify.VCol(cols="auto"):
                         vuetify.VBtn(
                             "CLEAR",
                             color="secondary",
+                            click=latticeConfiguration.on_clear_lattice_click,
                             dense=True
                         )
+                                
+                with vuetify.VCard(style="height: 220px; overflow-y: auto; width: 250px; padding: 10px;"):
+                    with vuetify.VCardTitle("Elements", classes="text-subtitle-2 pa-2"):
+                        vuetify.VSpacer()
+                        vuetify.VIcon(
+                            "mdi-arrow-expand",
+                            classes="ml-2",
+                            color="primary",
+                            click="showDialog = true",
+                        )
+                    vuetify.VDivider()
+                    with vuetify.VContainer(fluid=True):
+                        with vuetify.VRow(no_gutters=True, v_for="(item, i) in lattice_list", key="i", classes="mb-2"):
+                            with vuetify.VCol():
+                                vuetify.VChip(
+                                        style="width: 150px; justify-content: center",
+                                        dense=True,
+                                        v_text="item"
+                                    )
+                                
+                    with vuetify.VDialog(v_model=("showDialog", False), width="200px"):
+                        latticeConfiguration.dialog_lattice_elementList()
+                        
+           
 class resetParameters:
     def __init__(self) -> None:
         pass
