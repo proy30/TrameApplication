@@ -23,27 +23,41 @@ state, ctrl = server.state, server.controller
 class appContent:
     def toolbar(self):
             vuetify.VSpacer()
-            vuetify.VBtn(
-                "Configure",
-                color="primary",
-                classes="mr-2"
-            )
+            # vuetify.VBtn(
+            #     "Configure",
+            #     color="primary",
+            #     classes="mr-2"
+            # )
             vuetify.VSwitch(
                 v_model="$vuetify.theme.dark",
                 hide_details=True,
             )
 
-    def card_container_template(self, title, reset_parameters_name):
+    def card_container_template(self, title):
         with vuetify.VCard(classes="ma-4", style="max-width: 340px; max-hight: 320px"):
             with vuetify.VCardTitle(title):
                 vuetify.VSpacer()
                 vuetify.VIcon(
-                    "mdi-refresh",
+                    "mdi-information",
                     classes="ml-2",
-                    color="primary",
-                    click=reset_parameters_name
+                    style="color: #00313C;"
                 )
             vuetify.VDivider(classes="my-0")
+    
+    def documentation(section_name):
+        if section_name == "LatticeElements":
+            url = "https://impactx.readthedocs.io/en/latest/usage/python.html#lattice-elements"
+        elif section_name == "BeamDistributions":
+            url = "https://impactx.readthedocs.io/en/latest/usage/python.html#initial-beam-distributions"
+        elif section_name == "pythonParameters":
+            url = "https://impactx.readthedocs.io/en/latest/usage/python.html#general"
+        else:
+            raise ValueError(f"Invalid section name: {section_name}")
+        
+        if 'WSL_DISTRO_NAME' in os.environ:
+            subprocess.run(['explorer.exe', url])
+        else:
+            webbrowser.open_new_tab(url)
 
 
 class distributionParameters:
@@ -109,10 +123,10 @@ class distributionParameters:
             with vuetify.VCardTitle("Distribution Parameters"):
                 vuetify.VSpacer()
                 vuetify.VIcon(
-                    "mdi-refresh",
+                    "mdi-information",
                     classes="ml-2",
-                    color="primary",
-                    # click=distributionParameters.reset_parameters
+                    style="color: #00313C;",
+                    click=lambda: appContent.documentation("BeamDistributions"),
                 )
             vuetify.VDivider(classes="my-0")
             with vuetify.VCardText():
@@ -209,10 +223,10 @@ class inputParameters:
         with vuetify.VCard(classes="ma-2", style="max-width: 340px; height: 320px"):
             with vuetify.VCardTitle("Input Parameters", classes="d-flex justify-space-between align-center"):
                 vuetify.VIcon(
-                    "mdi-refresh",
+                    "mdi-information",
                     classes="ml-2",
-                    color="primary",
-                    click=resetParameters.reset_inputParameters
+                    style="color: #00313C;",
+                    click=lambda: appContent.documentation("pythonParameters"),
                 )
             vuetify.VDivider()
 
@@ -260,15 +274,7 @@ class latticeConfiguration:
         state.lattice_list = []
         state.selected_lattice =  None
         state.lattice_dropdown_options = find_all_classes(elements)
-        
-        
-    def lattice_documentation():
-        url = "https://impactx.readthedocs.io/en/latest/usage/python.html#lattice-elements"
-        
-        if 'WSL_DISTRO_NAME' in os.environ:
-            subprocess.run(['explorer.exe', url])
-        else:
-            webbrowser.open_new_tab(url)
+    
 
     def on_add_lattice_click():
         if state.selected_lattice:
@@ -302,7 +308,7 @@ class latticeConfiguration:
                 vuetify.VIcon(
                     "mdi-information",
                     classes="ml-2",
-                    click=latticeConfiguration.lattice_documentation,
+                    click=lambda: appContent.documentation("LatticeElements"),
                     style="color: #00313C;",
                 )
             
