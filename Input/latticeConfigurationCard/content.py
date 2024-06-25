@@ -69,20 +69,36 @@ class latticeConfiguration:
 
     def dialog_lattice_elementList():
         with vuetify.VCard(style="padding: 10px;"):
-            vuetify.VCardTitle("Elements")
+            with vuetify.VCardTitle("Elements", classes="text-subtitle-2 pa-2"):
+                vuetify.VSpacer()
+                vuetify.VIcon(
+                    "mdi-arrow-expand",
+                    classes="ml-2",
+                    color="primary",
+                    click="showDialog = true",
+                )
             vuetify.VDivider()
             with vuetify.VContainer(fluid=True):
-                with vuetify.VRow(no_gutters=True, v_for="(item, i) in lattice_list", key="i", classes="mb-2"):
-                    with vuetify.VCol():
-                        vuetify.VChip(
-                                style="width: 150px; justify-content: center",
+                    with vuetify.VRow(v_for="(latticeElement, i) in lattice_list", key="i", align="center", classes="my-2", no_gutters=True, style="min-width: 1200px;"):
+                        with vuetify.VCol(cols="auto"):
+                            vuetify.VChip(
+                                style="width: 150px; justify-content: center; margin-right: 10px",
                                 dense=True,
-                                v_text="item"
+                                v_text=("latticeElement.name",),
                             )
+                        with vuetify.VCol(v_for="(param, j) in latticeElement.params", key="j", cols="auto", style="margin-right: 10px;"):
+                            vuetify.VTextField(
+                                label=("param[0]",),
+                                v_model=(f"latticeElement.values[param[0]]", ""),
+                                change=(ctrl.on_update_latticeParameter_change, "[i, param[0], $event]"),
+                                dense=True,
+                                hide_details=True,
+                                style="width: 70px; margin-top: 5px; margin-right: 10px;"
+                        )       
 
 
     def card(self):
-        with vuetify.VDialog(v_model=("showDialog", False), width="700px"):
+        with vuetify.VDialog(v_model=("showDialog", False), width="1200px"):
             latticeConfiguration.dialog_lattice_elementList()
 
         with vuetify.VCard(classes="ma-2", style="max-width: 712px;"):
