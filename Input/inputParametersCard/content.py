@@ -29,24 +29,27 @@ class inputParameters:
             state.npart = "Invalid input"
 
     @state.change("particle_shape")
-    def a(particle_shape, **kwargs):
+    def on_particle_shape_change(particle_shape, **kwargs):
         print(f"Particle Shape changed to: {particle_shape}")
 
     @state.change("npart")
     def on_npart_change(npart, **kwargs):
         # inputParameters.format_to_scientific()
+        state.npart_validation = functions.validate(npart, "int")
         print(f"# of Particles changed to: {npart}")
 
     @state.change("kin_energy_MeV")
     def on_kin_energy_change(kin_energy_MeV, **kwargs):
+        state.kin_energy_MeV_validation = functions.validate(kin_energy_MeV, "float")
         print(f"Kinetic Energy changed to: {kin_energy_MeV}")
 
     @state.change("bunch_charge_C")
     def on_bunch_charge_C_change(bunch_charge_C, **kwargs):
+        state.bunch_charge_C_validation = functions.validate(bunch_charge_C, "float")
         print(f"Bunch Charge (C) changed to: {bunch_charge_C}")
 
     @state.change("kin_energy_unit")
-    def b(kin_energy_unit, **kwargs):
+    def on_kin_energy_unit_change(kin_energy_unit, **kwargs):
         # inputParameters.convert_kin_energy()
         print(f"Kinetic Energy unit changed to: {kin_energy_unit}")
 
@@ -76,37 +79,40 @@ class inputParameters:
 
             with vuetify.VCardText():
                 vuetify.VSelect(
-                    label="Particle Shape",
                     v_model=("particle_shape",),
+                    label="Particle Shape",
                     items=([1, 2, 3],),
                     dense=True,
                     classes="mb-2"
                 )
                 vuetify.VTextField(
-                    label="Number of Particles",
                     v_model=("npart",),
+                    label="Number of Particles",
+                    error_messages=("npart_validation",),
                     classes="mb-2",
                     dense=True,
                 )
                 with vuetify.VRow(classes="mb-2"):
                     with vuetify.VCol(cols=8):
                         vuetify.VTextField(
-                            label="Kinetic Energy",
                             v_model=("kin_energy_MeV",),
+                            label="Kinetic Energy",
+                            error_messages=("kin_energy_MeV_validation",),
                             type="number",
                             dense=True,
                             classes="mr-2",
                         )
                     with vuetify.VCol(cols=4):
                         vuetify.VSelect(
-                            label="Unit",
                             v_model=("kin_energy_unit",),
+                            label="Unit",
                             items=(["meV", "eV", "MeV", "GeV", "TeV"],),
                             dense=True,
                         )
                 vuetify.VTextField(
                     label="Bunch Charge (C)",
                     v_model=("bunch_charge_C",),
+                    error_messages=("bunch_charge_C_validation",),
                     type="number",
                     dense=True,
                     classes="mb-2"

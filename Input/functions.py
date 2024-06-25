@@ -70,3 +70,27 @@ class functions:
                 class_info_list.append(class_info)
         return class_info_list
         # return [get_class_info(getattr(module, name)) for name in dir(module) if isinstance(getattr(module, name), type)]
+
+    def validate(value, validation_type):
+        error_messages = []
+
+        if value is None:
+            error_messages.append("Field is required")
+        else:
+            try:
+                num_value = float(value)
+                if num_value < 0:
+                    error_messages.append("Must be positive")
+                else:
+                    if validation_type == "int":
+                        if not float(value).is_integer():
+                            error_messages.append("Must be an integer")
+                    elif validation_type == "float":
+                        try:
+                            float(value)
+                        except ValueError:
+                            error_messages.append("Must be a float")
+            except ValueError:
+                error_messages.append("Must be a number")
+
+        return error_messages   
