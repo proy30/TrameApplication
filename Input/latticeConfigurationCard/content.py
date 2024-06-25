@@ -2,7 +2,9 @@ from trame.app import get_server
 from trame.widgets  import vuetify
 
 from Input.functions import functions
+
 from impactx import elements
+from Input.latticeConfigurationCard.utilities import latticeElementsList
 # -----------------------------------------------------------------------------
 # Trame setup
 # -----------------------------------------------------------------------------
@@ -17,22 +19,54 @@ class latticeConfiguration:
     def __init__(self):
         state.lattice_list = []
         state.selected_lattice =  None
-        state.lattice_elements = functions.find_all_classes(elements)
-        # print(state.lattice_elements)
-        # state.latticeParameters = {
-        #     "Quad": ["ds", "k","ds", "k","ds", "k"],
-        #     "Drift": ["ds"]
-        # }
+
+        state.LATTICE_ELEMENTS = latticeElementsList(elements)
+        state.lattice_elements = list(state.LATTICE_ELEMENTS.keys())
+        state.lattice_parameters = {
+            key: [(param, default) for param, default, _type in params]
+            for key, params in state.LATTICE_ELEMENTS.items()
+        }
+        ctrl.on_add_lattice_click = latticeConfiguration.on_add_lattice_click
+        ctrl.on_update_latticeParameter_change = latticeConfiguration.on_update_latticeParameter_change
+    
 
     def on_add_lattice_click():
-        if state.selected_lattice:
-            state.lattice_list = state.lattice_list + [state.selected_lattice]
-            state.selected_lattice = None
+        lattice_element = state.selected_lattice
+        if lattice_element:
+            lattice_param = state.lattice_parameters.get(lattice_element, [])
+            new_item = {
+                "name": lattice_element,
+                "params": lattice_param,
+                "values": {param: default for param, default in lattice_param}
+            }
+        state.lattice_list = state.lattice_list + [new_item]
+        state.selected_lattice = None
             
 
     def on_clear_lattice_click():
         state.lattice_list = []
     
+    def on_update_latticeParameter_change(item_index, param, value):
+        # Find the type of the parameter
+        lattice_element = state.lattice_list[item_index]['name']
+        param_type = next(_type for p, d, _type in state.LATTICE_ELEMENTS[lattice_element] if p == param)
+        converted_value = latticeConfiguration.validate_and_convert(value, param_type)
+        if converted_value is not None:
+            state.lattice_list[item_index]['values'][param] = converted_value
+            print(f"Value changed for item {item_index}, param '{param}': {converted_value}")
+            # write_lattice_elements_to_file()
+
+    def validate_and_convert(value, desired_type):
+        if desired_type == "int":
+            return int(value)
+        elif desired_type == "float":
+            return float(value)
+        elif desired_type == "str":
+            return str(value)
+        else:
+            raise ValueError(f"Unsupported type: {desired_type}")
+        
+
     def dialog_lattice_elementList():
         with vuetify.VCard(style="padding: 10px;"):
             vuetify.VCardTitle("Elements")
@@ -45,6 +79,7 @@ class latticeConfiguration:
                                 dense=True,
                                 v_text="item"
                             )
+
 
     def card(self):
         with vuetify.VDialog(v_model=("showDialog", False), width="700px"):
@@ -97,31 +132,19 @@ class latticeConfiguration:
                                 )
                             vuetify.VDivider()
                             with vuetify.VContainer(fluid=True):
-                                    with vuetify.VRow(no_gutters=True, v_for="(item, i) in lattice_list", key="i", classes="mb-2", align_center=True):
+                                    with vuetify.VRow(v_for="(latticeElement, i) in lattice_list", key="i", align="center", classes="my-2", no_gutters=True, style="min-width: 1200px;"):
                                         with vuetify.VCol(cols="auto"):
                                             vuetify.VChip(
-                                                style="width: 150px; justify-content: center",
+                                                style="width: 150px; justify-content: center; margin-right: 10px",
                                                 dense=True,
-                                                v_text="item"
+                                                v_text=("latticeElement.name",),
                                             )
-                          
-
-                    # with vuetify.VCol(): 
-                    #     with vuetify.VCard(style="height: 220px; overflow-y: auto; width: 400px; padding: 10px;"):
-                    #         with vuetify.VCardTitle("Values", classes="text-subtitle-2 pa-2"):
-                    #             vuetify.VSpacer()
-                    #             vuetify.VIcon(
-                    #                 "mdi-arrow-expand",
-                    #                 classes="ml-2",
-                    #                 color="primary",
-                    #                 click="showVa = true",
-                    #             )
-                    #         vuetify.VDivider()
-                    #         with vuetify.VContainer(fluid=True):
-                    #             with vuetify.VRow(no_gutters=True, v_for="(item, i) in lattice_list", key="i", classes="mb-2"):
-                    #                 with vuetify.VCol():
-                    #                     vuetify.VChip(
-                    #                             style="width: 150px; justify-content: center",
-                    #                             dense=True,
-                    #                             v_text="item"
-                    #                         )
+                                        with vuetify.VCol(v_for="(param, j) in latticeElement.params", key="j", cols="auto", style="margin-right: 10px;"):
+                                            vuetify.VTextField(
+                                                label=("param[0]",),
+                                                v_model=(f"latticeElement.values[param[0]]", ""),
+                                                change=(ctrl.on_update_latticeParameter_change, "[i, param[0], $event]"),
+                                                dense=True,
+                                                hide_details=True,
+                                                style="width: 70px; margin-top: 5px; margin-right: 10px;"
+                                        )                          
