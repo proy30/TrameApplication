@@ -8,19 +8,25 @@ state, ctrl = server.state, server.controller
 
 def load_data(file_path):
     df = pd.read_csv(file_path, sep=' ')
-    dictionary = df.to_dict(orient='records')
+    return df
 
-    columns = df.columns
-    list = []
+def convert_to_dict(combined_data):
+    dictionary = combined_data.to_dict(orient='records')
+
+    columns = combined_data.columns
+    headers = []
     for column in columns:
         clean = column.strip()
 
-        convert_to_dictionary = {"text": clean, "value": clean}
-        list.append(convert_to_dictionary)
+        headers.append({"text": clean, "value": clean})
 
-    return dictionary, list
+    return dictionary, headers
 
-data, headers = load_data('/mnt/c/Users/parth/Downloads/vsCode/fixBugs/diags/reduced_beam_characteristics.0.0')
+reducedBeam_data = load_data('/mnt/c/Users/parth/Downloads/vsCode/fixBugs/diags/reduced_beam_characteristics.0.0')
+refParticle_data = load_data('/mnt/c/Users/parth/Downloads/vsCode/fixBugs/diags/ref_particle.0.0')
+
+combined_data = pd.merge(reducedBeam_data, refParticle_data, how='outer')
+data, headers = convert_to_dict(combined_data)
 
 state.data = data
 state.headers = headers
