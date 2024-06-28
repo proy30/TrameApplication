@@ -1,48 +1,58 @@
-import pandas as pd
 from trame.app import get_server
 from trame.ui.vuetify import SinglePageWithDrawerLayout
 from trame.widgets import vuetify
 
+from widgets import Functions
+
+# -----------------------------------------------------------------------------
+# Start server
+# -----------------------------------------------------------------------------
+
 server = get_server(client_type="vue2")
 state, ctrl = server.state, server.controller
 
-def load_data(file_path):
-    df = pd.read_csv(file_path, sep=' ')
-    return df
+# -----------------------------------------------------------------------------
+# Defaults
+# -----------------------------------------------------------------------------
+reducedBeam_data = '/mnt/c/Users/parth/Downloads/vsCode/fixBugs/diags/reduced_beam_characteristics.0.0'
+refParticle_data = '/mnt/c/Users/parth/Downloads/vsCode/fixBugs/diags/ref_particle.0.0'
 
-def convert_to_dict(combined_data):
-    dictionary = combined_data.to_dict(orient='records')
-
-    columns = combined_data.columns
-    headers = []
-    for column in columns:
-        clean = column.strip()
-
-        headers.append({"text": clean, "value": clean})
-
-    return dictionary, headers
-
-reducedBeam_data = load_data('/mnt/c/Users/parth/Downloads/vsCode/fixBugs/diags/reduced_beam_characteristics.0.0')
-refParticle_data = load_data('/mnt/c/Users/parth/Downloads/vsCode/fixBugs/diags/ref_particle.0.0')
-
-combined_data = pd.merge(reducedBeam_data, refParticle_data, how='outer')
-data, headers = convert_to_dict(combined_data)
+combined_data = Functions.combine_files(reducedBeam_data, refParticle_data)
+dictionary_data = Functions.convert_to_dict(combined_data)
+data, headers = dictionary_data
 
 state.data = data
 state.headers = headers
 
+default_columns = ["step", "s"]
+state.selected_columns = default_columns
+state.all_columns = [header['value'] for header in headers]
+
+@state.change("selected_columns")
+def update_table(selected_columns, **kwargs):
+    state.data = Functions.filter_data_by_columns(data, selected_columns)
 # -----------------------------------------------------------------------------
 # GUI
 # -----------------------------------------------------------------------------
-class table():
+class Table:
     def card():
         with vuetify.VCard():
-            vuetify.VCardTitle("Table"),
+            with vuetify.VRow():
+                vuetify.VCardTitle("Table")
+                with vuetify.VCol(style="max-width: 500px;"):
+                    vuetify.VSelect(
+                        v_model=("selected_columns",),
+                        items=("all_columns",),
+                        label="Select data to view",
+                        multiple=True,
+                    )
+            vuetify.VDivider()
             vuetify.VDataTable(
                 headers=("headers",),
                 items=("data",),
+                header_class="centered-header"
             )
-            
+
 # -----------------------------------------------------------------------------
 # Main Layout
 # -----------------------------------------------------------------------------
@@ -51,7 +61,7 @@ with SinglePageWithDrawerLayout(server) as layout:
         with vuetify.VContainer(fluid=True):
             with vuetify.VRow(no_gutters=True):
                 with vuetify.VCol(cols="auto", classes="pa-2"):
-                    table.card()
+                    Table.card()
 
 # -----------------------------------------------------------------------------
 # Main
