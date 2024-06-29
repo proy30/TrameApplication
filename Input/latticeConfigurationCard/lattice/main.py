@@ -5,6 +5,7 @@ from trame.widgets import vuetify
 
 from functions  import selectClasses
 from impactx import elements
+
 # -----------------------------------------------------------------------------
 # Trame setup
 # -----------------------------------------------------------------------------
@@ -15,9 +16,10 @@ state, ctrl = server.state, server.controller
 # -----------------------------------------------------------------------------
 # Helpful
 # -----------------------------------------------------------------------------
-state.listOfLatticeElements = selectClasses(elements)
-state.selectedLatticeList = []
 
+state.listOfLatticeElements = selectClasses(elements)
+state.selectedLattice = None
+state.selectedLatticeList = []
 
 # -----------------------------------------------------------------------------
 # Callbacks
@@ -31,6 +33,7 @@ def on_add_lattice_click():
     selectedLattice = state.selectedLattice
     if selectedLattice:
         state.selectedLatticeList.append(selectedLattice)
+        state.dirty("selectedLatticeList")
         print(f"ADD button clicked, added: {selectedLattice}")
         print(f"Current list of selected lattice elements: {state.selectedLatticeList}")
 
@@ -71,7 +74,25 @@ class latticeConfiguration:
                             color="secondary",
                             dense=True
                         )
-
+                with vuetify.VRow():
+                    with vuetify.VCol():       
+                        with vuetify.VCard(style="height: 300px; width: 700px; overflow-y: auto;"):
+                            with vuetify.VCardTitle("Elements", classes="text-subtitle-2 pa-2"):
+                                vuetify.VSpacer()
+                                vuetify.VIcon(
+                                    "mdi-arrow-expand",
+                                    classes="ml-2",
+                                    color="primary",
+                                )
+                            vuetify.VDivider()
+                            with vuetify.VContainer(fluid=True):
+                                with vuetify.VRow(v_for="latticeElement in selectedLatticeList"):
+                                    with vuetify.VCol():
+                                        vuetify.VChip(
+                                            style="width: 150px; justify-content: center;",
+                                            v_text=("latticeElement",),
+                                            dense=True,
+                                        )
 
 latticeConfiguration =  latticeConfiguration()
 with SinglePageWithDrawerLayout(server) as layout:
