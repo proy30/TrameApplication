@@ -21,9 +21,9 @@ state.listOfLatticeElements = selectClasses(elements)
 # -----------------------------------------------------------------------------
 # Callbacks
 # -----------------------------------------------------------------------------
-@state.change("listOfLatticeElements")
-def on_lattice_element_changed(listOfLatticeElements, **kwargs):
-    print (f"Lattice Selection Changed to: {listOfLatticeElements}")
+@state.change("selectedLattice")
+def on_lattice_element_changed(selectedLattice, **kwargs):
+    print (f"Lattice Selection Changed to: {selectedLattice}")
 # -----------------------------------------------------------------------------
 # ContentSetup
 # -----------------------------------------------------------------------------
@@ -42,6 +42,7 @@ class latticeConfiguration:
                     with vuetify.VCol(cols=8):
                         vuetify.VSelect(
                             label="Select Accelerator Lattice",
+                            v_model=("selectedLattice", None),
                             items=("listOfLatticeElements",),
                             dense=True,
                             classes="mr-2 mt-6"
