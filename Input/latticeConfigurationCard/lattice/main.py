@@ -16,6 +16,7 @@ state, ctrl = server.state, server.controller
 # Helpful
 # -----------------------------------------------------------------------------
 state.listOfLatticeElements = selectClasses(elements)
+state.selectedLatticeList = []
 
 
 # -----------------------------------------------------------------------------
@@ -24,6 +25,15 @@ state.listOfLatticeElements = selectClasses(elements)
 @state.change("selectedLattice")
 def on_lattice_element_changed(selectedLattice, **kwargs):
     print (f"Lattice Selection Changed to: {selectedLattice}")
+
+@ctrl.add("add_latticeElement")
+def on_add_lattice_click():
+    selectedLattice = state.selectedLattice
+    if selectedLattice:
+        state.selectedLatticeList.append(selectedLattice)
+        print(f"ADD button clicked, added: {selectedLattice}")
+        print(f"Current list of selected lattice elements: {state.selectedLatticeList}")
+
 # -----------------------------------------------------------------------------
 # ContentSetup
 # -----------------------------------------------------------------------------
@@ -52,7 +62,8 @@ class latticeConfiguration:
                             "ADD",
                             color="primary",
                             dense=True,
-                            classes="mr-2"
+                            classes="mr-2",
+                            click=ctrl.add_latticeElement,
                         )
                     with vuetify.VCol(cols="auto"):
                         vuetify.VBtn(
