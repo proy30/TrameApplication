@@ -37,7 +37,7 @@ def add_lattice_element():
 
     selectedLatticeElementWithParameters = {
         "name": selectedLattice,
-        "parameters": selectedLatticeParameters,
+        "parameters_with_default_value": selectedLatticeParameters,
     }
     return selectedLatticeElementWithParameters
 # -----------------------------------------------------------------------------
@@ -112,10 +112,10 @@ class latticeConfiguration:
                                             v_text=("latticeElement.name",),
                                             dense=True,
                                         )
-                                    with vuetify.VCol(v_for="parameter in latticeElement.parameters", key="parameter"):
+                                    with vuetify.VCol(v_for="value in latticeElement.parameters_with_default_value", key="parameter"):
                                             vuetify.VTextField(
-                                                label=("parameter[0]",), # parameter[0] = parameter name
-                                                v_model=("parameter[1]",), #  parameter[1] =  parameter default value 
+                                                label=("value[0]",), # parameter[0] = parameter name
+                                                v_model=("value[1]",), #  parameter[1] =  parameter default value 
                                             )
 
 latticeConfiguration =  latticeConfiguration()
