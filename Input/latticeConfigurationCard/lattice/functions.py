@@ -67,6 +67,16 @@ def latticeElementsList(module_name):
 def selectClasses(module_name):
     return list(latticeElementsList(module_name))
 
-# print (selectClasses(elements)      )
+def parametersAndDefaults(module_name):
+    parameters = {}
+    for key, params in latticeElementsList(module_name).items():
+        param_list = []
+        for param, default, _type in params:
+            param_list.append((param, default))
+        parameters[key] = param_list
+    return parameters
+
+# print(latticeElementsList(elements))
+# print (parametersAndDefaults(elements))
 
 

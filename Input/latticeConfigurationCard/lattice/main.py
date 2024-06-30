@@ -3,7 +3,7 @@ from trame.app import get_server
 from trame.ui.vuetify import SinglePageWithDrawerLayout
 from trame.widgets import vuetify
 
-from functions  import selectClasses
+from functions  import selectClasses, parametersAndDefaults
 from impactx import elements
 
 # -----------------------------------------------------------------------------
@@ -16,11 +16,30 @@ state, ctrl = server.state, server.controller
 # -----------------------------------------------------------------------------
 # Helpful
 # -----------------------------------------------------------------------------
+LATTICE_ELEMENTS_MODULE_NAME = elements
 
-state.listOfLatticeElements = selectClasses(elements)
+state.listOfLatticeElements = selectClasses(LATTICE_ELEMENTS_MODULE_NAME)
+state.listOfLatticeElementParametersAndDefault = parametersAndDefaults(LATTICE_ELEMENTS_MODULE_NAME)
+
 state.selectedLattice = None
 state.selectedLatticeList = []
 
+# state.listOfLatticeElementParametersAndDefault = {'Alignment': [], 'Aperture': [('xmax', None), ('ymax', None), ('shape', "'rectangular'"), ('dx', '0'), ('dy', '0'), ('rotation', '0')], 
+#                                             'BeamMonitor': [('name', None), ('backend', "'default'"), ('encoding', "'g'")],
+#                                             'Buncher': [('V', None), ('k', None), ('dx', '0'), ('dy', '0'), ('rotation', '0')],
+#                                             'CFbend': [('ds', None), ('rc', None), ('k', None), ('dx', '0'), ('dy', '0'), ('rotation', '0'), ('nslice', '1')]
+#                                             }  
+
+
+def add_lattice_element():
+    selectedLattice = state.selectedLattice
+    selectedLatticeParameters = state.listOfLatticeElementParametersAndDefault.get(selectedLattice, [])
+
+    selectedLatticeElementWithParameters = {
+        "name": selectedLattice,
+        "parameters": selectedLatticeParameters,
+    }
+    return selectedLatticeElementWithParameters
 # -----------------------------------------------------------------------------
 # Callbacks
 # -----------------------------------------------------------------------------
@@ -32,10 +51,11 @@ def on_lattice_element_changed(selectedLattice, **kwargs):
 def on_add_lattice_click():
     selectedLattice = state.selectedLattice
     if selectedLattice:
-        state.selectedLatticeList.append(selectedLattice)
+        selectedLatticeElementWithParameters = add_lattice_element()
+        state.selectedLatticeList.append(selectedLatticeElementWithParameters)
         state.dirty("selectedLatticeList")
-        print(f"ADD button clicked, added: {selectedLattice}")
-        print(f"Current list of selected lattice elements: {state.selectedLatticeList}")
+        # print(f"ADD button clicked, added: {selectedLattice}")
+        # print(f"Current list of selected lattice elements: {state.selectedLatticeList}")
 
 # -----------------------------------------------------------------------------
 # ContentSetup
@@ -81,18 +101,22 @@ class latticeConfiguration:
                                 vuetify.VSpacer()
                                 vuetify.VIcon(
                                     "mdi-arrow-expand",
-                                    classes="ml-2",
                                     color="primary",
                                 )
                             vuetify.VDivider()
-                            with vuetify.VContainer(fluid=True):
-                                with vuetify.VRow(v_for="latticeElement in selectedLatticeList"):
+                            with vuetify.VContainer(fluid=True,no_gutters=True):
+                                with vuetify.VRow(v_for="latticeElement in selectedLatticeList", key="latticeElement.name"):
                                     with vuetify.VCol():
                                         vuetify.VChip(
                                             style="width: 150px; justify-content: center;",
-                                            v_text=("latticeElement",),
+                                            v_text=("latticeElement.name",),
                                             dense=True,
                                         )
+                                    with vuetify.VCol(v_for="parameter in latticeElement.parameters", key="parameter"):
+                                            vuetify.VTextField(
+                                                label=("parameter[0]",), # parameter[0] = parameter name
+                                                v_model=("parameter[1]",), #  parameter[1] =  parameter default value 
+                                            )
 
 latticeConfiguration =  latticeConfiguration()
 with SinglePageWithDrawerLayout(server) as layout:
