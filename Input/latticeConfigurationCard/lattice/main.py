@@ -21,8 +21,11 @@ LATTICE_ELEMENTS_MODULE_NAME = elements
 state.listOfLatticeElements = selectClasses(LATTICE_ELEMENTS_MODULE_NAME)
 state.listOfLatticeElementParametersAndDefault = parametersAndDefaults(LATTICE_ELEMENTS_MODULE_NAME)
 
-state.selectedLattice = None
-state.selectedLatticeList = []
+# -----------------------------------------------------------------------------
+# Default
+# -----------------------------------------------------------------------------
+state.selectedLattice = None #  Selected lattice is Empty by default
+state.selectedLatticeList = [] # Selected lattice list is Empty by default
 
 # state.listOfLatticeElementParametersAndDefault = {'Alignment': [], 'Aperture': [('xmax', None), ('ymax', None), ('shape', "'rectangular'"), ('dx', '0'), ('dy', '0'), ('rotation', '0')], 
 #                                             'BeamMonitor': [('name', None), ('backend', "'default'"), ('encoding', "'g'")],
@@ -71,14 +74,14 @@ class latticeConfiguration:
                 )
             vuetify.VDivider()
             with vuetify.VCardText():
-                with vuetify.VRow(classes="mb-1 align-center", no_gutters=True):
+                with vuetify.VRow(align="center"):
                     with vuetify.VCol(cols=8):
                         vuetify.VSelect(
                             label="Select Accelerator Lattice",
                             v_model=("selectedLattice", None),
                             items=("listOfLatticeElements",),
                             dense=True,
-                            classes="mr-2 mt-6"
+                            classes="mr-2"
                         )
                     with vuetify.VCol(cols="auto"):
                         vuetify.VBtn(
@@ -104,18 +107,18 @@ class latticeConfiguration:
                                     color="primary",
                                 )
                             vuetify.VDivider()
-                            with vuetify.VContainer(fluid=True,no_gutters=True):
-                                with vuetify.VRow(v_for="latticeElement in selectedLatticeList", key="latticeElement.name"):
+                            with vuetify.VContainer(fluid=True):
+                                with vuetify.VRow(v_for="(latticeElement, index) in selectedLatticeList", align="center"):
                                     with vuetify.VCol():
                                         vuetify.VChip(
                                             style="width: 150px; justify-content: center;",
                                             v_text=("latticeElement.name",),
                                             dense=True,
                                         )
-                                    with vuetify.VCol(v_for="value in latticeElement.parameters_with_default_value", key="parameter"):
+                                    with vuetify.VCol(v_for="(value, parameterIndex) in latticeElement.parameters_with_default_value"):
                                             vuetify.VTextField(
-                                                label=("value[0]",), # parameter[0] = parameter name
-                                                v_model=("value[1]",), #  parameter[1] =  parameter default value 
+                                                label=("value[0]",), # value[0] = parameter name
+                                                v_model=("value[1]",), #  value[1] =  parameter default value 
                                             )
 
 latticeConfiguration =  latticeConfiguration()
