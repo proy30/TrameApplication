@@ -11,8 +11,14 @@ class Functions:
         headers = [{"text": column.strip(), "value": column.strip()} for column in columns]
         return dictionary, headers
 
-    def filter_data_by_columns(data, selected_columns):
-        return [{col: row[col] for col in selected_columns} for row in data]
+    # def filter_data_by_columns(data, selected_columns):
+    #     result = []
+    #     for row in data:
+    #         filtered_row = {}
+    #         for col in selected_columns:
+    #             filtered_row[col] = row[col]
+    #         result.append(filtered_row)
+    #     return result
 
     def combine_files(file1_name, file2_name):
         file1 = Functions.load_data(file1_name)

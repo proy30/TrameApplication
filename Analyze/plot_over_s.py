@@ -19,18 +19,20 @@ refParticle_data = '/mnt/c/Users/parth/Downloads/vsCode/fixBugs/diags/ref_partic
 
 combined_data = Functions.combine_files(reducedBeam_data, refParticle_data)
 dictionary_data = Functions.convert_to_dict(combined_data)
+
 data, headers = dictionary_data
+default_columns = ["step", "s"]
+all_data_columns = [header['value'] for header in headers]
 
 state.data = data
 state.headers = headers
-
-default_columns = ["step", "s"]
 state.selected_columns = default_columns
-state.all_columns = [header['value'] for header in headers]
+state.all_columns = all_data_columns
 
 @state.change("selected_columns")
 def update_table(selected_columns, **kwargs):
-    state.data = Functions.filter_data_by_columns(data, selected_columns)
+    # state.data = Functions.filter_data_by_columns(data, selected_columns)
+    state.selected_columns = [header for header in headers if header['value'] in selected_columns]
 # -----------------------------------------------------------------------------
 # GUI
 # -----------------------------------------------------------------------------
