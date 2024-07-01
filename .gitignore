@@ -2,3 +2,6 @@
 __pycache__/
 *.py[cod]
 *$py.class
+
+# Ignore the 00testBugs folder
+00testBugs/
