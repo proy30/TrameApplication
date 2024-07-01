@@ -3,5 +3,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-# Ignore the 00testBugs folder
+# Ignore the 00testBugs folder and output.txt
 00testBugs/
+output.txt
+application.py
