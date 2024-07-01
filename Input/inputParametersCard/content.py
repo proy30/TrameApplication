@@ -16,7 +16,7 @@ state, ctrl = server.state, server.controller
 class inputParameters:
     def __init__ (self):
         state.particle_shape = 1
-        state.npart = 10000
+        state.npart = 100
         state.kin_energy_MeV = 2.0e3
         state.bunch_charge_C = 1.0e-9
         state.kin_energy_unit = "MeV"
@@ -53,18 +53,18 @@ class inputParameters:
         # inputParameters.convert_kin_energy()
         print(f"Kinetic Energy unit changed to: {kin_energy_unit}")
 
-    # def convert_kin_energy():
-    #     conversion_factors = {
-    #         "meV": 1.0e-9,
-    #         "eV": 1.0e-6,
-    #         "keV": 1.0e-3,
-    #         "MeV": 1.0,
-    #         "GeV": 1.0e3,
-    #         "TeV": 1.0e6,
-    #     }
-    #     state.kin_energy_MeV = float(state.kin_energy_MeV)
-    #     state.kin_energy_MeV /= conversion_factors["MeV"]
-    #     state.kin_energy_MeV *= conversion_factors[state.kin_energy_unit]
+    def convert_kin_energy():
+        conversion_factors = {
+            "meV": 1.0e-9,
+            "eV": 1.0e-6,
+            "keV": 1.0e-3,
+            "MeV": 1.0,
+            "GeV": 1.0e3,
+            "TeV": 1.0e6,
+        }
+        state.kin_energy_MeV = float(state.kin_energy_MeV)
+        state.kin_energy_MeV /= conversion_factors["MeV"]
+        state.kin_energy_MeV *= conversion_factors[state.kin_energy_unit]
 
     def card(self):
         with vuetify.VCard(classes="ma-2", style="max-width: 340px; height: 320px"):

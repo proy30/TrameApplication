@@ -35,3 +35,6 @@ class analyzeOptions:
                 vuetify.VDataTable(
                     
                 )
+
+    # def phase_space_simulation():
+        # with vuetify.VCardclasses="ma-2"
