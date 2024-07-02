@@ -61,6 +61,7 @@ state.all_data = data
 state.all_headers = headers
 state.selected_headers = default_headers
 state.filtered_data = []
+state.plot_options = ["1D plots over s", "Phase Space Plots"]
 
 # -----------------------------------------------------------------------------
 # State changes
@@ -77,7 +78,7 @@ def on_filtered_data_change(filtered_data, **kwargs):
 
 @state.change("active_plot")
 def on_plot_selection_change(active_plot, **kwargs):
-    ctrl.figure.update(PLOTS[active_plot]())
+    ctrl.figure_update(PLOTS[active_plot]())
 
 
 # -----------------------------------------------------------------------------
@@ -110,6 +111,15 @@ class Table:
 # Main Layout
 # -----------------------------------------------------------------------------
 with SinglePageWithDrawerLayout(server) as layout:
+    with layout.toolbar:
+        vuetify.VSpacer()
+        vuetify.VSelect(
+            v_model=("active_plot","Line"),
+            items=("plot_options",),
+            label="Select plot to view",
+            dense=True,
+            style="width: 500px"
+        )
     with layout.content:
         with vuetify.VContainer(fluid=True):
             with vuetify.VRow(no_gutters=True, classes="fill-height"):
