@@ -2,9 +2,8 @@ from trame.app import get_server
 from trame.ui.vuetify import SinglePageWithDrawerLayout
 from trame.widgets import vuetify, plotly
 
-from widgets import Functions
+from Analyze.widgets import Functions
 import plotly.graph_objects as go
-
 
 # -----------------------------------------------------------------------------
 # Start server
@@ -93,6 +92,14 @@ def on_plot_selection_change(active_plot, **kwargs):
 # -----------------------------------------------------------------------------
 class Table:
     def card():
+        vuetify.VSpacer()
+        vuetify.VSelect(
+            v_model=("active_plot","Line"),
+            items=("plot_options",),
+            label="Select plot to view",
+            dense=True,
+            style="width: 500px"
+        )
         with vuetify.VCard(v_if=("show_table")):
             with vuetify.VCol(style="width: 500px;"):
                 vuetify.VSelect(
@@ -118,26 +125,20 @@ class Table:
 # -----------------------------------------------------------------------------
 # Main Layout
 # -----------------------------------------------------------------------------
-with SinglePageWithDrawerLayout(server) as layout:
-    with layout.toolbar:
-        vuetify.VSpacer()
-        vuetify.VSelect(
-            v_model=("active_plot","Line"),
-            items=("plot_options",),
-            label="Select plot to view",
-            dense=True,
-            style="width: 500px"
-        )
-    with layout.content:
-        with vuetify.VContainer(fluid=True):
-            with vuetify.VRow(no_gutters=True, classes="fill-height"):
-                with vuetify.VCol(cols="auto", classes="pa-2 fill-height"):
-                    Table.card()
-                with vuetify.VCol(classes="pa-2 d-flex align-center justify-center fill-height"):
-                    Table.plot()
-
-# -----------------------------------------------------------------------------
-# Main
-# -----------------------------------------------------------------------------
-if __name__ == "__main__":
-    server.start()
+# with SinglePageWithDrawerLayout(server) as layout:
+    # with layout.toolbar:
+    #     vuetify.VSpacer()
+    #     vuetify.VSelect(
+    #         v_model=("active_plot","Line"),
+    #         items=("plot_options",),
+    #         label="Select plot to view",
+    #         dense=True,
+    #         style="width: 500px"
+    #     )
+    # with layout.content:
+    #     with vuetify.VContainer(fluid=True):
+    #         with vuetify.VRow(no_gutters=True, classes="fill-height"):
+    #             with vuetify.VCol(cols="auto", classes="pa-2 fill-height"):
+    #                 Table.card()
+    #             with vuetify.VCol(classes="pa-2 d-flex align-center justify-center fill-height"):
+    #                 Table.plot()

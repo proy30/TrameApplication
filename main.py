@@ -6,7 +6,6 @@ from trame.ui.router import RouterViewLayout
 # from simulation import run_impactX_simulation
 
 from Input.trameFunctions import trameFunctions
-from Analyze.content import analyzeOptions
 
 from Toolbar.content import toolbar
 
@@ -14,6 +13,7 @@ from Input.inputParametersCard.content import inputParameters
 from Input.distributionParametersCard.content import distributionParameters
 from Input.latticeConfigurationCard.content import latticeConfiguration
 from Input.runSimulationCard.content import runSimulation
+from Analyze.plot_over_s import Table
 
 # -----------------------------------------------------------------------------
 # Trame setup
@@ -29,7 +29,7 @@ inputParameters = inputParameters()
 distributionParameters = distributionParameters()
 latticeConfiguration = latticeConfiguration()
 toolbar = toolbar()
-analyzeOptions = analyzeOptions()
+Table = Table
 runSimulation = runSimulation()
 
 with RouterViewLayout(server, "/Input"):
@@ -47,22 +47,30 @@ with RouterViewLayout(server, "/Input"):
             
 
 # with RouterViewLayout(server, "/Analyze"):
-    # with vuetify.VContainer(fluid=True):
-        # with vuetify.VRow(no_gutters=True):
-        # with vuetify.VRow(no_gutters=True):
-        #     analyzeOptions.card()
-            # with vuetify.VCol(cols="auto", classes="pa-2"):
-                # runSimulation.selectionCard()
-            # with vuetify.VCol(cols="auto", classes="pa-2"):
-                # runSimulation.simulationPlot()
+#     with vuetify.VContainer(fluid=True):
+#         with vuetify.VRow(no_gutters=True):
+#         with vuetify.VRow(no_gutters=True):
+#             analyzeOptions.card()
+#             with vuetify.VCol(cols="auto", classes="pa-2"):
+#                 runSimulation.selectionCard()
+#             with vuetify.VCol(cols="auto", classes="pa-2"):
+#                 runSimulation.simulationPlot()
 
+
+with RouterViewLayout(server, "/Analyze"):
+        with vuetify.VContainer(fluid=True):
+            with vuetify.VRow(no_gutters=True, classes="fill-height"):
+                with vuetify.VCol(cols="auto", classes="pa-2 fill-height"):
+                    Table.card()
+                with vuetify.VCol(classes="pa-2 d-flex align-center justify-center fill-height"):
+                    Table.plot()
 # -----------------------------------------------------------------------------
 # GUI
 # -----------------------------------------------------------------------------
 with SinglePageWithDrawerLayout(server) as layout:
     with layout.toolbar:
         toolbar.toolbar()
-
+        
     with layout.drawer as drawer:
         drawer.width = 200
         with vuetify.VList():
