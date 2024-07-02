@@ -52,6 +52,9 @@ PLOTS = {
 reducedBeam_data = '/mnt/c/Users/parth/Downloads/vsCode/fixBugs/diags/reduced_beam_characteristics.0.0'
 refParticle_data = '/mnt/c/Users/parth/Downloads/vsCode/fixBugs/diags/ref_particle.0.0'
 default_headers = ["step", "s", "sig_x"]
+state.plot_options = ["1D plots over s", "Phase Space Plots"]
+state.show_table = False
+
 
 combined_files= Functions.combine_files(reducedBeam_data, refParticle_data)
 combined_files_data_converted_to_dictionary_format = Functions.convert_to_dict(combined_files)
@@ -61,7 +64,6 @@ state.all_data = data
 state.all_headers = headers
 state.selected_headers = default_headers
 state.filtered_data = []
-state.plot_options = ["1D plots over s", "Phase Space Plots"]
 
 # -----------------------------------------------------------------------------
 # State changes
@@ -78,7 +80,12 @@ def on_filtered_data_change(filtered_data, **kwargs):
 
 @state.change("active_plot")
 def on_plot_selection_change(active_plot, **kwargs):
-    ctrl.figure_update(PLOTS[active_plot]())
+    if active_plot == "1D plots over s":
+        state.show_table = True
+        ctrl.figure_update(PLOTS["Line"]())
+    else:
+        state.show_table = False
+    
 
 
 # -----------------------------------------------------------------------------
@@ -86,7 +93,7 @@ def on_plot_selection_change(active_plot, **kwargs):
 # -----------------------------------------------------------------------------
 class Table:
     def card():
-        with vuetify.VCard():
+        with vuetify.VCard(v_if=("show_table")):
             with vuetify.VCol(style="width: 500px;"):
                 vuetify.VSelect(
                     v_model=("selected_headers",),
@@ -103,9 +110,10 @@ class Table:
                     height="250px",
                 )
     def plot():
-        figure = plotly.Figure(display_mode_bar="true")
-        ctrl.figure_update = figure.update
-        ctrl.figure_update(line_plot())
+        with vuetify.VContainer(v_if=("show_table")):
+            figure = plotly.Figure(display_mode_bar="true")
+            ctrl.figure_update = figure.update
+            ctrl.figure_update(line_plot())
 
 # -----------------------------------------------------------------------------
 # Main Layout
