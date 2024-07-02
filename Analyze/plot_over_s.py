@@ -18,13 +18,16 @@ state, ctrl = server.state, server.controller
 # -----------------------------------------------------------------------------
 
 def line_plot():
-    x_axis = [1,2,3,4]
-    y_axis =[2,3,4,5,7,12]
+    x_axis = state.selected_headers[1] if len(state.selected_headers) > 1 else None
+    y_axis = state.selected_headers[2] if len(state.selected_headers) > 2 else None
+
+    x = [row[x_axis] for row in state.filtered_data] if x_axis else []
+    y = [row[y_axis] for row in state.filtered_data] if y_axis else []
 
     return go.Figure(
         data=go.Scatter(
-            x = x_axis,
-            y = y_axis,
+            x = x,
+            y = y,
             mode='lines+markers',
             line = dict(color='blue', width=2),
             marker=dict(size=8)
@@ -48,7 +51,7 @@ PLOTS = {
 
 reducedBeam_data = '/mnt/c/Users/parth/Downloads/vsCode/fixBugs/diags/reduced_beam_characteristics.0.0'
 refParticle_data = '/mnt/c/Users/parth/Downloads/vsCode/fixBugs/diags/ref_particle.0.0'
-default_headers = ["step", "s", "z"]
+default_headers = ["step", "s", "sig_x"]
 
 combined_files= Functions.combine_files(reducedBeam_data, refParticle_data)
 combined_files_data_converted_to_dictionary_format = Functions.convert_to_dict(combined_files)
@@ -57,6 +60,7 @@ data, headers = combined_files_data_converted_to_dictionary_format
 state.all_data = data
 state.all_headers = headers
 state.selected_headers = default_headers
+state.filtered_data = []
 
 # -----------------------------------------------------------------------------
 # State changes
@@ -82,23 +86,21 @@ def on_plot_selection_change(active_plot, **kwargs):
 class Table:
     def card():
         with vuetify.VCard():
-            with vuetify.VRow():
-                vuetify.VCardTitle("Table")
-                with vuetify.VCol(style="max-width: 500px;"):
-                    vuetify.VSelect(
-                        v_model=("selected_headers",),
-                        items=("all_headers",),
-                        label="Select data to view",
-                        multiple=True,
-                    )
-            vuetify.VDivider()
-            vuetify.VDataTable(
-                headers=("filtered_headers",),
-                items=("filtered_data",),
-                header_class="centered-header",
-                dense=True,
-                height="250px",
-            )
+            with vuetify.VCol(style="width: 500px;"):
+                vuetify.VSelect(
+                    v_model=("selected_headers",),
+                    items=("all_headers",),
+                    label="Select data to view",
+                    multiple=True,
+                )
+                vuetify.VDivider()
+                vuetify.VDataTable(
+                    headers=("filtered_headers",),
+                    items=("filtered_data",),
+                    header_class="centered-header",
+                    dense=True,
+                    height="250px",
+                )
     def plot():
         figure = plotly.Figure(display_mode_bar="true")
         ctrl.figure_update = figure.update
