@@ -6,6 +6,7 @@ from Analyze.widgets import Functions
 
 from Analyze.plot_phase_space.phaseSpace import run_simulation
 from Analyze.plot_over_s.overS import line_plot
+
 # -----------------------------------------------------------------------------
 # Start server
 # -----------------------------------------------------------------------------
@@ -39,7 +40,7 @@ def figure_size():
 
 PLOTS = {
     "1D plots over s": plot_over_s,
-    "Phase Space Plots": run_simulation,
+    "Phase Space Plots": None,  # Placeholder, handled by run_simulation
 }
 
 # -----------------------------------------------------------------------------
@@ -89,8 +90,13 @@ def on_plot_selection_change(active_plot, **kwargs):
 def update_plot():
     if state.active_plot == "1D plots over s":
         ctrl.plotly_figure_update(plot_over_s())
-    else:
-        ctrl.matplotlib_figure_update(run_simulation())
+    elif state.active_plot == "Phase Space Plots" and state.simulation_data:
+        ctrl.matplotlib_figure_update(state.simulation_data)
+
+@ctrl.add("run_simulation")
+def run_simulation_and_store():
+    state.simulation_data = run_simulation()
+    ctrl.update_plot()
 
 ctrl.update_plot = update_plot
 
@@ -113,6 +119,7 @@ class Table:
                 vuetify.VBtn(
                     "Run Simulation",
                     style="background-color: #00313C; color: white;",
+                    click=ctrl.run_simulation,
                 )
         with vuetify.VRow():
             with vuetify.VCard(v_if=("show_table")):
@@ -131,6 +138,7 @@ class Table:
                         dense=True,
                         height="250px",
                     )
+
     def plot():
         with vuetify.VContainer():
             with vuetify.VContainer(v_if="active_plot === '1D plots over s'"):

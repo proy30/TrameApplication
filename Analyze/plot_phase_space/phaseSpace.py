@@ -7,6 +7,13 @@
 #
 # -*- coding: utf-8 -*-
 
+from trame.app import get_server
+
+
+server = get_server(client_type="vue2")
+state, ctrl = server.state, server.controller
+
+
 import importlib
 
 import matplotlib.pyplot as plt
@@ -34,7 +41,7 @@ def run_simulation(save_png=True):
     # init particle beam
     kin_energy_MeV = 2.0e3
     bunch_charge_C = 1.0e-9
-    npart = 100
+    npart = state.npart
 
     #   reference particle
     pc = sim.particle_container()
