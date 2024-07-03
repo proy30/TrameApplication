@@ -5,7 +5,6 @@ from trame.widgets import vuetify, plotly
 from Analyze.plot_over_s.widgets import Functions
 import plotly.graph_objects as go
 
-from Analyze.plot_phase_space.phaseSpace import plots
 # -----------------------------------------------------------------------------
 # Start server
 # -----------------------------------------------------------------------------
@@ -40,11 +39,33 @@ def line_plot():
         )
     )
     
+# Phase Space Plotting
+def phase_space_plot():
+    x_axis = state.selected_headers[1] if len(state.selected_headers) > 1 else None
+    y_axis = state.selected_headers[2] if len(state.selected_headers) > 2 else None
+
+    x = [row[x_axis] for row in state.filtered_data] if x_axis else []
+    y = [row[y_axis] for row in state.filtered_data] if y_axis else []
+
+    return go.Figure(
+        data=go.Scatter(
+            x=x,
+            y=y,
+            mode='markers',
+            marker=dict(color='red', size=5)
+        ),
+        layout=go.Layout(
+            title="Phase Space Plot",
+            xaxis=dict(title="X axis"),
+            yaxis=dict(title="Y axis"),
+            margin=dict(l=20, r=20, t=25, b=30)
+        )
+    )
 
 PLOTS = {
-    "Line": line_plot
+    "1D plots over s": line_plot,
+    "Phase Space Plots": phase_space_plot,
 }
-
 # -----------------------------------------------------------------------------
 # Defaults
 # -----------------------------------------------------------------------------
@@ -54,7 +75,7 @@ refParticle_data = '/mnt/c/Users/parth/Downloads/vsCode/fixBugs/diags/ref_partic
 default_headers = ["step", "s", "sig_x"]
 state.plot_options = ["1D plots over s", "Phase Space Plots"]
 state.show_table = False
-
+state.active_plot = "1D plots over s"  
 
 combined_files= Functions.combine_files(reducedBeam_data, refParticle_data)
 combined_files_data_converted_to_dictionary_format = Functions.convert_to_dict(combined_files)
@@ -82,11 +103,10 @@ def on_filtered_data_change(filtered_data, **kwargs):
 def on_plot_selection_change(active_plot, **kwargs):
     if active_plot == "1D plots over s":
         state.show_table = True
-        ctrl.figure_update(PLOTS["Line"]())
-    elif active_plot == "Phase Space Plots":
-        plots.phaseSpacePlots()
     else:
         state.show_table = False
+    ctrl.figure_update(PLOTS[active_plot]())
+    
 
 # -----------------------------------------------------------------------------
 # GUI
@@ -95,7 +115,7 @@ class Table:
     def card():
         vuetify.VSpacer()
         vuetify.VSelect(
-            v_model=("active_plot","Line"),
+            v_model=("active_plot","1D plots over s"),
             items=("plot_options",),
             label="Select plot to view",
             dense=True,
@@ -118,7 +138,7 @@ class Table:
                     height="250px",
                 )
     def plot():
-        with vuetify.VContainer(v_if=("show_table")):
+        with vuetify.VContainer():
             figure = plotly.Figure(display_mode_bar="true")
             ctrl.figure_update = figure.update
-            ctrl.figure_update(line_plot())
+            ctrl.figure_update(PLOTS[state.active_plot]())
