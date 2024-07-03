@@ -84,9 +84,11 @@ PLOTS = {
 reducedBeam_data = '/mnt/c/Users/parth/Downloads/vsCode/fixBugs/diags/reduced_beam_characteristics.0.0'
 refParticle_data = '/mnt/c/Users/parth/Downloads/vsCode/fixBugs/diags/ref_particle.0.0'
 default_headers = ["step", "s", "sig_x"]
-state.plot_options = ["1D plots over s", "Phase Space Plots"]
+state.plot_options = list(PLOTS.keys())
 state.show_table = False
-state.active_plot = "1D plots over s"  
+
+firstPlotOption = state.plot_options[0]
+state.active_plot = firstPlotOption
 
 combined_files= Functions.combine_files(reducedBeam_data, refParticle_data)
 combined_files_data_converted_to_dictionary_format = Functions.convert_to_dict(combined_files)
@@ -118,7 +120,7 @@ def on_plot_selection_change(active_plot, **kwargs):
         state.show_table = False
     ctrl.update_plot()
 
-
+@ctrl.add("update_plot")
 def update_plot():
     if state.active_plot == "1D plots over s":
         ctrl.plotly_figure_update(line_plot())
