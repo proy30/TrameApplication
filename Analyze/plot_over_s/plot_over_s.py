@@ -1,10 +1,11 @@
 from trame.app import get_server
 from trame.ui.vuetify import SinglePageWithDrawerLayout
-from trame.widgets import vuetify, plotly
+from trame.widgets import vuetify, plotly, matplotlib
 
 from Analyze.plot_over_s.widgets import Functions
 import plotly.graph_objects as go
-
+import numpy as np
+import matplotlib.pyplot as plt
 # -----------------------------------------------------------------------------
 # Start server
 # -----------------------------------------------------------------------------
@@ -40,27 +41,37 @@ def line_plot():
     )
     
 # Phase Space Plotting
+def figure_size():
+    if state.figure_size is None:
+        return {}
+
+    dpi = state.figure_size.get("dpi")
+    rect = state.figure_size.get("size")
+    w_inch = rect.get("width") / dpi
+    h_inch = rect.get("height") / dpi
+
+    return {
+        "figsize": (w_inch, h_inch),
+        "dpi": dpi,
+    }
+
 def phase_space_plot():
-    x_axis = state.selected_headers[1] if len(state.selected_headers) > 1 else None
-    y_axis = state.selected_headers[2] if len(state.selected_headers) > 2 else None
-
-    x = [row[x_axis] for row in state.filtered_data] if x_axis else []
-    y = [row[y_axis] for row in state.filtered_data] if y_axis else []
-
-    return go.Figure(
-        data=go.Scatter(
-            x=x,
-            y=y,
-            mode='markers',
-            marker=dict(color='red', size=5)
-        ),
-        layout=go.Layout(
-            title="Phase Space Plot",
-            xaxis=dict(title="X axis"),
-            yaxis=dict(title="Y axis"),
-            margin=dict(l=20, r=20, t=25, b=30)
-        )
+    plt.close("all")
+    fig, ax = plt.subplots(**figure_size())
+    np.random.seed(0)
+    ax.plot(
+        np.random.normal(size=100), np.random.normal(size=100), "or", ms=10, alpha=0.3
     )
+    ax.plot(
+        np.random.normal(size=100), np.random.normal(size=100), "ob", ms=20, alpha=0.1
+    )
+
+    ax.set_xlabel("this is x")
+    ax.set_ylabel("this is y")
+    ax.set_title("Matplotlib Plot Rendered in D3!", size=14)
+    ax.grid(color="lightgray", alpha=0.7)
+
+    return fig
 
 PLOTS = {
     "1D plots over s": line_plot,
@@ -97,7 +108,7 @@ def on_header_selection_change(selected_headers, **kwargs):
 
 @state.change("filtered_data")
 def on_filtered_data_change(filtered_data, **kwargs):
-    ctrl.figure_update(line_plot())
+    ctrl.update_plot() 
 
 @state.change("active_plot")
 def on_plot_selection_change(active_plot, **kwargs):
@@ -105,8 +116,16 @@ def on_plot_selection_change(active_plot, **kwargs):
         state.show_table = True
     else:
         state.show_table = False
-    ctrl.figure_update(PLOTS[active_plot]())
-    
+    ctrl.update_plot()
+
+
+def update_plot():
+    if state.active_plot == "1D plots over s":
+        ctrl.plotly_figure_update(line_plot())
+    else:
+        ctrl.matplotlib_figure_update(phase_space_plot())
+
+ctrl.update_plot = update_plot
 
 # -----------------------------------------------------------------------------
 # GUI
@@ -139,6 +158,9 @@ class Table:
                 )
     def plot():
         with vuetify.VContainer():
-            figure = plotly.Figure(display_mode_bar="true")
-            ctrl.figure_update = figure.update
-            ctrl.figure_update(PLOTS[state.active_plot]())
+            with vuetify.VContainer(v_if="active_plot === '1D plots over s'"):
+                plotly_figure = plotly.Figure(display_mode_bar="true")
+                ctrl.plotly_figure_update = plotly_figure.update
+            with vuetify.VContainer(v_if="active_plot === 'Phase Space Plots'"):
+                matplotlib_figure = matplotlib.Figure(style="position: absolute")
+                ctrl.matplotlib_figure_update = matplotlib_figure.update
