@@ -34,7 +34,7 @@ def run_simulation(save_png=True):
     # init particle beam
     kin_energy_MeV = 2.0e3
     bunch_charge_C = 1.0e-9
-    npart = 10000
+    npart = 100
 
     #   reference particle
     pc = sim.particle_container()

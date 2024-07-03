@@ -100,29 +100,37 @@ ctrl.update_plot = update_plot
 class Table:
     def card():
         vuetify.VSpacer()
-        vuetify.VSelect(
-            v_model=("active_plot","1D plots over s"),
-            items=("plot_options",),
-            label="Select plot to view",
-            dense=True,
-            style="width: 500px"
-        )
-        with vuetify.VCard(v_if=("show_table")):
-            with vuetify.VCol(style="width: 500px;"):
+        with vuetify.VRow():
+            with vuetify.VCol():
                 vuetify.VSelect(
-                    v_model=("selected_headers",),
-                    items=("all_headers",),
-                    label="Select data to view",
-                    multiple=True,
-                )
-                vuetify.VDivider()
-                vuetify.VDataTable(
-                    headers=("filtered_headers",),
-                    items=("filtered_data",),
-                    header_class="centered-header",
+                    v_model=("active_plot","1D plots over s"),
+                    items=("plot_options",),
+                    label="Select plot to view",
                     dense=True,
-                    height="250px",
+                    style="width: 500px"
                 )
+            with vuetify.VCol():
+                vuetify.VBtn(
+                    "Run Simulation",
+                    style="background-color: #00313C; color: white;",
+                )
+        with vuetify.VRow():
+            with vuetify.VCard(v_if=("show_table")):
+                with vuetify.VCol(style="width: 500px;"):
+                    vuetify.VSelect(
+                        v_model=("selected_headers",),
+                        items=("all_headers",),
+                        label="Select data to view",
+                        multiple=True,
+                    )
+                    vuetify.VDivider()
+                    vuetify.VDataTable(
+                        headers=("filtered_headers",),
+                        items=("filtered_data",),
+                        header_class="centered-header",
+                        dense=True,
+                        height="250px",
+                    )
     def plot():
         with vuetify.VContainer():
             with vuetify.VContainer(v_if="active_plot === '1D plots over s'"):
