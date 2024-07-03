@@ -108,8 +108,8 @@ class AnalyzeSimulation:
     def toolbar():
         vuetify.VSpacer()
         vuetify.VSelect(
-            # v_model=("active_plot", "1D plots over s"),
-            # items=("plot_options",),
+            v_model=("active_plot", "1D plots over s"),
+            items=("plot_options",),
             label="Select plot to view",
             hide_details=True,
             dense=True,
@@ -118,7 +118,7 @@ class AnalyzeSimulation:
         vuetify.VBtn(
             "Run Simulation",
             style="background-color: #00313C; color: white; margin: 0 20px;",
-            # click=ctrl.run_simulation,
+            click=ctrl.run_simulation,
         )
         vuetify.VSwitch(
                 v_model="$vuetify.theme.dark",
@@ -126,23 +126,7 @@ class AnalyzeSimulation:
             )
         
     def card():
-        vuetify.VSpacer()
-        with vuetify.VRow():
-            with vuetify.VCol():
-                vuetify.VSelect(
-                    v_model=("active_plot","1D plots over s"),
-                    items=("plot_options",),
-                    label="Select plot to view",
-                    dense=True,
-                    style="width: 500px"
-                )
-            with vuetify.VCol():
-                vuetify.VBtn(
-                    "Run Simulation",
-                    style="background-color: #00313C; color: white;",
-                    click=ctrl.run_simulation,
-                )
-        with vuetify.VRow():
+        with vuetify.VContainer():
             with vuetify.VCard(v_if=("show_table")):
                 with vuetify.VCol(style="width: 500px;"):
                     vuetify.VSelect(
@@ -161,10 +145,9 @@ class AnalyzeSimulation:
                     )
 
     def plot():
-        with vuetify.VContainer():
-            with vuetify.VContainer(v_if="active_plot === '1D plots over s'"):
-                plotly_figure = plotly.Figure(display_mode_bar="true")
-                ctrl.plotly_figure_update = plotly_figure.update
-            with vuetify.VContainer(v_if="active_plot === 'Phase Space Plots'"):
-                matplotlib_figure = matplotlib.Figure(style="position: absolute")
-                ctrl.matplotlib_figure_update = matplotlib_figure.update
+        with vuetify.VContainer(v_if="active_plot === '1D plots over s'"):
+            plotly_figure = plotly.Figure(display_mode_bar="true")
+            ctrl.plotly_figure_update = plotly_figure.update
+        with vuetify.VContainer(v_if="active_plot === 'Phase Space Plots'"):
+            matplotlib_figure = matplotlib.Figure(style="position: absolute")
+            ctrl.matplotlib_figure_update = matplotlib_figure.update
