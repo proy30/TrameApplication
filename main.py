@@ -13,7 +13,7 @@ from Input.inputParametersCard.content import inputParameters
 from Input.distributionParametersCard.content import distributionParameters
 from Input.latticeConfigurationCard.content import latticeConfiguration
 from Input.runSimulationCard.content import runSimulation
-from Analyze.plot_over_s.plot_over_s import Table
+from Analyze.plotsMain import Table
 
 # -----------------------------------------------------------------------------
 # Trame setup

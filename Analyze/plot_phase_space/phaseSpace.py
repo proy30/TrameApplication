@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 import pytest
 
 from impactx import ImpactX, amr, distribution, elements
-from Analyze.plot_over_s.simulationSettings import adjusted_settings_plot
+from Analyze.plot_phase_space.phaseSpaceSettings import adjusted_settings_plot
 
 from mpi4py import MPI
 

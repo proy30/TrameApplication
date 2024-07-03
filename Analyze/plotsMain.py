@@ -2,12 +2,10 @@ from trame.app import get_server
 from trame.ui.vuetify import SinglePageWithDrawerLayout
 from trame.widgets import vuetify, plotly, matplotlib
 
-from Analyze.plot_over_s.widgets import Functions
-import plotly.graph_objects as go
-import numpy as np
-import matplotlib.pyplot as plt
+from Analyze.widgets import Functions
 
-from Analyze.plot_over_s.simulation import run_simulation
+from Analyze.plot_phase_space.phaseSpace import run_simulation
+from Analyze.plot_over_s.overS import line_plot
 # -----------------------------------------------------------------------------
 # Start server
 # -----------------------------------------------------------------------------
@@ -16,33 +14,15 @@ server = get_server(client_type="vue2")
 state, ctrl = server.state, server.controller
 
 # -----------------------------------------------------------------------------
-# 1D Plot
+# Plotting
 # -----------------------------------------------------------------------------
 
-def line_plot():
-    x_axis = state.selected_headers[1] if len(state.selected_headers) > 1 else None
-    y_axis = state.selected_headers[2] if len(state.selected_headers) > 2 else None
+# Call plot_over_s
+def plot_over_s():
+    fig = line_plot(state.selected_headers, state.filtered_data)
+    ctrl.plotly_figure_update(fig)
 
-    x = [row[x_axis] for row in state.filtered_data] if x_axis else []
-    y = [row[y_axis] for row in state.filtered_data] if y_axis else []
-
-    return go.Figure(
-        data=go.Scatter(
-            x = x,
-            y = y,
-            mode='lines+markers',
-            line = dict(color='blue', width=2),
-            marker=dict(size=8)
-        ),
-        layout=go.Layout(
-            title="Interactive 1D plot over s",
-            xaxis=dict(title="s"),
-            yaxis=dict(title="Y axis"),
-            margin=dict(l=20, r=20, t=25, b=30)
-        )
-    )
-    
-# Phase Space Plotting
+# Matplotlib features
 def figure_size():
     if state.figure_size is None:
         return {}
@@ -57,28 +37,11 @@ def figure_size():
         "dpi": dpi,
     }
 
-def phase_space_plot():
-    plt.close("all")
-    fig, ax = plt.subplots(**figure_size())
-    np.random.seed(0)
-    ax.plot(
-        np.random.normal(size=100), np.random.normal(size=100), "or", ms=10, alpha=0.3
-    )
-    ax.plot(
-        np.random.normal(size=100), np.random.normal(size=100), "ob", ms=20, alpha=0.1
-    )
-
-    ax.set_xlabel("this is x")
-    ax.set_ylabel("this is y")
-    ax.set_title("Matplotlib Plot Rendered in D3!", size=14)
-    ax.grid(color="lightgray", alpha=0.7)
-
-    return fig
-
 PLOTS = {
-    "1D plots over s": line_plot,
+    "1D plots over s": plot_over_s,
     "Phase Space Plots": run_simulation,
 }
+
 # -----------------------------------------------------------------------------
 # Defaults
 # -----------------------------------------------------------------------------
@@ -125,7 +88,7 @@ def on_plot_selection_change(active_plot, **kwargs):
 @ctrl.add("update_plot")
 def update_plot():
     if state.active_plot == "1D plots over s":
-        ctrl.plotly_figure_update(line_plot())
+        ctrl.plotly_figure_update(plot_over_s())
     else:
         ctrl.matplotlib_figure_update(run_simulation())
 
