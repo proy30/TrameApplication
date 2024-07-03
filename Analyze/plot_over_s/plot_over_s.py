@@ -6,6 +6,8 @@ from Analyze.plot_over_s.widgets import Functions
 import plotly.graph_objects as go
 import numpy as np
 import matplotlib.pyplot as plt
+
+from Analyze.plot_over_s.simulation import run_simulation
 # -----------------------------------------------------------------------------
 # Start server
 # -----------------------------------------------------------------------------
@@ -75,7 +77,7 @@ def phase_space_plot():
 
 PLOTS = {
     "1D plots over s": line_plot,
-    "Phase Space Plots": phase_space_plot,
+    "Phase Space Plots": run_simulation,
 }
 # -----------------------------------------------------------------------------
 # Defaults
@@ -125,7 +127,7 @@ def update_plot():
     if state.active_plot == "1D plots over s":
         ctrl.plotly_figure_update(line_plot())
     else:
-        ctrl.matplotlib_figure_update(phase_space_plot())
+        ctrl.matplotlib_figure_update(run_simulation())
 
 ctrl.update_plot = update_plot
 

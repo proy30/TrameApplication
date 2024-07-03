@@ -13,14 +13,14 @@ import matplotlib.pyplot as plt
 import pytest
 
 from impactx import ImpactX, amr, distribution, elements
-from simulationSettings import adjusted_settings_plot
+from Analyze.plot_over_s.simulationSettings import adjusted_settings_plot
 
 from mpi4py import MPI
 
 @pytest.mark.skipif(
     importlib.util.find_spec("pandas") is None, reason="pandas is not available"
 )
-def test_df_pandas(save_png=True):
+def run_simulation(save_png=True):
     """
     This tests using ImpactX and Pandas Dataframes
     """
