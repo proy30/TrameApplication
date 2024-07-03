@@ -11,7 +11,7 @@ from Input.inputParametersCard.content import inputParameters
 from Input.distributionParametersCard.content import distributionParameters
 from Input.latticeConfigurationCard.content import latticeConfiguration
 from Input.runSimulationCard.content import runSimulation
-from Analyze.plotsMain import Table
+from Analyze.plotsMain import AnalyzeSimulation
 
 # -----------------------------------------------------------------------------
 # Trame setup
@@ -44,9 +44,9 @@ with RouterViewLayout(server, "/Analyze"):
         with vuetify.VContainer(fluid=True):
             with vuetify.VRow(no_gutters=True, classes="fill-height"):
                 with vuetify.VCol(cols="auto", classes="pa-2 fill-height"):
-                    Table.card()
+                    AnalyzeSimulation.card()
                 with vuetify.VCol(classes="pa-2 d-flex align-center justify-center fill-height"):
-                    Table.plot()
+                    AnalyzeSimulation.plot()
 
 # -----------------------------------------------------------------------------
 # GUI
@@ -56,7 +56,7 @@ with SinglePageWithDrawerLayout(server) as layout:
         with vuetify.Template(v_if="$route.path == '/Input'"):
             toolbar.toolbar()
         with vuetify.Template(v_if="$route.path == '/Analyze'"):
-            toolbar.analyzeToolbar()
+            AnalyzeSimulation.toolbar()
         
     with layout.drawer as drawer:
         drawer.width = 200
