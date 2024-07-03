@@ -3,8 +3,6 @@ from trame.ui.vuetify import SinglePageWithDrawerLayout
 from trame.widgets import vuetify, router
 from trame.ui.router import RouterViewLayout
 
-# from simulation import run_impactX_simulation
-
 from Input.trameFunctions import trameFunctions
 
 from Toolbar.content import toolbar
@@ -28,8 +26,6 @@ state, ctrl = server.state, server.controller
 inputParameters = inputParameters()
 distributionParameters = distributionParameters()
 latticeConfiguration = latticeConfiguration()
-toolbar = toolbar()
-Table = Table
 runSimulation = runSimulation()
 
 with RouterViewLayout(server, "/Input"):
@@ -44,19 +40,6 @@ with RouterViewLayout(server, "/Input"):
         with vuetify.VCol(cols="auto", classes="pa-2"):
             latticeConfiguration.card() 
 
-            
-
-# with RouterViewLayout(server, "/Analyze"):
-#     with vuetify.VContainer(fluid=True):
-#         with vuetify.VRow(no_gutters=True):
-#         with vuetify.VRow(no_gutters=True):
-#             analyzeOptions.card()
-#             with vuetify.VCol(cols="auto", classes="pa-2"):
-#                 runSimulation.selectionCard()
-#             with vuetify.VCol(cols="auto", classes="pa-2"):
-#                 runSimulation.simulationPlot()
-
-
 with RouterViewLayout(server, "/Analyze"):
         with vuetify.VContainer(fluid=True):
             with vuetify.VRow(no_gutters=True, classes="fill-height"):
@@ -64,12 +47,16 @@ with RouterViewLayout(server, "/Analyze"):
                     Table.card()
                 with vuetify.VCol(classes="pa-2 d-flex align-center justify-center fill-height"):
                     Table.plot()
+
 # -----------------------------------------------------------------------------
 # GUI
 # -----------------------------------------------------------------------------
 with SinglePageWithDrawerLayout(server) as layout:
     with layout.toolbar:
-        toolbar.toolbar()
+        with vuetify.Template(v_if="$route.path == '/Input'"):
+            toolbar.toolbar()
+        with vuetify.Template(v_if="$route.path == '/Analyze'"):
+            toolbar.analyzeToolbar()
         
     with layout.drawer as drawer:
         drawer.width = 200
@@ -81,9 +68,9 @@ with SinglePageWithDrawerLayout(server) as layout:
 
     with layout.content:
         router.RouterView()
+
 # -----------------------------------------------------------------------------
 # Main
 # -----------------------------------------------------------------------------
-
 if __name__ == "__main__":
     server.start()
