@@ -13,7 +13,7 @@ from Input.inputParametersCard.content import inputParameters
 from Input.distributionParametersCard.content import distributionParameters
 from Input.latticeConfigurationCard.content import latticeConfiguration
 from Input.runSimulationCard.content import runSimulation
-from Analyze.plot_over_s import Table
+from Analyze.plot_over_s.plot_over_s import Table
 
 # -----------------------------------------------------------------------------
 # Trame setup
@@ -39,8 +39,8 @@ with RouterViewLayout(server, "/Input"):
                 inputParameters.card()
             with vuetify.VCol(cols="auto", classes="pa-2"):
                 distributionParameters.card()
-            with vuetify.VCol(cols="auto", classes="pa-2"):
-                runSimulation.simulationPlot()
+            # with vuetify.VCol(cols="auto", classes="pa-2"):
+                # runSimulation.simulationPlot()
         with vuetify.VCol(cols="auto", classes="pa-2"):
             latticeConfiguration.card() 
 

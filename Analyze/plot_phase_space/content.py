@@ -1,12 +1,10 @@
 from trame.app import get_server
 from trame.widgets import vuetify
-
-import Input.runSimulationCard.simulation as simulation
-
 import numpy as np
 import matplotlib.pyplot as plt
 from trame.widgets import vuetify, trame, matplotlib
 
+from simulation import run_simulation
 # -----------------------------------------------------------------------------
 # Trame setup
 # -----------------------------------------------------------------------------
@@ -55,7 +53,7 @@ def create_figure():
     npart_int = int(state.npart)
     kin_energy_MeV_int = int(state.kin_energy_MeV)
     bunch_charge_C_int = float(state.bunch_charge_C)
-    fig = simulation.run_simulation(npart=npart_int, kin_energy_MeV=kin_energy_MeV_int, bunch_charge_C=bunch_charge_C_int)
+    fig = run_simulation(npart=npart_int, kin_energy_MeV=kin_energy_MeV_int, bunch_charge_C=bunch_charge_C_int)
     return fig
 
 # -----------------------------------------------------------------------------
@@ -118,7 +116,8 @@ def on_bunch_charge_C_change(bunch_charge_C, **kwargs):
 
 @state.change("figure_size", "num_points", "npart", "kin_energy_MeV", "bunch_charge_C")
 def update_chart(**kwargs):
-    # ctrl.update_figure(create_figure())
+    fig = create_figure()
+    ctrl.update_figure(fig)
     print(f"Figure updated with npart: {state.npart}, kin_energy_MeV: {state.kin_energy_MeV}, bunch_charge_C: {state.bunch_charge_C}")
 
 # -----------------------------------------------------------------------------
@@ -138,12 +137,35 @@ class runSimulation:
                         vuetify.VBtn(
                             "Run Simulation",
                             style="background-color: #00313C; color: white;",
-                            click=lambda: update_chart()
+                            click=update_chart
                         )
 
-    # def simulationPlot(self):
-    #     with vuetify.VContainer(fluid=True, classes="fill-height pa-0 ma-0", style="width: 500px"):
-    #         with trame.SizeObserver("figure_size"):
-    #             html_figure = matplotlib.Figure()
-    #             ctrl.update_figure = html_figure.update
+    def simulationPlot(self):
+        with vuetify.VContainer(fluid=True, classes="fill-height pa-0 ma-0", style="width: 500px"):
+            with trame.SizeObserver("figure_size"):
+                html_figure = matplotlib.Figure()
+                ctrl.update_figure = html_figure.update
+                ctrl.update_figure(create_figure())
 
+# -----------------------------------------------------------------------------
+# Main
+# -----------------------------------------------------------------------------
+
+run_simulation = runSimulation()
+
+with vuetify.VContainer(fluid=True):
+    with vuetify.VRow():
+        with vuetify.VCol(cols=3):
+            run_simulation.selectionCard()
+        with vuetify.VCol(cols=9):
+            run_simulation.simulationPlot()
+
+# -----------------------------------------------------------------------------
+# Start server
+# -----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
+# Main
+# -----------------------------------------------------------------------------
+
+if __name__ == "__main__":
+    server.start()

@@ -2,9 +2,10 @@ from trame.app import get_server
 from trame.ui.vuetify import SinglePageWithDrawerLayout
 from trame.widgets import vuetify, plotly
 
-from Analyze.widgets import Functions
+from Analyze.plot_over_s.widgets import Functions
 import plotly.graph_objects as go
 
+from Analyze.plot_phase_space.phaseSpace import plots
 # -----------------------------------------------------------------------------
 # Start server
 # -----------------------------------------------------------------------------
@@ -82,10 +83,10 @@ def on_plot_selection_change(active_plot, **kwargs):
     if active_plot == "1D plots over s":
         state.show_table = True
         ctrl.figure_update(PLOTS["Line"]())
+    elif active_plot == "Phase Space Plots":
+        plots.phaseSpacePlots()
     else:
         state.show_table = False
-    
-
 
 # -----------------------------------------------------------------------------
 # GUI
@@ -121,24 +122,3 @@ class Table:
             figure = plotly.Figure(display_mode_bar="true")
             ctrl.figure_update = figure.update
             ctrl.figure_update(line_plot())
-
-# -----------------------------------------------------------------------------
-# Main Layout
-# -----------------------------------------------------------------------------
-# with SinglePageWithDrawerLayout(server) as layout:
-    # with layout.toolbar:
-    #     vuetify.VSpacer()
-    #     vuetify.VSelect(
-    #         v_model=("active_plot","Line"),
-    #         items=("plot_options",),
-    #         label="Select plot to view",
-    #         dense=True,
-    #         style="width: 500px"
-    #     )
-    # with layout.content:
-    #     with vuetify.VContainer(fluid=True):
-    #         with vuetify.VRow(no_gutters=True, classes="fill-height"):
-    #             with vuetify.VCol(cols="auto", classes="pa-2 fill-height"):
-    #                 Table.card()
-    #             with vuetify.VCol(classes="pa-2 d-flex align-center justify-center fill-height"):
-    #                 Table.plot()
