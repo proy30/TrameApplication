@@ -43,6 +43,17 @@ def add_lattice_element():
         "parameters_with_default_value": selectedLatticeParameters,
     }
     return selectedLatticeElementWithParameters
+
+def validate_and_convert(value, desired_type):
+    if desired_type == "int":
+        return int(value)
+    elif desired_type == "float":
+        return float(value)
+    elif desired_type == "str":
+        return str(value)
+    else:
+        raise ValueError(f"Unsupported type: {desired_type}")
+
 # -----------------------------------------------------------------------------
 # Callbacks
 # -----------------------------------------------------------------------------
@@ -59,6 +70,19 @@ def on_add_lattice_click():
         state.dirty("selectedLatticeList")
         # print(f"ADD button clicked, added: {selectedLattice}")
         # print(f"Current list of selected lattice elements: {state.selectedLatticeList}")
+
+@ctrl.add("updateElements")
+def on_lattice_element_parameter_change(index, parameter_name, value):
+    # lattice_element_parameter = state.selectedLatticeList[index]['name']
+    # parameter_type = 
+    # lattice_element_parameter_converted_to_correct_type = convert(lattice_element_parameter, parameter_type)
+    state.selectedLatticeList[index]["parameters_with_default_value"] = [
+        (name, value if name == parameter_name else default)
+        for name, default in state.selectedLatticeList[index]["parameters_with_default_value"]
+    ]
+    state.dirty("selectedLatticeList")
+    print(f"Lattice element {index}, {parameter_name} changed to {value}")
+
 
 # -----------------------------------------------------------------------------
 # ContentSetup
@@ -119,6 +143,7 @@ class latticeConfiguration:
                                             vuetify.VTextField(
                                                 label=("value[0]",), # value[0] = parameter name
                                                 v_model=("value[1]",), #  value[1] =  parameter default value 
+                                                change=(ctrl.updateElements,  "[index, value[0], $event]"),
                                             )
 
 latticeConfiguration =  latticeConfiguration()
