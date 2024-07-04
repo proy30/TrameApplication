@@ -53,7 +53,7 @@ def validate_and_convert(value, desired_type):
         return str(value)
     else:
         raise ValueError(f"Unsupported type: {desired_type}")
-    
+         
 def update_parameter_helper(parameters_with_default_value, parameter_name, new_value):
     updated_parameters = []
     for name, default in parameters_with_default_value:
@@ -67,8 +67,20 @@ def update_parameter_helper(parameters_with_default_value, parameter_name, new_v
 def update_parameter(index, parameter_name, value):
     latticeElementParameter = state.selectedLatticeList[index]["parameters_with_default_value"]
     updated_parameters = update_parameter_helper(latticeElementParameter, parameter_name, value)
+
     state.selectedLatticeList[index]["parameters_with_default_value"] = updated_parameters
     state.dirty("selectedLatticeList")
+
+def save_elements_to_file():
+    with open("output.txt", "w") as file:
+        file.write("latticeElements = [\n")
+        for element in state.selectedLatticeList:
+            element_name = element["name"]
+            parameters = ", ".join(
+                f"{param[1]}" for param in element["parameters_with_default_value"]
+            )
+            file.write(f"    elements.{element_name}({parameters}),\n")
+        file.write("]\n")   
 # -----------------------------------------------------------------------------
 # Callbacks
 # -----------------------------------------------------------------------------
@@ -83,13 +95,15 @@ def on_add_lattice_element_click():
     if selectedLattice:
         selectedLatticeElementWithParameters = add_lattice_element()
         state.selectedLatticeList.append(selectedLatticeElementWithParameters)
+        save_elements_to_file()
         state.dirty("selectedLatticeList")
         # print(f"ADD button clicked, added: {selectedLattice}")
         # print(f"Current list of selected lattice elements: {state.selectedLatticeList}")
 
 @ctrl.add("updateElements")
 def on_lattice_element_parameter_change(index, parameter_name, value):
-    update_parameter(index, parameter_name, value)  
+    update_parameter(index, parameter_name, value)
+    save_elements_to_file()
     print(f"Lattice element {index}, {parameter_name} changed to {value}")
 
 
