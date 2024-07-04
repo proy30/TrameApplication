@@ -1,7 +1,12 @@
-# Ignore Python cache files
-__pycache__/
-*.py[cod]
-*$py.class
+
+##########
+# Python #
+##########
+_tmppythonbuild/
+*.pyc
+__pycache__
+dist/
+*.egg-info/
 
 #Etc
 00testBugs/
