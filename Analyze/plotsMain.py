@@ -53,7 +53,7 @@ default_headers = ["step", "s", "sig_x"]
 state.plot_options = list(PLOTS.keys())
 state.show_table = False
 
-firstPlotOption = state.plot_options[0]
+firstPlotOption = state.plot_options[1]
 state.active_plot = firstPlotOption
 
 combined_files= Functions.combine_files(reducedBeam_data, refParticle_data)
@@ -148,6 +148,6 @@ class AnalyzeSimulation:
         with vuetify.VContainer(v_if="active_plot === '1D plots over s'"):
             plotly_figure = plotly.Figure(display_mode_bar="true")
             ctrl.plotly_figure_update = plotly_figure.update
-        with vuetify.VContainer(v_if="active_plot === 'Phase Space Plots'"):
+        with vuetify.VLayout(v_if="active_plot === 'Phase Space Plots'"):
             matplotlib_figure = matplotlib.Figure(style="position: absolute")
             ctrl.matplotlib_figure_update = matplotlib_figure.update
