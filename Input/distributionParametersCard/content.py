@@ -56,9 +56,10 @@ class distributionParameters:
         state.right_parameters = parameters[2*third:]
         print(f"Distribution parameters have been changed to {state.parameters}")
 
-    @state.change("parameter_values[item]")
-    def on_distribution_parameter_values_change(**kwargs):
-        print("Change happened")
+    @state.change("selected_distribution")
+    def on_selected_distribution_change(selected_distribution, **kwargs):
+        distributionParameters.on_selectDistribution_click
+        print(f"Distribution changed to: {selected_distribution}")
         
     def card(self):
         with vuetify.VCard(classes="ma-2", style="max-width: 340px; height: 320px"):
@@ -81,17 +82,17 @@ class distributionParameters:
                             dense=True,
                             classes="mr-2",
                             style="width: 200px;",
-                            change=distributionParameters.on_selectDistribution_click
+                            # change=ctrl.selectDistributionBtn,
                         )
-                    with vuetify.VCol(cols="auto"):
-                        vuetify.VBtn(
-                            "SELECT",
-                            classes="mr-2",
-                            color="primary",
-                            click=ctrl.selectDistributionBtn,
-                            dense=True,
-                            style="min-width: 80px;"
-                        )
+                    # with vuetify.VCol(cols="auto"):
+                    #     vuetify.VBtn(
+                    #         "SELECT",
+                    #         classes="mr-2",
+                    #         color="primary",
+                    #         click=ctrl.selectDistributionBtn,
+                    #         dense=True,
+                    #         style="min-width: 80px;"
+                    #     )
                 vuetify.VDivider(classes="mb-7")
 
                 with vuetify.VRow(no_gutters=True):

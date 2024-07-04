@@ -11,10 +11,24 @@ class Functions:
         headers = [{"text": column.strip(), "value": column.strip()} for column in columns]
         return dictionary, headers
 
-    def filter_data_by_columns(data, selected_columns):
-        return [{col: row[col] for col in selected_columns} for row in data]
-
     def combine_files(file1_name, file2_name):
         file1 = Functions.load_data(file1_name)
         file2 = Functions.load_data(file2_name)
         return pd.merge(file1, file2, how='outer')
+
+    def filter_headers(allHeaders, selected_headers):
+        filtered_headers = []
+        for selectedHeader in allHeaders:
+            if selectedHeader['value'] in selected_headers:
+                filtered_headers.append(selectedHeader)
+        return filtered_headers
+
+    def filter_data(allData, selected_headers):
+        filtered_data = []
+        for row in allData:
+            filtered_row = {}
+            for key, value in row.items():
+                if key in selected_headers:
+                    filtered_row[key] = value
+            filtered_data.append(filtered_row)
+        return filtered_data

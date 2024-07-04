@@ -3,11 +3,16 @@ from trame.ui.vuetify import SinglePageWithDrawerLayout
 from trame.widgets import vuetify, router
 from trame.ui.router import RouterViewLayout
 
-from simulation import run_impactX_simulation
+from Input.trameFunctions import trameFunctions
 
-from UI.trameFunctions import trameFunctions
-from UI.content import appContent, inputParameters, distributionParameters, latticeConfiguration
-from UI.utilities import find_all_classes, find_classes
+from Toolbar.content import toolbar
+
+from Input.inputParametersCard.content import inputParameters
+from Input.distributionParametersCard.content import distributionParameters
+from Input.latticeConfigurationCard.content import latticeConfiguration
+from Input.runSimulationCard.content import runSimulation
+from Analyze.plotsMain import AnalyzeSimulation
+
 # -----------------------------------------------------------------------------
 # Trame setup
 # -----------------------------------------------------------------------------
@@ -18,11 +23,10 @@ state, ctrl = server.state, server.controller
 # -----------------------------------------------------------------------------
 # ContentSetup
 # -----------------------------------------------------------------------------
-appContent = appContent()
 inputParameters = inputParameters()
 distributionParameters = distributionParameters()
 latticeConfiguration = latticeConfiguration()
-
+runSimulation = runSimulation()
 
 with RouterViewLayout(server, "/Input"):
     with vuetify.VContainer(fluid=True):
@@ -31,16 +35,29 @@ with RouterViewLayout(server, "/Input"):
                 inputParameters.card()
             with vuetify.VCol(cols="auto", classes="pa-2"):
                 distributionParameters.card()
+            # with vuetify.VCol(cols="auto", classes="pa-2"):
+                # runSimulation.simulationPlot()
         with vuetify.VCol(cols="auto", classes="pa-2"):
             latticeConfiguration.card() 
+
+with RouterViewLayout(server, "/Analyze"):
+        with vuetify.VContainer(fluid=True):
+            with vuetify.VRow(no_gutters=True, classes="fill-height"):
+                with vuetify.VCol(cols="auto", classes="pa-2 fill-height"):
+                    AnalyzeSimulation.card()
+                with vuetify.VCol(classes="pa-2 d-flex align-center justify-center fill-height"):
+                    AnalyzeSimulation.plot()
 
 # -----------------------------------------------------------------------------
 # GUI
 # -----------------------------------------------------------------------------
 with SinglePageWithDrawerLayout(server) as layout:
     with layout.toolbar:
-        appContent.toolbar()
-
+        with vuetify.Template(v_if="$route.path == '/Input'"):
+            toolbar.toolbar()
+        with vuetify.Template(v_if="$route.path == '/Analyze'"):
+            AnalyzeSimulation.toolbar()
+        
     with layout.drawer as drawer:
         drawer.width = 200
         with vuetify.VList():
@@ -49,12 +66,11 @@ with SinglePageWithDrawerLayout(server) as layout:
         trameFunctions.create_route("Run", "mdi-play")
         trameFunctions.create_route("Analyze", "mdi-chart-box-multiple")
 
-
     with layout.content:
         router.RouterView()
+
 # -----------------------------------------------------------------------------
 # Main
 # -----------------------------------------------------------------------------
-
 if __name__ == "__main__":
     server.start()

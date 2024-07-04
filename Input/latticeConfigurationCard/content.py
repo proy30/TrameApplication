@@ -39,9 +39,9 @@ class latticeConfiguration:
                 "params": lattice_param,
                 "values": {param: default for param, default in lattice_param}
             }
-        state.lattice_list = state.lattice_list + [new_item]
-        state.selected_lattice = None
-            
+            state.lattice_list = state.lattice_list + [new_item]
+            state.selected_lattice = None
+                
 
     def on_clear_lattice_click():
         state.lattice_list = []

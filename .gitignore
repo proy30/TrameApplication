@@ -1,0 +1,21 @@
+
+##########
+# Python #
+##########
+_tmppythonbuild/
+*.pyc
+__pycache__
+dist/
+*.egg-info/
+
+#Etc
+00testBugs/
+output.txt
+application.py
+diags/
+diags.old.*/
+Input/latticeConfigurationCard/lattice/
+Backtrace.0.0
+Analyze/simulation.py
+Analyze/simulationtest.py
+**/diags.old*

@@ -3,7 +3,9 @@ import webbrowser
 import subprocess
 import os
 
+import inspect
 import re
+
 from impactx import distribution, elements
 # -----------------------------------------------------------------------------
 # Code
@@ -93,4 +95,91 @@ class functions:
             except ValueError:
                 error_messages.append("Must be a number")
 
-        return error_messages   
+        return error_messages
+
+    def findAllClasses(module_name):
+        results = []
+        for name in dir(module_name):
+            attr = getattr(module_name, name)
+            if inspect.isclass(attr):
+                results.append((name, attr))
+        return results
+
+
+    def findInitDocstringForClasses(classes):
+        docstrings = {}
+        for name, cls in classes:
+            init_method = getattr(cls, '__init__', None)
+            if init_method:
+                docstring = cls.__init__.__doc__
+                docstrings[name] = docstring
+        return docstrings
+
+
+    def extractParameters(docstring):
+        parameters = []
+        docstring = re.search(r'\((.*?)\)', docstring).group(1)  # Return class name and init signature
+        docstring = docstring.split(',')
+
+        for parameter in docstring:
+            if parameter.startswith('self'):
+                continue
+            
+            name = parameter
+            default = None
+            parameter_type = 'Any' 
+
+            if ':' in parameter:
+                split_by_semicolon = parameter.split(':', 1)
+                name = split_by_semicolon[0].strip()
+                type_and_default = split_by_semicolon[1].strip()
+                if '=' in type_and_default:
+                    split_by_equals = type_and_default.split('=', 1)
+                    parameter_type = split_by_equals[0].strip()
+                    default = split_by_equals[1].strip()
+                    if default.isalpha():
+                        default = f"'{default}'"
+                else:
+                    parameter_type = type_and_default
+
+            parameters.append((name, default, parameter_type))
+
+        return parameters
+
+
+    def class_with_Parameter_DefaultValue_Type_dictionary(module_name):
+        classes = functions.findAllClasses(module_name)
+        docstrings = functions.findInitDocstringForClasses(classes)
+
+        result = {}
+
+        for class_name, docstring in docstrings.items():
+            parameters = functions.extractParameters(docstring)
+            result[class_name] = parameters
+
+        return result
+    
+    def KeysOnly(module_name):
+        dictionary = functions.class_with_Parameter_DefaultValue_Type_dictionary(distribution)
+        return list(dictionary.keys())
+    
+    def ParametersOnly(module_name):
+        dictionary = functions.class_with_Parameter_DefaultValue_Type_dictionary(elements)
+        
+        lattice_parameters = {}
+
+        for element_name, parameters in dictionary.items():
+            parameter_list = []
+
+            for param, default, _type in parameters:
+                parameter_tuple = (param, default)
+                
+                parameter_list.append(parameter_tuple)
+            
+            lattice_parameters[element_name] = parameter_list
+
+        return lattice_parameters
+
+
+results = functions.ParametersOnly(distribution)
+# print(results)
