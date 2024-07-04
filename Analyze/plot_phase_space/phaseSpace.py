@@ -24,6 +24,21 @@ from Analyze.plot_phase_space.phaseSpaceSettings import adjusted_settings_plot
 
 from mpi4py import MPI
 
+import os
+
+###
+def read_elements_from_file(file_path):
+    elements_list = []
+    with open(file_path, "r") as file:
+        lines = file.readlines()
+        for line in lines:
+            line = line.strip()
+            if line.startswith("elements."):
+                element_code = line.replace("elements.", "").rstrip(",")
+                elements_list.append(eval(f"elements.{element_code}"))
+    return elements_list
+###
+
 @pytest.mark.skipif(
     importlib.util.find_spec("pandas") is None, reason="pandas is not available"
 )
@@ -65,13 +80,25 @@ def run_simulation(save_png=True):
     assert pc.total_number_of_particles() == npart
 
     # init accelerator lattice
-    fodo = [
-        elements.Drift(0.25),
-        elements.Quad(1.0, 1.0),
-        elements.Drift(0.5),
-        elements.Quad(1.0, -1.0),
-        elements.Drift(0.25),
-    ]
+    # fodo = [
+    #     elements.Drift(0.25),
+    #     elements.Quad(1.0, 1.0),
+    #     elements.Drift(0.5),
+    #     elements.Quad(1.0, -1.0),
+    #     elements.Drift(0.25),
+    # ]
+    file_path = "output.txt"
+    if os.path.exists(file_path):
+        fodo = read_elements_from_file(file_path)
+    else:
+        fodo = [
+            elements.Drift(0.25),
+            elements.Quad(1.0, 1.0),
+            elements.Drift(0.5),
+            elements.Quad(1.0, -1.0),
+            elements.Drift(0.25),
+        ]
+
     sim.lattice.extend(fodo)
 
     # simulate

@@ -1,6 +1,6 @@
 import inspect
 import re
-
+from impactx import elements
 
 def findAllClasses(module_name):
     results = []
@@ -63,5 +63,20 @@ def latticeElementsList(module_name):
         result[class_name] = parameters
 
     return result
+
+def selectClasses(module_name):
+    return list(latticeElementsList(module_name))
+
+def parametersAndDefaults(module_name):
+    parameters = {}
+    for key, params in latticeElementsList(module_name).items():
+        param_list = []
+        for param, default, _type in params:
+            param_list.append((param, default))
+        parameters[key] = param_list
+    return parameters
+
+# print(latticeElementsList(elements))
+# print (parametersAndDefaults(elements))
 
 

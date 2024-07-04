@@ -9,7 +9,7 @@ from Toolbar.content import toolbar
 
 from Input.inputParametersCard.content import inputParameters
 from Input.distributionParametersCard.content import distributionParameters
-from Input.latticeConfigurationCard.content import latticeConfiguration
+from Input.latticeConfigurationCard.latticeMain import latticeConfiguration
 from Input.runSimulationCard.content import runSimulation
 from Analyze.plotsMain import AnalyzeSimulation
 
