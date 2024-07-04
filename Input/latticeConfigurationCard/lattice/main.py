@@ -53,16 +53,32 @@ def validate_and_convert(value, desired_type):
         return str(value)
     else:
         raise ValueError(f"Unsupported type: {desired_type}")
+    
+def update_parameter_helper(parameters_with_default_value, parameter_name, new_value):
+    updated_parameters = []
+    for name, default in parameters_with_default_value:
+        if name == parameter_name:
+            updated_parameters.append((name, new_value))
+        else:
+            updated_parameters.append((name, default))
+    
+    return updated_parameters
 
+def update_parameter(index, parameter_name, value):
+    latticeElementParameter = state.selectedLatticeList[index]["parameters_with_default_value"]
+    updated_parameters = update_parameter_helper(latticeElementParameter, parameter_name, value)
+    state.selectedLatticeList[index]["parameters_with_default_value"] = updated_parameters
+    state.dirty("selectedLatticeList")
 # -----------------------------------------------------------------------------
 # Callbacks
 # -----------------------------------------------------------------------------
 @state.change("selectedLattice")
-def on_lattice_element_changed(selectedLattice, **kwargs):
-    print (f"Lattice Selection Changed to: {selectedLattice}")
+def on_lattice_element_name_change(selectedLattice, **kwargs):
+    return
+    # print (f"Lattice Selection Changed to: {selectedLattice}")
 
 @ctrl.add("add_latticeElement")
-def on_add_lattice_click():
+def on_add_lattice_element_click():
     selectedLattice = state.selectedLattice
     if selectedLattice:
         selectedLatticeElementWithParameters = add_lattice_element()
@@ -73,14 +89,7 @@ def on_add_lattice_click():
 
 @ctrl.add("updateElements")
 def on_lattice_element_parameter_change(index, parameter_name, value):
-    # lattice_element_parameter = state.selectedLatticeList[index]['name']
-    # parameter_type = 
-    # lattice_element_parameter_converted_to_correct_type = convert(lattice_element_parameter, parameter_type)
-    state.selectedLatticeList[index]["parameters_with_default_value"] = [
-        (name, value if name == parameter_name else default)
-        for name, default in state.selectedLatticeList[index]["parameters_with_default_value"]
-    ]
-    state.dirty("selectedLatticeList")
+    update_parameter(index, parameter_name, value)  
     print(f"Lattice element {index}, {parameter_name} changed to {value}")
 
 

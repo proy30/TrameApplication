@@ -14,7 +14,6 @@ output.txt
 application.py
 diags/
 diags.old.*/
-Input/latticeConfigurationCard/lattice/
 Backtrace.0.0
 Analyze/simulation.py
 Analyze/simulationtest.py
