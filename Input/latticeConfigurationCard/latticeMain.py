@@ -100,6 +100,10 @@ def on_add_lattice_element_click():
         # print(f"ADD button clicked, added: {selectedLattice}")
         # print(f"Current list of selected lattice elements: {state.selectedLatticeList}")
 
+@ctrl.add("clear_latticeElements")
+def on_clear_lattice_element_click():
+    state.selectedLatticeList = []
+
 @ctrl.add("updateElements")
 def on_lattice_element_parameter_change(index, parameter_name, value):
     update_parameter(index, parameter_name, value)
@@ -142,7 +146,8 @@ class latticeConfiguration:
                         vuetify.VBtn(
                             "CLEAR",
                             color="secondary",
-                            dense=True
+                            dense=True,
+                            click=ctrl.clear_latticeElements,
                         )
                 with vuetify.VRow():
                     with vuetify.VCol():       
