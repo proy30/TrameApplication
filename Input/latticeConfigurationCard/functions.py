@@ -52,7 +52,7 @@ def extractParameters(docstring):
     return parameters
 
 
-def latticeElementsList(module_name):
+def classAndParametersAndDefaultValueAndType(module_name):
     classes = findAllClasses(module_name)
     docstrings = findInitDocstringForClasses(classes)
 
@@ -65,11 +65,11 @@ def latticeElementsList(module_name):
     return result
 
 def selectClasses(module_name):
-    return list(latticeElementsList(module_name))
+    return list(classAndParametersAndDefaultValueAndType(module_name))
 
 def parametersAndDefaults(module_name):
     parameters = {}
-    for key, params in latticeElementsList(module_name).items():
+    for key, params in classAndParametersAndDefaultValueAndType(module_name).items():
         param_list = []
         for param, default, _type in params:
             param_list.append((param, default))

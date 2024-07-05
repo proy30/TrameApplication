@@ -2,7 +2,7 @@ from trame.app import get_server
 from trame.widgets  import vuetify
 
 from Input.functions import functions
-from Input.latticeConfigurationCard.functions import selectClasses, parametersAndDefaults
+from Input.latticeConfigurationCard.functions import selectClasses, classAndParametersAndDefaultValueAndType
 from impactx import distribution
 # -----------------------------------------------------------------------------
 # Trame setup
@@ -17,7 +17,7 @@ state, ctrl = server.state, server.controller
 DISTRIBUTIONS_MODULE_NAME = distribution
 
 state.listOfDistributions = selectClasses(DISTRIBUTIONS_MODULE_NAME)
-state.listOfDistributionParametersAndDefault = parametersAndDefaults(DISTRIBUTIONS_MODULE_NAME)
+state.listOfDistributionsAndParametersAndDefault = classAndParametersAndDefaultValueAndType(DISTRIBUTIONS_MODULE_NAME)
 
 # -----------------------------------------------------------------------------
 # Default
@@ -27,11 +27,12 @@ state.selectedDistributionParameters = []
 
 
 def populate_distribution_parameters(selectedDistribution):
-    selectedDistributionParameters = state.listOfDistributionParametersAndDefault.get(selectedDistribution, [])
+    selectedDistributionParameters = state.listOfDistributionsAndParametersAndDefault.get(selectedDistribution, [])
 
     state.selectedDistributionParameters = [
-        {"parameter_name": parameter[0],
-         "parameter_default_value" : parameter[1]
+        {"parameter_name" : parameter[0],
+         "parameter_default_value" : parameter[1],
+         "parameter_type" : parameter[2],
          }
         for parameter in selectedDistributionParameters
     ]
