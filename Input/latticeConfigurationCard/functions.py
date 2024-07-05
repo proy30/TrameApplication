@@ -1,6 +1,6 @@
 import inspect
 import re
-from impactx import elements
+from impactx import elements, distribution
 
 def findAllClasses(module_name):
     results = []
@@ -76,7 +76,5 @@ def parametersAndDefaults(module_name):
         parameters[key] = param_list
     return parameters
 
-# print(latticeElementsList(elements))
-# print (parametersAndDefaults(elements))
-
-
+# print(selectClasses(distribution))
+# print(parametersAndDefaults(distribution))

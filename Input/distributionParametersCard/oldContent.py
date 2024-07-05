@@ -111,7 +111,7 @@ class distributionParameters:
                                 v_model=("parameter_values[item]",),
                                 label=("item",),
                                 dense=True,
-                                style="max-width: 90px",
+                                style="max-width: 45px",
                             )
                     with vuetify.VCol(cols=4):
                         with vuetify.VRow(v_for="(item, i) in right_parameters", key="i", align="center", justify="center"):

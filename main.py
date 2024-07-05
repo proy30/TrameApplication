@@ -36,8 +36,8 @@ with RouterViewLayout(server, "/Input"):
                 distributionParameters.card()
             # with vuetify.VCol(cols="auto", classes="pa-2"):
                 # runSimulation.simulationPlot()
-        with vuetify.VCol(cols="auto", classes="pa-2"):
-            latticeConfiguration.card() 
+        # with vuetify.VCol(cols="auto", classes="pa-2"):
+            # latticeConfiguration.card() 
 
 with RouterViewLayout(server, "/Analyze"):
         with vuetify.VContainer(fluid=True):
