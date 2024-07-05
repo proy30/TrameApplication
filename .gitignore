@@ -18,3 +18,4 @@ Backtrace.0.0
 Analyze/simulation.py
 Analyze/simulationtest.py
 **/diags.old*
+output_*.txt

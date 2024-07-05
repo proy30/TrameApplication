@@ -73,7 +73,7 @@ def update_parameter(index, parameter_name, value):
     state.dirty("selectedLatticeList")
 
 def save_elements_to_file():
-    with open("output.txt", "w") as file:
+    with open("output_latticeElements_parameters.txt", "w") as file:
         file.write("latticeElements = [\n")
         for element in state.selectedLatticeList:
             element_name = element["name"]

@@ -37,6 +37,17 @@ def populate_distribution_parameters(selectedDistribution):
     ]
 
     return selectedDistributionParameters
+
+def save_distribution_parameters_to_file():
+    distribution_name = state.selectedDistribution
+    parameters = {param["parameter_name"]: param["parameter_default_value"] for param in state.selectedDistributionParameters}
+
+    with open("output_distribution_parameters.txt", "w") as file:
+        file.write(f"distr = distribution.{distribution_name}(\n")
+        for param, value in parameters.items():
+            file.write(f"    {param}={value},\n")
+        file.write(")\n")
+
 # -----------------------------------------------------------------------------
 # Callbacks
 # -----------------------------------------------------------------------------
@@ -44,7 +55,16 @@ def populate_distribution_parameters(selectedDistribution):
 @state.change("selectedDistribution")
 def on_lattice_element_name_change(selectedDistribution, **kwargs):
     populate_distribution_parameters(selectedDistribution)
+    save_distribution_parameters_to_file()
 
+@ctrl.add("updateDistributionParameters")
+def on_distribution_parameter_change(parameter_name, value):
+    for param in state.selectedDistributionParameters:
+        if param["parameter_name"] == parameter_name:
+            param["parameter_default_value"] = value
+            break
+    save_distribution_parameters_to_file()
+    print(f"Parameter {parameter_name} was changed to {value}")
 # -----------------------------------------------------------------------------
 # Content
 # -----------------------------------------------------------------------------
@@ -77,6 +97,7 @@ class distributionParameters:
                                 vuetify.VTextField(
                                     label=("parameter.parameter_name",),
                                     v_model=("parameter.parameter_default_value",),
+                                    change=(ctrl.updateDistributionParameters,  "[parameter.parameter_name, $event]"),
                                     dense=True,
                                     hide_details=True,
                                     style="max-width: 90px",
@@ -87,6 +108,7 @@ class distributionParameters:
                                 vuetify.VTextField(
                                     label=("parameter.parameter_name",),
                                     v_model=("parameter.parameter_default_value",),
+                                    change=(ctrl.updateDistributionParameters,  "[parameter.parameter_name, $event]"),
                                     dense=True,
                                     hide_details=True,
                                     style="max-width: 90px",
@@ -97,6 +119,7 @@ class distributionParameters:
                                 vuetify.VTextField(
                                     label=("parameter.parameter_name",),
                                     v_model=("parameter.parameter_default_value",),
+                                    change=(ctrl.updateDistributionParameters,  "[parameter.parameter_name, $event]"),
                                     dense=True,
                                     hide_details=True,
                                     style="max-width: 90px",
