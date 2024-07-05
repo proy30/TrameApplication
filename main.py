@@ -8,7 +8,7 @@ from Input.trameFunctions import trameFunctions
 from Toolbar.content import toolbar
 
 from Input.inputParametersCard.content import inputParameters
-from Input.distributionParametersCard.content import distributionParameters
+from Input.distributionParametersCard.distributionMain import distributionParameters
 from Input.latticeConfigurationCard.latticeMain import latticeConfiguration
 from Input.runSimulationCard.content import runSimulation
 from Analyze.plotsMain import AnalyzeSimulation
@@ -24,7 +24,6 @@ state, ctrl = server.state, server.controller
 # ContentSetup
 # -----------------------------------------------------------------------------
 inputParameters = inputParameters()
-distributionParameters = distributionParameters()
 latticeConfiguration = latticeConfiguration()
 runSimulation = runSimulation()
 

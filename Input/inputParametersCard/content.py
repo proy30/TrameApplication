@@ -67,7 +67,7 @@ class inputParameters:
         state.kin_energy_MeV *= conversion_factors[state.kin_energy_unit]
 
     def card(self):
-        with vuetify.VCard(classes="ma-2", style="max-width: 340px; height: 320px"):
+        with vuetify.VCard(style="width: 340px; height: 320px"):
             with vuetify.VCardTitle("Input Parameters", classes="d-flex justify-space-between align-center"):
                 vuetify.VIcon(
                     "mdi-information",

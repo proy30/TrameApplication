@@ -62,7 +62,7 @@ class distributionParameters:
         print(f"Distribution changed to: {selected_distribution}")
         
     def card(self):
-        with vuetify.VCard(classes="ma-2", style="max-width: 340px; height: 320px"):
+        with vuetify.VCard(classes="ma-2", style="max-width: 360px; height: 320px"):
             with vuetify.VCardTitle("Distribution Parameters"):
                 vuetify.VSpacer()
                 vuetify.VIcon(
