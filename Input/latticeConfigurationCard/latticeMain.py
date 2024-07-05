@@ -121,7 +121,7 @@ class latticeConfiguration:
         with vuetify.VDialog(v_model=("showDialog", False), width="1200px"):
             latticeConfiguration.dialog_lattice_elementList()
             
-        with vuetify.VCard(classes="ma-2", style="width: 712px;"):
+        with vuetify.VCard(style="width: 696px;"):
             with vuetify.VCardTitle("Lattice Configuration"):
                 vuetify.VSpacer()
                 vuetify.VIcon(

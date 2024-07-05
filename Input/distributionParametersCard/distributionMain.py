@@ -22,7 +22,7 @@ state.listOfDistributionParametersAndDefault = parametersAndDefaults(DISTRIBUTIO
 # -----------------------------------------------------------------------------
 # Default
 # -----------------------------------------------------------------------------
-state.selectedDistribution = None #  Selected distribution is Empty by default
+state.selectedDistribution = "Waterbag" #  Selected distribution is Empty by default
 state.selectedDistributionParameters = [] 
 
 
@@ -71,7 +71,7 @@ def on_distribution_parameter_change(parameter_name, value):
 
 class distributionParameters:
     def card():
-        with vuetify.VCard(style="width: 340px; height: 320px"):
+        with vuetify.VCard(style="width: 340px; height: 300px"):
             with vuetify.VCardTitle("Distribution Parameters"):
                 vuetify.VSpacer()
                 vuetify.VIcon(
