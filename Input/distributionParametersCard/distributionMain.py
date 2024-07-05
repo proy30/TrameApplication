@@ -70,12 +70,36 @@ class distributionParameters:
                             dense=True,
                             hide_details=True,
                         )
-                with vuetify.VRow(v_for="(parameter, index) in selectedDistributionParameters"):
-                    with vuetify.VCol():
-                        vuetify.VTextField(
-                            label=("parameter.parameter_name",),
-                            v_model=("parameter.parameter_default_value",),
-                            dense=True,
-                            hide_details=True,
-                            style="max-width: 90px",
-                        )
+                with vuetify.VRow():
+                    with vuetify.VCol(cols=4):
+                        with vuetify.VRow(v_for="(parameter, index) in selectedDistributionParameters"):
+                            with vuetify.VCol(v_if="index % 3 == 0"):
+                                vuetify.VTextField(
+                                    label=("parameter.parameter_name",),
+                                    v_model=("parameter.parameter_default_value",),
+                                    dense=True,
+                                    hide_details=True,
+                                    style="max-width: 90px",
+                                )
+                    with vuetify.VCol(cols=4): 
+                        with vuetify.VRow(v_for="(parameter, index) in selectedDistributionParameters"):
+                            with vuetify.VCol(v_if="index % 3 == 1"):
+                                vuetify.VTextField(
+                                    label=("parameter.parameter_name",),
+                                    v_model=("parameter.parameter_default_value",),
+                                    dense=True,
+                                    hide_details=True,
+                                    style="max-width: 90px",
+                                )
+                    with vuetify.VCol(cols=4):
+                        with vuetify.VRow(v_for="(parameter, index) in selectedDistributionParameters"):
+                            with vuetify.VCol(v_if="index % 3 == 2"):
+                                vuetify.VTextField(
+                                    label=("parameter.parameter_name",),
+                                    v_model=("parameter.parameter_default_value",),
+                                    dense=True,
+                                    hide_details=True,
+                                    style="max-width: 90px",
+                                )
+
+
