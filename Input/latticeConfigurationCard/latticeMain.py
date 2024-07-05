@@ -3,6 +3,7 @@ from trame.app import get_server
 from trame.ui.vuetify import SinglePageWithDrawerLayout
 from trame.widgets import vuetify
 
+from Input.functions import functions
 from Input.latticeConfigurationCard.functions  import selectClasses, parametersAndDefaults
 from impactx import elements
 
@@ -103,6 +104,7 @@ def on_add_lattice_element_click():
 @ctrl.add("clear_latticeElements")
 def on_clear_lattice_element_click():
     state.selectedLatticeList = []
+    save_elements_to_file()
 
 @ctrl.add("updateElements")
 def on_lattice_element_parameter_change(index, parameter_name, value):
@@ -116,23 +118,28 @@ def on_lattice_element_parameter_change(index, parameter_name, value):
 # -----------------------------------------------------------------------------
 class latticeConfiguration:
     def card(self):
+        with vuetify.VDialog(v_model=("showDialog", False), width="1200px"):
+            latticeConfiguration.dialog_lattice_elementList()
+            
         with vuetify.VCard(classes="ma-2", style="width: 712px;"):
             with vuetify.VCardTitle("Lattice Configuration"):
+                vuetify.VSpacer()
                 vuetify.VIcon(
                     "mdi-information",
                     classes="ml-2",
+                    click=lambda: functions.documentation("LatticeElements"),
                     style="color: #00313C;",
                 )
             vuetify.VDivider()
             with vuetify.VCardText():
-                with vuetify.VRow(align="center"):
+                with vuetify.VRow(align="center", no_gutters=True):
                     with vuetify.VCol(cols=8):
                         vuetify.VSelect(
                             label="Select Accelerator Lattice",
                             v_model=("selectedLattice", None),
                             items=("listOfLatticeElements",),
                             dense=True,
-                            classes="mr-2"
+                            classes="mr-2 pt-6"
                         )
                     with vuetify.VCol(cols="auto"):
                         vuetify.VBtn(
@@ -152,24 +159,59 @@ class latticeConfiguration:
                 with vuetify.VRow():
                     with vuetify.VCol():       
                         with vuetify.VCard(style="height: 300px; width: 700px; overflow-y: auto;"):
-                            with vuetify.VCardTitle("Elements", classes="text-subtitle-2 pa-2"):
+                            with vuetify.VCardTitle("Elements", classes="text-subtitle-2 pa-3"):
                                 vuetify.VSpacer()
                                 vuetify.VIcon(
                                     "mdi-arrow-expand",
                                     color="primary",
+                                    click="showDialog = true",
+                                    classes="ml-2"
                                 )
                             vuetify.VDivider()
                             with vuetify.VContainer(fluid=True):
-                                with vuetify.VRow(v_for="(latticeElement, index) in selectedLatticeList", align="center"):
-                                    with vuetify.VCol():
+                                with vuetify.VRow(v_for="(latticeElement, index) in selectedLatticeList", align="center", no_gutters=True, style="min-width: 1500px;"):
+                                    with vuetify.VCol(cols="auto", classes="pa-2"):
                                         vuetify.VChip(
-                                            style="width: 150px; justify-content: center;",
                                             v_text=("latticeElement.name",),
                                             dense=True,
+                                            classes="mr-2",
+                                            style="justify-content: center"
                                         )
-                                    with vuetify.VCol(v_for="(value, parameterIndex) in latticeElement.parameters_with_default_value"):
-                                            vuetify.VTextField(
-                                                label=("value[0]",), # value[0] = parameter name
-                                                v_model=("value[1]",), #  value[1] =  parameter default value 
-                                                change=(ctrl.updateElements,  "[index, value[0], $event]"),
-                                            )
+                                    with vuetify.VCol(v_for="(value, parameterIndex) in latticeElement.parameters_with_default_value", cols="auto", classes="pa-2"):
+                                        vuetify.VTextField(
+                                            label=("value[0]",),  # value[0] = parameter name
+                                            v_model=("value[1]",),  # value[1] = parameter default value
+                                            change=(ctrl.updateElements, "[index, value[0], $event]"),
+                                            dense=True,
+                                            style="width: 75px;"
+                                        )
+
+
+    def dialog_lattice_elementList():
+        with vuetify.VCard():
+            with vuetify.VCardTitle("Elements", classes="text-subtitle-2 pa-3"):
+                vuetify.VSpacer()
+                vuetify.VIcon(
+                    "mdi-arrow-expand",
+                    color="primary",
+                    click="showDialog = true",
+                    classes="ml-2"
+                )
+            vuetify.VDivider()
+            with vuetify.VContainer(fluid=True):
+                with vuetify.VRow(v_for="(latticeElement, index) in selectedLatticeList", align="center", no_gutters=True, style="min-width: 1500px;"):
+                    with vuetify.VCol(cols="auto", classes="pa-2"):
+                        vuetify.VChip(
+                            v_text=("latticeElement.name",),
+                            dense=True,
+                            classes="mr-2",
+                            style="justify-content: center"
+                        )
+                    with vuetify.VCol(v_for="(value, parameterIndex) in latticeElement.parameters_with_default_value", cols="auto", classes="pa-2"):
+                        vuetify.VTextField(
+                            label=("value[0]",),  # value[0] = parameter name
+                            v_model=("value[1]",),  # value[1] = parameter default value
+                            change=(ctrl.updateElements, "[index, value[0], $event]"),
+                            dense=True,
+                            style="width: 75px;"
+                        )
