@@ -180,6 +180,12 @@ class functions:
 
         return lattice_parameters
 
-
-results = functions.ParametersOnly(distribution)
-# print(results)
+    def determine_input_type(value):
+        try:
+            return int(value), int
+        except ValueError:
+            try:
+                return float(value), float
+            except ValueError:
+                return value, str
+        

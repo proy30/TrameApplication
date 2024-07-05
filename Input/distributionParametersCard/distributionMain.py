@@ -58,7 +58,10 @@ def on_lattice_element_name_change(selectedDistribution, **kwargs):
     save_distribution_parameters_to_file()
 
 @ctrl.add("updateDistributionParameters")
-def on_distribution_parameter_change(parameter_name, value):
+def on_distribution_parameter_change(parameter_name, parameter_value, parameter_type,  parameter_index):
+    parameter_value, input_type = functions.determine_input_type(parameter_value)
+    print(f"Parameter {parameter_name} was changed to {parameter_value} (type: {input_type})")
+    
     for param in state.selectedDistributionParameters:
         if param["parameter_name"] == parameter_name:
             param["parameter_default_value"] = value
