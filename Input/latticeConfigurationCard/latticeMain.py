@@ -191,12 +191,6 @@ class latticeConfiguration:
         with vuetify.VCard():
             with vuetify.VCardTitle("Elements", classes="text-subtitle-2 pa-3"):
                 vuetify.VSpacer()
-                vuetify.VIcon(
-                    "mdi-arrow-expand",
-                    color="primary",
-                    click="showDialog = true",
-                    classes="ml-2"
-                )
             vuetify.VDivider()
             with vuetify.VContainer(fluid=True):
                 with vuetify.VRow(v_for="(latticeElement, index) in selectedLatticeList", align="center", no_gutters=True, style="min-width: 1500px;"):
