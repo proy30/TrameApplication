@@ -112,7 +112,11 @@ def on_lattice_element_parameter_change(index, parameter_name, value):
     save_elements_to_file()
     print(f"Lattice element {index}, {parameter_name} changed to {value}")
 
-
+@ctrl.add("deleteLatticeElement")
+def on_delete_LatticeElement_click(index):
+    state.selectedLatticeList.pop(index)
+    state.dirty("selectedLatticeList")
+    save_elements_to_file()
 # -----------------------------------------------------------------------------
 # ContentSetup
 # -----------------------------------------------------------------------------
@@ -165,12 +169,15 @@ class latticeConfiguration:
                                     "mdi-arrow-expand",
                                     color="primary",
                                     click="showDialog = true",
-                                    classes="ml-2"
                                 )
                             vuetify.VDivider()
                             with vuetify.VContainer(fluid=True):
                                 with vuetify.VRow(v_for="(latticeElement, index) in selectedLatticeList", align="center", no_gutters=True, style="min-width: 1500px;"):
                                     with vuetify.VCol(cols="auto", classes="pa-2"):
+                                        vuetify.VIcon(
+                                            "mdi-delete",
+                                            click=(ctrl.deleteLatticeElement,"[index]"),
+                                        )
                                         vuetify.VChip(
                                             v_text=("latticeElement.name",),
                                             dense=True,
