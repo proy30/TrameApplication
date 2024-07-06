@@ -1,7 +1,7 @@
 from trame.app import get_server
 from trame.widgets  import vuetify
 
-from Input.functions import functions
+from Input.generalFunctions import functions
 # -----------------------------------------------------------------------------
 # Trame setup
 # -----------------------------------------------------------------------------

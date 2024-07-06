@@ -2,8 +2,7 @@ from trame.app import get_server
 from trame.ui.vuetify import SinglePageWithDrawerLayout
 from trame.widgets import vuetify
 
-from Input.functions import functions
-from Input.latticeConfigurationCard.functions  import selectClasses, parametersAndDefaults
+from Input.generalFunctions import functions
 from impactx import elements
 
 # -----------------------------------------------------------------------------
@@ -18,8 +17,8 @@ state, ctrl = server.state, server.controller
 # -----------------------------------------------------------------------------
 LATTICE_ELEMENTS_MODULE_NAME = elements
 
-state.listOfLatticeElements = selectClasses(LATTICE_ELEMENTS_MODULE_NAME)
-state.listOfLatticeElementParametersAndDefault = parametersAndDefaults(LATTICE_ELEMENTS_MODULE_NAME)
+state.listOfLatticeElements = functions.selectClasses(LATTICE_ELEMENTS_MODULE_NAME)
+state.listOfLatticeElementParametersAndDefault = functions.parametersAndDefaults(LATTICE_ELEMENTS_MODULE_NAME)
 
 # -----------------------------------------------------------------------------
 # Default

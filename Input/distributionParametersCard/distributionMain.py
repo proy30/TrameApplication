@@ -1,8 +1,7 @@
 from trame.app import get_server
 from trame.widgets  import vuetify
 
-from Input.functions import functions
-from Input.latticeConfigurationCard.functions import selectClasses, classAndParametersAndDefaultValueAndType
+from Input.generalFunctions import functions
 from impactx import distribution
 # -----------------------------------------------------------------------------
 # Trame setup
@@ -16,8 +15,8 @@ state, ctrl = server.state, server.controller
 # -----------------------------------------------------------------------------
 DISTRIBUTIONS_MODULE_NAME = distribution
 
-state.listOfDistributions = selectClasses(DISTRIBUTIONS_MODULE_NAME)
-state.listOfDistributionsAndParametersAndDefault = classAndParametersAndDefaultValueAndType(DISTRIBUTIONS_MODULE_NAME)
+state.listOfDistributions = functions.selectClasses(DISTRIBUTIONS_MODULE_NAME)
+state.listOfDistributionsAndParametersAndDefault = functions.classAndParametersAndDefaultValueAndType(DISTRIBUTIONS_MODULE_NAME)
 
 # -----------------------------------------------------------------------------
 # Default

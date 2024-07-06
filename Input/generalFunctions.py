@@ -28,51 +28,6 @@ class functions:
         else:
             webbrowser.open_new_tab(url)
 
-    def find_all_classes(module):    
-        list_of_classes = []
-        for name in dir(module):
-            if isinstance(getattr(module, name), type):
-                list_of_classes.append(name)
-            
-        return list_of_classes
-
-    def get_class_info(cls):
-        init_documentation = getattr(cls, '__init__', None).__doc__
-        if not init_documentation:
-            raise ValueError(f"__init__ documentation not found")
-        
-        param_str = re.search(r'\((.*?)\)', init_documentation)
-
-        init_params = []
-        params = param_str.group(1)
-        param_list = params.split(',')
-
-        for param in param_list:
-            stripped_param = param.strip()
-            if not stripped_param.startswith('self'):
-                init_params.append(stripped_param)
-
-        # init_params = [param.strip() for param in param_str.group(1).split(',') if not param.strip().startswith('self')] if param_str else []
-        
-        return {
-            "name": cls.__name__,
-            "init_doc": init_documentation,
-            "init_params": init_params
-        }
-
-
-    def find_classes(module):
-        class_info_list = []
-
-        for name in dir(module):
-            obj = getattr(module, name)
-
-            if isinstance(obj, type):
-                class_info = functions.get_class_info(obj)
-                class_info_list.append(class_info)
-        return class_info_list
-        # return [get_class_info(getattr(module, name)) for name in dir(module) if isinstance(getattr(module, name), type)]
-
     def validate(value, validation_type):
         error_messages = []
 
@@ -96,6 +51,48 @@ class functions:
                 error_messages.append("Must be a number")
 
         return error_messages
+    
+# -----------------------------------------------------------------------------
+# Validation functions
+# -----------------------------------------------------------------------------
+
+    def determine_input_type(value):
+        try:
+            return int(value), int
+        except ValueError:
+            try:
+                return float(value), float
+            except ValueError:
+                return value, str
+        
+    def validate_value(input_value, value_type):
+        if value_type == "int":
+            try:
+                value = int(input_value)
+                if value <= 0:
+                    return ["Must be pos."]
+                return []
+            except ValueError:
+                return ["Must be an integer"]
+
+        elif value_type == "float":
+            try:
+                value = float(input_value)
+                if value <= 0:
+                    return ["Must be pos."]
+                return []
+            except ValueError:
+                return ["Must be a float"]
+
+        elif value_type == "string":
+            return []
+
+        else:
+            return ["Unknown type"]
+
+# -----------------------------------------------------------------------------
+# Class, parameter, default value, and default type retrievals
+# -----------------------------------------------------------------------------
 
     def findAllClasses(module_name):
         results = []
@@ -147,7 +144,7 @@ class functions:
         return parameters
 
 
-    def class_with_Parameter_DefaultValue_Type_dictionary(module_name):
+    def classAndParametersAndDefaultValueAndType(module_name):
         classes = functions.findAllClasses(module_name)
         docstrings = functions.findInitDocstringForClasses(classes)
 
@@ -158,58 +155,15 @@ class functions:
             result[class_name] = parameters
 
         return result
-    
-    def KeysOnly(module_name):
-        dictionary = functions.class_with_Parameter_DefaultValue_Type_dictionary(distribution)
-        return list(dictionary.keys())
-    
-    def ParametersOnly(module_name):
-        dictionary = functions.class_with_Parameter_DefaultValue_Type_dictionary(elements)
-        
-        lattice_parameters = {}
 
-        for element_name, parameters in dictionary.items():
-            parameter_list = []
+    def selectClasses(module_name):
+        return list(functions.classAndParametersAndDefaultValueAndType(module_name))
 
-            for param, default, _type in parameters:
-                parameter_tuple = (param, default)
-                
-                parameter_list.append(parameter_tuple)
-            
-            lattice_parameters[element_name] = parameter_list
-
-        return lattice_parameters
-
-    def determine_input_type(value):
-        try:
-            return int(value), int
-        except ValueError:
-            try:
-                return float(value), float
-            except ValueError:
-                return value, str
-        
-    def validate_value(input_value, value_type):
-        if value_type == "int":
-            try:
-                value = int(input_value)
-                if value <= 0:
-                    return ["Must be pos."]
-                return []
-            except ValueError:
-                return ["Must be an integer"]
-
-        elif value_type == "float":
-            try:
-                value = float(input_value)
-                if value <= 0:
-                    return ["Must be pos."]
-                return []
-            except ValueError:
-                return ["Must be a float"]
-
-        elif value_type == "string":
-            return []
-
-        else:
-            return ["Unknown type"]
+    def parametersAndDefaults(module_name):
+        parameters = {}
+        for key, params in functions.classAndParametersAndDefaultValueAndType(module_name).items():
+            param_list = []
+            for param, default, _type in params:
+                param_list.append((param, default))
+            parameters[key] = param_list
+        return parameters
