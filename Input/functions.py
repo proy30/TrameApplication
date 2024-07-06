@@ -189,3 +189,27 @@ class functions:
             except ValueError:
                 return value, str
         
+    def validate_value(input_value, value_type):
+        if value_type == "int":
+            try:
+                value = int(input_value)
+                if value <= 0:
+                    return ["Must be a positive integer"]
+                return []
+            except ValueError:
+                return ["Must be an integer"]
+
+        elif value_type == "float":
+            try:
+                value = float(input_value)
+                if value <= 0:
+                    return ["Must be a positive float"]
+                return []
+            except ValueError:
+                return ["Must be a float"]
+
+        elif value_type == "string":
+            return []
+
+        else:
+            return ["Unknown type specified"]
