@@ -194,7 +194,7 @@ class functions:
             try:
                 value = int(input_value)
                 if value <= 0:
-                    return ["Must be a positive integer"]
+                    return ["Must be pos."]
                 return []
             except ValueError:
                 return ["Must be an integer"]
@@ -203,7 +203,7 @@ class functions:
             try:
                 value = float(input_value)
                 if value <= 0:
-                    return ["Must be a positive float"]
+                    return ["Must be pos."]
                 return []
             except ValueError:
                 return ["Must be a float"]
@@ -212,4 +212,4 @@ class functions:
             return []
 
         else:
-            return ["Unknown type specified"]
+            return ["Unknown type"]

@@ -7,7 +7,7 @@ from Input.trameFunctions import trameFunctions
 
 from Toolbar.content import toolbar
 
-from Input.inputParametersCard.content import inputParameters
+from Input.inputParametersCard.inputMain import inputParameters
 from Input.distributionParametersCard.distributionMain import distributionParameters
 from Input.latticeConfigurationCard.latticeMain import latticeConfiguration
 from Input.runSimulationCard.content import runSimulation

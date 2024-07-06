@@ -68,52 +68,60 @@ class inputParameters:
 
     def card(self):
         with vuetify.VCard(style="width: 340px; height: 300px"):
-            with vuetify.VCardTitle("Input Parameters", classes="d-flex justify-space-between align-center"):
+            with vuetify.VCardTitle("Input Parameters"):
+                vuetify.VSpacer()
                 vuetify.VIcon(
                     "mdi-information",
-                    classes="ml-2",
                     style="color: #00313C;",
                     click=lambda: functions.documentation("pythonParameters"),
                 )
             vuetify.VDivider()
-
             with vuetify.VCardText():
-                with vuetify.VRow():
-                    with vuetify.VCol():
-                        vuetify.VSelect(
-                            v_model=("particle_shape",),
-                            label="Particle Shape",
-                            items=([1, 2, 3],),
-                            dense=True,
-                        )
+                vuetify.VSelect(
+                    v_model=("particle_shape",),
+                    label="Particle Shape",
+                    items=([1, 2, 3],),
+                    dense=True,
+                )
+                with vuetify.VRow(classes="my-0"):
+                    with vuetify.VCol(cols=12, classes="py-0"):
                         vuetify.VTextField(
                             v_model=("npart",),
                             label="Number of Particles",
                             error_messages=("npart_validation",),
+                            type="number",
                             dense=True,
                         )
-                        with vuetify.VRow():
-                            with vuetify.VCol(cols=8):
-                                vuetify.VTextField(
-                                    v_model=("kin_energy_MeV",),
-                                    label="Kinetic Energy",
-                                    error_messages=("kin_energy_MeV_validation",),
-                                    type="number",
-                                    dense=True,
-                                    classes="mr-2",
-                                )
-                            with vuetify.VCol(cols=4):
-                                vuetify.VSelect(
-                                    v_model=("kin_energy_unit",),
-                                    label="Unit",
-                                    items=(["meV", "eV", "MeV", "GeV", "TeV"],),
-                                    dense=True,
-                                )
+                with vuetify.VRow(classes="my-2"):
+                    with vuetify.VCol(cols=8, classes="py-0"):
                         vuetify.VTextField(
-                            label="Bunch Charge (C)",
+                            v_model=("kin_energy_MeV",),
+                            label="Kinetic Energy",
+                            error_messages=("kin_energy_MeV_validation",),
+                            type="number",
+                            dense=True,
+                            classes="mr-2",
+                        )
+                    with vuetify.VCol(cols=4, classes="py-0"):
+                        vuetify.VSelect(
+                            v_model=("kin_energy_unit",),
+                            label="Unit",
+                            items=(["meV", "eV", "MeV", "GeV", "TeV"],),
+                            dense=True,
+                        )
+                with vuetify.VRow(classes="my-2"):
+                    with vuetify.VCol(cols=8, classes="py-0"):
+                        vuetify.VTextField(
+                            label="Bunch Charge",
                             v_model=("bunch_charge_C",),
                             error_messages=("bunch_charge_C_validation",),
                             type="number",
                             dense=True,
-                        
+                        )
+                    with vuetify.VCol(cols=4, classes="py-0"):
+                        vuetify.VTextField(
+                            label="Unit",
+                            value="C",
+                            dense=True,
+                            disabled=True,
                         )

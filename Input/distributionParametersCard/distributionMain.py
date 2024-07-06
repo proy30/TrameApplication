@@ -117,48 +117,24 @@ class distributionParameters:
                     style="color: #00313C;",
                     click=lambda: functions.documentation("BeamDistributions"),
                 )
-            vuetify.VDivider(classes="my-0")
+            vuetify.VDivider()
             with vuetify.VCardText():
-                with vuetify.VRow():
-                    with vuetify.VCol():
-                        vuetify.VSelect(
-                            label="Select Distribution",
-                            v_model=("selectedDistribution",),
-                            items=("listOfDistributions",),
-                            dense=True,
-                            hide_details=True,
-                        )
-                with vuetify.VRow():
-                    with vuetify.VCol(cols=4):
-                        with vuetify.VRow(v_for="(parameter, index) in selectedDistributionParameters", no_gutters=True):
-                            with vuetify.VCol(v_if="index % 3 == 0"):
-                                vuetify.VTextField(
-                                    label=("parameter.parameter_name",),
-                                    v_model=("parameter.parameter_default_value",),
-                                    change=(ctrl.updateDistributionParameters, "[parameter.parameter_name, $event, parameter.parameter_type]"),
-                                    error_messages=("parameter.parameter_error_message",),
-                                    dense=True,
-                                    style="max-width: 90px",
-                                )
-                    with vuetify.VCol(cols=4):
-                        with vuetify.VRow(v_for="(parameter, index) in selectedDistributionParameters", no_gutters=True):
-                            with vuetify.VCol(v_if="index % 3 == 1"):
-                                vuetify.VTextField(
-                                    label=("parameter.parameter_name",),
-                                    v_model=("parameter.parameter_default_value",),
-                                    change=(ctrl.updateDistributionParameters, "[parameter.parameter_name, $event, parameter.parameter_type]"),
-                                    error_messages=("parameter.parameter_error_message",),
-                                    dense=True,
-                                    style="max-width: 90px",
-                                )
-                    with vuetify.VCol(cols=4):
-                        with vuetify.VRow(v_for="(parameter, index) in selectedDistributionParameters", no_gutters=True):
-                            with vuetify.VCol(v_if="index % 3 == 2"):
-                                vuetify.VTextField(
-                                    label=("parameter.parameter_name",),
-                                    v_model=("parameter.parameter_default_value",),
-                                    change=(ctrl.updateDistributionParameters, "[parameter.parameter_name, $event, parameter.parameter_type]"),
-                                    error_messages=("parameter.parameter_error_message",),
-                                    dense=True,
-                                    style="max-width: 90px",
-                                )
+                vuetify.VSelect(
+                    label="Select Distribution",
+                    v_model=("selectedDistribution",),
+                    items=("listOfDistributions",),
+                    dense=True,
+                )
+                with vuetify.VRow(classes="my-2"):
+                    for i in range(3):
+                        with vuetify.VCol(cols=4, classes="py-0"):
+                            with vuetify.VRow(v_for="(parameter, index) in selectedDistributionParameters"):
+                                with vuetify.VCol(v_if=f"index % 3 == {i}", classes="py-1"):
+                                    vuetify.VTextField(
+                                        label=("parameter.parameter_name",),
+                                        v_model=("parameter.parameter_default_value",),
+                                        change=(ctrl.updateDistributionParameters, "[parameter.parameter_name, $event, parameter.parameter_type]"),
+                                        error_messages=("parameter.parameter_error_message",),
+                                        type="number",
+                                        dense=True,
+                                    )
