@@ -60,12 +60,27 @@ def save_distribution_parameters_to_file():
             file.write(f"    {param}={value},\n")
         file.write(")\n")
 
-def validate_float_test(value):
-    try:
-        float(value)
+def validate_value(input_value, value_type):
+    if value_type == "int":
+        try:
+            int(input_value)
+            return True, []
+        except ValueError:
+            return False, ["Must be an integer"]
+
+    elif value_type == "float":
+        try:
+            float(input_value)
+            return True, []
+        except ValueError:
+            return False, ["Must be a float"]
+
+    elif value_type == "string":
         return True, []
-    except ValueError:
-        return False, ["Must be a float"]
+
+    else:
+        return False, ["Unknown type specified"]
+
 # -----------------------------------------------------------------------------
 # Callbacks
 # -----------------------------------------------------------------------------
@@ -81,12 +96,14 @@ def on_distribution_parameter_change(parameter_name, parameter_value):
     print(f"Parameter {parameter_name} was changed to {parameter_value} (type: {input_type})")
     
     for param in state.selectedDistributionParameters:
+        isValid, error_message = validate_value(parameter_value, "int")
+
         if param["parameter_name"] == parameter_name:
             param["parameter_default_value"] = parameter_value
-            isValid, error_message = validate_float_test(parameter_value)
             param["parameter_error_message"] = error_message
-            break
+    
     state.dirty("selectedDistributionParameters")
+
     save_distribution_parameters_to_file()
 # -----------------------------------------------------------------------------
 # Content
