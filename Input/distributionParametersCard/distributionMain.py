@@ -91,19 +91,18 @@ def on_lattice_element_name_change(selectedDistribution, **kwargs):
     save_distribution_parameters_to_file()
 
 @ctrl.add("updateDistributionParameters")
-def on_distribution_parameter_change(parameter_name, parameter_value):
+def on_distribution_parameter_change(parameter_name, parameter_value, parameter_type):
     parameter_value, input_type = functions.determine_input_type(parameter_value)
     print(f"Parameter {parameter_name} was changed to {parameter_value} (type: {input_type})")
     
-    for param in state.selectedDistributionParameters:
-        isValid, error_message = validate_value(parameter_value, "int")
+    isValid, error_message = validate_value(parameter_value, parameter_type)
 
+    for param in state.selectedDistributionParameters:
         if param["parameter_name"] == parameter_name:
             param["parameter_default_value"] = parameter_value
             param["parameter_error_message"] = error_message
     
     state.dirty("selectedDistributionParameters")
-
     save_distribution_parameters_to_file()
 # -----------------------------------------------------------------------------
 # Content
@@ -137,7 +136,7 @@ class distributionParameters:
                                 vuetify.VTextField(
                                     label=("parameter.parameter_name",),
                                     v_model=("parameter.parameter_default_value",),
-                                    change=(ctrl.updateDistributionParameters,  "[parameter.parameter_name, $event]"),
+                                    change=(ctrl.updateDistributionParameters,  "[parameter.parameter_name, $event, parameter.parameter_type]"),
                                     error_messages=("parameter.parameter_error_message",),
                                     dense=True,
                                     style="max-width: 90px",
@@ -148,7 +147,7 @@ class distributionParameters:
                                 vuetify.VTextField(
                                     label=("parameter.parameter_name",),
                                     v_model=("parameter.parameter_default_value",),
-                                    change=(ctrl.updateDistributionParameters,  "[parameter.parameter_name, $event]"),
+                                    change=(ctrl.updateDistributionParameters,  "[parameter.parameter_name, $event, parameter.parameter_type]"),
                                     error_messages=("parameter.parameter_error_message",),
                                     dense=True,
                                     style="max-width: 90px",
@@ -159,7 +158,7 @@ class distributionParameters:
                                 vuetify.VTextField(
                                     label=("parameter.parameter_name",),
                                     v_model=("parameter.parameter_default_value",),
-                                    change=(ctrl.updateDistributionParameters,  "[parameter.parameter_name, $event]"),
+                                    change=(ctrl.updateDistributionParameters,  "[parameter.parameter_name, $event, parameter.parameter_type]"),
                                     error_messages=("parameter.parameter_error_message",),
                                     dense=True,
                                     style="max-width: 90px",
