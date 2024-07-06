@@ -10,39 +10,15 @@ server = get_server(client_type="vue2")
 state, ctrl = server.state, server.controller
 
 # -----------------------------------------------------------------------------
-# Content
+# Helpful functions
 # -----------------------------------------------------------------------------
+
 def format_to_scientific():
     try:
         value = float(state.npart)
         state.npart = f"{value:.2e}"
     except ValueError:
         state.npart = "Invalid input"
-
-@state.change("particle_shape")
-def on_particle_shape_change(particle_shape, **kwargs):
-    print(f"Particle Shape changed to: {particle_shape}")
-
-@state.change("npart")
-def on_npart_change(npart, **kwargs):
-    # inputParameters.format_to_scientific()
-    state.npart_validation = functions.validate(npart, "int")
-    print(f"# of Particles changed to: {npart}")
-
-@state.change("kin_energy_MeV")
-def on_kin_energy_change(kin_energy_MeV, **kwargs):
-    state.kin_energy_MeV_validation = functions.validate(kin_energy_MeV, "float")
-    print(f"Kinetic Energy changed to: {kin_energy_MeV}")
-
-@state.change("bunch_charge_C")
-def on_bunch_charge_C_change(bunch_charge_C, **kwargs):
-    state.bunch_charge_C_validation = functions.validate(bunch_charge_C, "float")
-    print(f"Bunch Charge (C) changed to: {bunch_charge_C}")
-
-@state.change("kin_energy_unit")
-def on_kin_energy_unit_change(kin_energy_unit, **kwargs):
-    # inputParameters.convert_kin_energy()
-    print(f"Kinetic Energy unit changed to: {kin_energy_unit}")
 
 def convert_kin_energy():
     conversion_factors = {
@@ -57,6 +33,42 @@ def convert_kin_energy():
     state.kin_energy_MeV /= conversion_factors["MeV"]
     state.kin_energy_MeV *= conversion_factors[state.kin_energy_unit]
 
+# -----------------------------------------------------------------------------
+# Callbacks
+# -----------------------------------------------------------------------------
+
+@state.change("particle_shape")
+def on_particle_shape_change(particle_shape, **kwargs):
+    print(f"Particle Shape changed to: {particle_shape}")
+
+@state.change("npart")
+def on_npart_change(npart, **kwargs):
+    state.npart, npart_input_type = functions.determine_input_type(npart)
+    state.npart_validation = functions.validate_value(npart, "int")
+
+    print(f"npart changed to {npart} (type: {npart_input_type})")
+
+@state.change("kin_energy_MeV")
+def on_kin_energy_change(kin_energy_MeV, **kwargs):
+    state.kin_energy_MeV_validation = functions.validate_value(kin_energy_MeV, "float")
+
+    state.kin_energy_MeV, kin_energy_MeV_input_type = functions.determine_input_type(kin_energy_MeV)
+    print(f"Kinetic Energy () changed to {kin_energy_MeV} (type: {kin_energy_MeV_input_type})")
+
+@state.change("bunch_charge_C")
+def on_bunch_charge_C_change(bunch_charge_C, **kwargs):
+    state.bunch_charge_C_validation = functions.validate(bunch_charge_C, "float")
+
+    state.bunch_charge_C, bunch_charge_C_input_type = functions.determine_input_type(bunch_charge_C)
+    print(f"Bunch Charge (C) changed to {bunch_charge_C} (type: {bunch_charge_C_input_type})")
+
+@state.change("kin_energy_unit")
+def on_kin_energy_unit_change(kin_energy_unit, **kwargs):
+    print(f"Kinetic Energy unit changed to: {kin_energy_unit}")
+
+# -----------------------------------------------------------------------------
+# Content
+# -----------------------------------------------------------------------------
 class inputParameters:
     def __init__ (self):
         state.particle_shape = 1

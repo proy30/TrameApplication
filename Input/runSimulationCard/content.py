@@ -101,25 +101,25 @@ def validate_bunch_charge(bunch_charge):
         state.bunch_charge_C_validation = "Invalid input for bunch charge."
         return False
 
-@state.change("npart")
-def on_npart_change(npart, **kwargs):
-    if validate_npart(npart):
-        print(f"# of Particles changed to: {npart} (type: {type(state.npart)})")
+# @state.change("npart")
+# def on_npart_change(npart, **kwargs):
+#     if validate_npart(npart):
+#         print(f"# of Particles changed to: {npart} (type: {type(state.npart)})")
 
-@state.change("kin_energy_MeV")
-def on_kin_energy_change(kin_energy_MeV, **kwargs):
-    if validate_kin_energy(kin_energy_MeV):
-        print(f"Kinetic Energy changed to: {kin_energy_MeV}")
+# @state.change("kin_energy_MeV")
+# def on_kin_energy_change(kin_energy_MeV, **kwargs):
+#     if validate_kin_energy(kin_energy_MeV):
+#         print(f"Kinetic Energy changed to: {kin_energy_MeV}")
 
-@state.change("bunch_charge_C")
-def on_bunch_charge_C_change(bunch_charge_C, **kwargs):
-    if validate_bunch_charge(bunch_charge_C):
-        print(f"Bunch Charge (C) changed to: {bunch_charge_C}")
+# @state.change("bunch_charge_C")
+# def on_bunch_charge_C_change(bunch_charge_C, **kwargs):
+#     if validate_bunch_charge(bunch_charge_C):
+#         print(f"Bunch Charge (C) changed to: {bunch_charge_C}")
 
-@state.change("figure_size", "num_points", "npart", "kin_energy_MeV", "bunch_charge_C")
-def update_chart(**kwargs):
-    # ctrl.update_figure(create_figure())
-    print(f"Figure updated with npart: {state.npart}, kin_energy_MeV: {state.kin_energy_MeV}, bunch_charge_C: {state.bunch_charge_C}")
+# @state.change("figure_size", "num_points", "npart", "kin_energy_MeV", "bunch_charge_C")
+# def update_chart(**kwargs):
+#     # ctrl.update_figure(create_figure())
+#     print(f"Figure updated with npart: {state.npart}, kin_energy_MeV: {state.kin_energy_MeV}, bunch_charge_C: {state.bunch_charge_C}")
 
 # -----------------------------------------------------------------------------
 # UI Classes
