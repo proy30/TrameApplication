@@ -33,6 +33,7 @@ def populate_distribution_parameters(selectedDistribution):
         {"parameter_name" : parameter[0],
          "parameter_default_value" : parameter[1],
          "parameter_type" : parameter[2],
+         "parameter_error_message": [],
          }
         for parameter in selectedDistributionParameters
     ]
@@ -49,6 +50,12 @@ def save_distribution_parameters_to_file():
             file.write(f"    {param}={value},\n")
         file.write(")\n")
 
+def validate_float_test(value):
+    try:
+        float(value)
+        return True, []
+    except ValueError:
+        return False, ["Must be a float"]
 # -----------------------------------------------------------------------------
 # Callbacks
 # -----------------------------------------------------------------------------
@@ -59,16 +66,18 @@ def on_lattice_element_name_change(selectedDistribution, **kwargs):
     save_distribution_parameters_to_file()
 
 @ctrl.add("updateDistributionParameters")
-def on_distribution_parameter_change(parameter_name, parameter_value, parameter_type,  parameter_index):
+def on_distribution_parameter_change(parameter_name, parameter_value):
     parameter_value, input_type = functions.determine_input_type(parameter_value)
     print(f"Parameter {parameter_name} was changed to {parameter_value} (type: {input_type})")
     
     for param in state.selectedDistributionParameters:
         if param["parameter_name"] == parameter_name:
-            param["parameter_default_value"] = value
+            param["parameter_default_value"] = parameter_value
+            isValid, error_message = validate_float_test(parameter_value)
+            param["parameter_error_message"] = error_message
             break
+    state.dirty("selectedDistributionParameters")
     save_distribution_parameters_to_file()
-    print(f"Parameter {parameter_name} was changed to {value}")
 # -----------------------------------------------------------------------------
 # Content
 # -----------------------------------------------------------------------------
@@ -96,36 +105,36 @@ class distributionParameters:
                         )
                 with vuetify.VRow():
                     with vuetify.VCol(cols=4):
-                        with vuetify.VRow(v_for="(parameter, index) in selectedDistributionParameters"):
+                        with vuetify.VRow(v_for="(parameter, index) in selectedDistributionParameters", no_gutters=True):
                             with vuetify.VCol(v_if="index % 3 == 0"):
                                 vuetify.VTextField(
                                     label=("parameter.parameter_name",),
                                     v_model=("parameter.parameter_default_value",),
                                     change=(ctrl.updateDistributionParameters,  "[parameter.parameter_name, $event]"),
+                                    error_messages=("parameter.parameter_error_message",),
                                     dense=True,
-                                    hide_details=True,
                                     style="max-width: 90px",
                                 )
                     with vuetify.VCol(cols=4): 
-                        with vuetify.VRow(v_for="(parameter, index) in selectedDistributionParameters"):
+                        with vuetify.VRow(v_for="(parameter, index) in selectedDistributionParameters", no_gutters=True):
                             with vuetify.VCol(v_if="index % 3 == 1"):
                                 vuetify.VTextField(
                                     label=("parameter.parameter_name",),
                                     v_model=("parameter.parameter_default_value",),
                                     change=(ctrl.updateDistributionParameters,  "[parameter.parameter_name, $event]"),
+                                    error_messages=("parameter.parameter_error_message",),
                                     dense=True,
-                                    hide_details=True,
                                     style="max-width: 90px",
                                 )
                     with vuetify.VCol(cols=4):
-                        with vuetify.VRow(v_for="(parameter, index) in selectedDistributionParameters"):
+                        with vuetify.VRow(v_for="(parameter, index) in selectedDistributionParameters", no_gutters=True):
                             with vuetify.VCol(v_if="index % 3 == 2"):
                                 vuetify.VTextField(
                                     label=("parameter.parameter_name",),
                                     v_model=("parameter.parameter_default_value",),
                                     change=(ctrl.updateDistributionParameters,  "[parameter.parameter_name, $event]"),
+                                    error_messages=("parameter.parameter_error_message",),
                                     dense=True,
-                                    hide_details=True,
                                     style="max-width: 90px",
                                 )
 
