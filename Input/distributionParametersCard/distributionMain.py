@@ -3,6 +3,7 @@ from trame.widgets  import vuetify
 
 from Input.functions import functions
 from Input.latticeConfigurationCard.functions import selectClasses, classAndParametersAndDefaultValueAndType
+from Input.distributionParametersCard.distributionFunctions import distributionFunctions
 from impactx import distribution
 # -----------------------------------------------------------------------------
 # Trame setup
@@ -22,9 +23,13 @@ state.listOfDistributionsAndParametersAndDefault = classAndParametersAndDefaultV
 # -----------------------------------------------------------------------------
 # Default
 # -----------------------------------------------------------------------------
+
 state.selectedDistribution = "Waterbag" #  Selected distribution is Empty by default
 state.selectedDistributionParameters = [] 
 
+# -----------------------------------------------------------------------------
+# Main Functions
+# -----------------------------------------------------------------------------
 
 def populate_distribution_parameters(selectedDistribution):
     selectedDistributionParameters = state.listOfDistributionsAndParametersAndDefault.get(selectedDistribution, [])
@@ -37,10 +42,31 @@ def populate_distribution_parameters(selectedDistribution):
          }
         for parameter in selectedDistributionParameters
     ]
-
+    
+    save_distribution_parameters_to_file()
     return selectedDistributionParameters
 
-def distribution_parameter_input():
+
+def update_distribution_parameters(parameterName, parameterValue, parameterErrorMessage):
+    """
+    Updates parameter value and then includes error message if user input is not valid
+    """
+    for param in state.selectedDistributionParameters:
+        if param["parameter_name"] == parameterName:
+            param["parameter_default_value"] = parameterValue
+            param["parameter_error_message"] = parameterErrorMessage
+    
+    state.dirty("selectedDistributionParameters")
+    save_distribution_parameters_to_file()
+
+# -----------------------------------------------------------------------------
+# Write to file functions
+# -----------------------------------------------------------------------------
+
+def parameter_input_checker():
+    """
+    Helper function to check if user input is valid, if yes, then will update with value, if not then set to None.
+    """
     parameter_input = {}
     for param in state.selectedDistributionParameters:
         if param["parameter_error_message"] == []:
@@ -51,36 +77,17 @@ def distribution_parameter_input():
     return parameter_input
 
 def save_distribution_parameters_to_file():
+    """
+    Writes users input for distribution parameters into file in simulation code format
+    """
     distribution_name = state.selectedDistribution
-    parameters = distribution_parameter_input()
+    parameters = parameter_input_checker()
 
     with open("output_distribution_parameters.txt", "w") as file:
         file.write(f"distr = distribution.{distribution_name}(\n")
         for param, value in parameters.items():
             file.write(f"    {param}={value},\n")
         file.write(")\n")
-
-def validate_value(input_value, value_type):
-    if value_type == "int":
-        try:
-            int(input_value)
-            return True, []
-        except ValueError:
-            return False, ["Must be an integer"]
-
-    elif value_type == "float":
-        try:
-            float(input_value)
-            return True, []
-        except ValueError:
-            return False, ["Must be a float"]
-
-    elif value_type == "string":
-        return True, []
-
-    else:
-        return False, ["Unknown type specified"]
-
 # -----------------------------------------------------------------------------
 # Callbacks
 # -----------------------------------------------------------------------------
@@ -88,22 +95,15 @@ def validate_value(input_value, value_type):
 @state.change("selectedDistribution")
 def on_lattice_element_name_change(selectedDistribution, **kwargs):
     populate_distribution_parameters(selectedDistribution)
-    save_distribution_parameters_to_file()
 
 @ctrl.add("updateDistributionParameters")
 def on_distribution_parameter_change(parameter_name, parameter_value, parameter_type):
     parameter_value, input_type = functions.determine_input_type(parameter_value)
+    error_message = distributionFunctions.validate_value(parameter_value, parameter_type)
+    
+    update_distribution_parameters(parameter_name, parameter_value, error_message)
     print(f"Parameter {parameter_name} was changed to {parameter_value} (type: {input_type})")
-    
-    isValid, error_message = validate_value(parameter_value, parameter_type)
 
-    for param in state.selectedDistributionParameters:
-        if param["parameter_name"] == parameter_name:
-            param["parameter_default_value"] = parameter_value
-            param["parameter_error_message"] = error_message
-    
-    state.dirty("selectedDistributionParameters")
-    save_distribution_parameters_to_file()
 # -----------------------------------------------------------------------------
 # Content
 # -----------------------------------------------------------------------------
@@ -136,18 +136,18 @@ class distributionParameters:
                                 vuetify.VTextField(
                                     label=("parameter.parameter_name",),
                                     v_model=("parameter.parameter_default_value",),
-                                    change=(ctrl.updateDistributionParameters,  "[parameter.parameter_name, $event, parameter.parameter_type]"),
+                                    change=(ctrl.updateDistributionParameters, "[parameter.parameter_name, $event, parameter.parameter_type]"),
                                     error_messages=("parameter.parameter_error_message",),
                                     dense=True,
                                     style="max-width: 90px",
                                 )
-                    with vuetify.VCol(cols=4): 
+                    with vuetify.VCol(cols=4):
                         with vuetify.VRow(v_for="(parameter, index) in selectedDistributionParameters", no_gutters=True):
                             with vuetify.VCol(v_if="index % 3 == 1"):
                                 vuetify.VTextField(
                                     label=("parameter.parameter_name",),
                                     v_model=("parameter.parameter_default_value",),
-                                    change=(ctrl.updateDistributionParameters,  "[parameter.parameter_name, $event, parameter.parameter_type]"),
+                                    change=(ctrl.updateDistributionParameters, "[parameter.parameter_name, $event, parameter.parameter_type]"),
                                     error_messages=("parameter.parameter_error_message",),
                                     dense=True,
                                     style="max-width: 90px",
@@ -158,10 +158,8 @@ class distributionParameters:
                                 vuetify.VTextField(
                                     label=("parameter.parameter_name",),
                                     v_model=("parameter.parameter_default_value",),
-                                    change=(ctrl.updateDistributionParameters,  "[parameter.parameter_name, $event, parameter.parameter_type]"),
+                                    change=(ctrl.updateDistributionParameters, "[parameter.parameter_name, $event, parameter.parameter_type]"),
                                     error_messages=("parameter.parameter_error_message",),
                                     dense=True,
                                     style="max-width: 90px",
                                 )
-
-
