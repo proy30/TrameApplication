@@ -40,9 +40,19 @@ def populate_distribution_parameters(selectedDistribution):
 
     return selectedDistributionParameters
 
+def distribution_parameter_input():
+    parameter_input = {}
+    for param in state.selectedDistributionParameters:
+        if param["parameter_error_message"] == []:
+            parameter_input[param["parameter_name"]] = param["parameter_default_value"]
+        else:
+            parameter_input[param["parameter_name"]] = None
+
+    return parameter_input
+
 def save_distribution_parameters_to_file():
     distribution_name = state.selectedDistribution
-    parameters = {param["parameter_name"]: param["parameter_default_value"] for param in state.selectedDistributionParameters}
+    parameters = distribution_parameter_input()
 
     with open("output_distribution_parameters.txt", "w") as file:
         file.write(f"distr = distribution.{distribution_name}(\n")
