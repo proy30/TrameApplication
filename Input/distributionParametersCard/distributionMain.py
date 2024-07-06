@@ -119,7 +119,7 @@ class distributionParameters:
                 )
             vuetify.VDivider()
             with vuetify.VCardText():
-                vuetify.VSelect(
+                vuetify.VCombobox(
                     label="Select Distribution",
                     v_model=("selectedDistribution",),
                     items=("listOfDistributions",),

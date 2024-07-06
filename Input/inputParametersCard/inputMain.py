@@ -77,7 +77,7 @@ class inputParameters:
                 )
             vuetify.VDivider()
             with vuetify.VCardText():
-                vuetify.VSelect(
+                vuetify.VCombobox(
                     v_model=("particle_shape",),
                     label="Particle Shape",
                     items=([1, 2, 3],),

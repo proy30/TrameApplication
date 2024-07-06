@@ -1,4 +1,3 @@
-
 from trame.app import get_server
 from trame.ui.vuetify import SinglePageWithDrawerLayout
 from trame.widgets import vuetify
@@ -138,7 +137,7 @@ class latticeConfiguration:
             with vuetify.VCardText():
                 with vuetify.VRow(align="center", no_gutters=True):
                     with vuetify.VCol(cols=8):
-                        vuetify.VSelect(
+                        vuetify.VCombobox(
                             label="Select Accelerator Lattice",
                             v_model=("selectedLattice", None),
                             items=("listOfLatticeElements",),
@@ -202,6 +201,10 @@ class latticeConfiguration:
             with vuetify.VContainer(fluid=True):
                 with vuetify.VRow(v_for="(latticeElement, index) in selectedLatticeList", align="center", no_gutters=True, style="min-width: 1500px;"):
                     with vuetify.VCol(cols="auto", classes="pa-2"):
+                        vuetify.VIcon(
+                            "mdi-delete",
+                            click=(ctrl.deleteLatticeElement,"[index]"),
+                        )
                         vuetify.VChip(
                             v_text=("latticeElement.name",),
                             dense=True,
