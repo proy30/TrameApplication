@@ -62,14 +62,14 @@ def run_simulation(save_png=True):
     """
     sim = ImpactX()
 
-    sim.particle_shape = 2
+    sim.particle_shape = state.particle_shape
     sim.space_charge = False
     sim.slice_step_diagnostics = False
     sim.init_grids()
 
     # init particle beam
-    kin_energy_MeV = 2.0e3
-    bunch_charge_C = 1.0e-9
+    kin_energy_MeV = state.kin_energy_MeV
+    bunch_charge_C = state.bunch_charge_C
     npart = state.npart
 
     #   reference particle
