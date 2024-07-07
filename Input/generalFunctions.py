@@ -84,7 +84,7 @@ class functions:
             except ValueError:
                 return ["Must be a float"]
 
-        elif value_type == "string":
+        elif value_type == "str":
             return []
 
         else:
