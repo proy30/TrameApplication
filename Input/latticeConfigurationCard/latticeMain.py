@@ -56,17 +56,19 @@ def add_lattice_element():
     state.selectedLatticeList.append(selectedLatticeElement)
     return selectedLatticeElement
  
-def update_parameter(index, parameterName, parameterValue):
+def update_latticeElement_parameters(index, parameterName, parameterValue, parameterErrorMessage):
     """
     Updates parameter value
     """
     for param in state.selectedLatticeList[index]["parameters"]:
         if param["parameter_name"] == parameterName:
             param["parameter_default_value"] = parameterValue
+            param["parameter_error_message"] = parameterErrorMessage
 
-    state.dirty("selectedDistributionParameters")
+
+    state.dirty("selectedLatticeList")
+    print(state.selectedLatticeList)
     save_elements_to_file()
-
 # -----------------------------------------------------------------------------
 # Write to file functions
 # -----------------------------------------------------------------------------
@@ -101,16 +103,19 @@ def on_add_lattice_element_click():
         # print(f"ADD button clicked, added: {selectedLattice}")
         # print(f"Current list of selected lattice elements: {state.selectedLatticeList}")
 
+@ctrl.add("updateLatticeElementParameters")
+def on_lattice_element_parameter_change(index, parameter_name, parameter_value, parameter_type):
+    parameter_value, input_type = functions.determine_input_type(parameter_value)
+    error_message = functions.validate_against(parameter_value, parameter_type)
+
+    update_latticeElement_parameters(index, parameter_name, parameter_value, error_message)
+    print(f"Lattice element {index}, {parameter_name} changed to {parameter_value} (type: {input_type})")
+
+
 @ctrl.add("clear_latticeElements")
 def on_clear_lattice_element_click():
     state.selectedLatticeList = []
     save_elements_to_file()
-
-@ctrl.add("updateElements")
-def on_lattice_element_parameter_change(index, parameter_name, value):
-    update_parameter(index, parameter_name, value)
-    save_elements_to_file()
-    print(f"Lattice element {index}, {parameter_name} changed to {value}")
 
 @ctrl.add("deleteLatticeElement")
 def on_delete_LatticeElement_click(index):
@@ -190,7 +195,8 @@ class latticeConfiguration:
                                         vuetify.VTextField(
                                             label=("parameter.parameter_name",),
                                             v_model=("parameter.parameter_default_value",),
-                                            change=(ctrl.updateElements, "[index, parameter.parameter_name, $event]"),
+                                            change=(ctrl.updateLatticeElementParameters, "[index, parameter.parameter_name, $event, parameter.parameter_type]"),
+                                            error_messages=("parameter.parameter_error_message",),
                                             dense=True,
                                             style="width: 75px;"
                                         )
@@ -218,7 +224,8 @@ class latticeConfiguration:
                         vuetify.VTextField(
                             label=("parameter.parameter_name",),
                             v_model=("parameter.parameter_default_value",),
-                            change=(ctrl.updateElements, "[index, parameter.parameter_name, $event]"),
+                            change=(ctrl.updateLatticeElementParameters, "[index, parameter.parameter_name, $event, parameter.parameter_type]"),
+                            error_messages=("parameter.parameter_error_message",),
                             dense=True,
                             style="width: 75px;"
                         )
