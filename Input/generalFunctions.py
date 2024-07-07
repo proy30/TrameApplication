@@ -167,3 +167,15 @@ class functions:
                 param_list.append((param, default))
             parameters[key] = param_list
         return parameters
+
+    def convert_to_correct_type(value, desired_type):
+        if value is None:
+            raise ValueError("Cannot convert to desired type")
+        if desired_type == "int":
+            return int(value)
+        elif desired_type == "float":
+            return float(value)
+        elif desired_type == "str":
+            return str(value)
+        else:
+            raise ValueError("Unknown type")

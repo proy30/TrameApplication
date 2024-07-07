@@ -33,60 +33,20 @@ def convert_kin_energy():
     state.kin_energy_MeV /= conversion_factors["MeV"]
     state.kin_energy_MeV *= conversion_factors[state.kin_energy_unit]
 
-def convert_to_correct_type(value, desired_type):
-    if value is None:
-        raise ValueError("Cannot convert NoneType to the desired type")
-    if desired_type == "int":
-        return int(value)
-    elif desired_type == "float":
-        return float(value)
-    elif desired_type == "str":
-        return str(value)
-    else:
-        raise ValueError("Unknown type")
-
 # -----------------------------------------------------------------------------
 # Callbacks
 # -----------------------------------------------------------------------------
 
-def validate_and_convert_to_correct_type(value, parameter_type, state_name, validation_name):
-    validation_result = functions.validate_against(value, parameter_type)
+@ctrl.add("on_input_change")
+def validate_and_convert_to_correct_type(value, desired_type, state_name, validation_name):
+    
+    validation_result = functions.validate_against(value, desired_type)
     setattr(state, validation_name, validation_result)
     if validation_result == []:
-        converted_value = convert_to_correct_type(value, parameter_type)
+        converted_value = functions.convert_to_correct_type(value, desired_type)
+        print(f"{state_name} changed to {converted_value} (type: {type(converted_value)})")
         if getattr(state, state_name) != converted_value:
-            setattr(state, state_name, converted_value)
-            return False
-    return True
-
-@state.change("particle_shape")
-def on_particle_shape_change(particle_shape, **kwargs):
-    print(f"Particle Shape changed to: {particle_shape}")
-
-@state.change("npart")
-def on_npart_change(npart, **kwargs):
-    npart_input_type = "int"
-    state_changed = validate_and_convert_to_correct_type(npart, npart_input_type, "npart", "npart_validation")
-    if state_changed:
-        print(f"npart changed to {state.npart} (type: {type(state.npart)})")
-
-@state.change("kin_energy_MeV")
-def on_kin_energy_change(kin_energy_MeV, **kwargs):
-    kinetic_energy_input_type = "float"
-    state_changed = validate_and_convert_to_correct_type(kin_energy_MeV, kinetic_energy_input_type, "kin_energy_MeV", "kin_energy_MeV_validation")
-    if state_changed:
-        print(f"Kinetic Energy changed to {state.kin_energy_MeV} (type: {type(state.kin_energy_MeV)})")
-
-@state.change("bunch_charge_C")
-def on_bunch_charge_C_change(bunch_charge_C, **kwargs):
-    bunch_charge_input_type = "float"
-    state_changed = validate_and_convert_to_correct_type(bunch_charge_C, bunch_charge_input_type, "bunch_charge_C", "bunch_charge_C_validation")
-    if state_changed:
-        print(f"Bunch Charge (C) changed to {state.bunch_charge_C} (type: {type(state.bunch_charge_C)})")
-
-@state.change("kin_energy_unit")
-def on_kin_energy_unit_change(kin_energy_unit, **kwargs):
-    print(f"Kinetic Energy unit changed to: {kin_energy_unit}")
+            setattr(state, state_name, converted_value)    
 
 # -----------------------------------------------------------------------------
 # Content
@@ -98,6 +58,11 @@ class inputParameters:
         state.kin_energy_MeV = 2.0e3
         state.bunch_charge_C = 2e5
         state.kin_energy_unit = "MeV"
+        
+        state.npart_validation = []
+        state.kin_energy_MeV_validation = []
+        state.bunch_charge_C_validation = []
+
 
     def card(self):
         with vuetify.VCard(style="width: 340px; height: 300px"):
@@ -122,6 +87,7 @@ class inputParameters:
                             v_model=("npart",),
                             label="Number of Particles",
                             error_messages=("npart_validation",),
+                            change=(ctrl.on_input_change, "[$event, 'int','npart','npart_validation']"),
                             type="number",
                             dense=True,
                         )
@@ -131,6 +97,7 @@ class inputParameters:
                             v_model=("kin_energy_MeV",),
                             label="Kinetic Energy",
                             error_messages=("kin_energy_MeV_validation",),
+                            change=(ctrl.on_input_change, "[$event, 'float','kin_energy_MeV','kin_energy_MeV_validation']"),
                             type="number",
                             dense=True,
                             classes="mr-2",
@@ -148,6 +115,7 @@ class inputParameters:
                             label="Bunch Charge",
                             v_model=("bunch_charge_C",),
                             error_messages=("bunch_charge_C_validation",),
+                            change=(ctrl.on_input_change, "[$event, 'float','bunch_charge_C','bunch_charge_C_validation']"),
                             type="number",
                             dense=True,
                         )
