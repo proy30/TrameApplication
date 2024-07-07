@@ -18,7 +18,7 @@ state, ctrl = server.state, server.controller
 LATTICE_ELEMENTS_MODULE_NAME = elements
 
 state.listOfLatticeElements = functions.selectClasses(LATTICE_ELEMENTS_MODULE_NAME)
-state.listOfLatticeElementParametersAndDefault = functions.parametersAndDefaults(LATTICE_ELEMENTS_MODULE_NAME)
+state.listOfLatticeElementParametersAndDefault = functions.classAndParametersAndDefaultValueAndType(LATTICE_ELEMENTS_MODULE_NAME)
 
 # -----------------------------------------------------------------------------
 # Default
@@ -40,38 +40,32 @@ def add_lattice_element():
     selectedLattice = state.selectedLattice
     selectedLatticeParameters = state.listOfLatticeElementParametersAndDefault.get(selectedLattice, [])
 
-    selectedLatticeElementWithParameters = {
+    selectedLatticeElement = {
         "name": selectedLattice,
-        "parameters_with_default_value": selectedLatticeParameters,
+        "parameters": [
+            {"parameter_name": parameter[0], 
+             "parameter_default_value": parameter[1], 
+             "parameter_type": parameter[2], 
+             "parameter_error_message": []
+            }
+            for parameter in selectedLatticeParameters
+        ]
     }
-    return selectedLatticeElementWithParameters
 
-def validate_and_convert(value, desired_type):
-    if desired_type == "int":
-        return int(value)
-    elif desired_type == "float":
-        return float(value)
-    elif desired_type == "str":
-        return str(value)
-    else:
-        raise ValueError(f"Unsupported type: {desired_type}")
-         
-def update_parameter_helper(parameters_with_default_value, parameter_name, new_value):
-    updated_parameters = []
-    for name, default in parameters_with_default_value:
-        if name == parameter_name:
-            updated_parameters.append((name, new_value))
-        else:
-            updated_parameters.append((name, default))
-    
-    return updated_parameters
+    state.selectedLatticeParaameters = selectedLatticeElement["parameters"]
+    state.selectedLatticeList.append(selectedLatticeElement)
+    return selectedLatticeElement
+ 
+def update_parameter(index, parameterName, parameterValue):
+    """
+    Updates parameter value
+    """
+    for param in state.selectedLatticeList[index]["parameters"]:
+        if param["parameter_name"] == parameterName:
+            param["parameter_default_value"] = parameterValue
 
-def update_parameter(index, parameter_name, value):
-    latticeElementParameter = state.selectedLatticeList[index]["parameters_with_default_value"]
-    updated_parameters = update_parameter_helper(latticeElementParameter, parameter_name, value)
-
-    state.selectedLatticeList[index]["parameters_with_default_value"] = updated_parameters
-    state.dirty("selectedLatticeList")
+    state.dirty("selectedDistributionParameters")
+    save_elements_to_file()
 
 # -----------------------------------------------------------------------------
 # Write to file functions
@@ -83,7 +77,7 @@ def save_elements_to_file():
         for element in state.selectedLatticeList:
             element_name = element["name"]
             parameters = ", ".join(
-                f"{param[1]}" for param in element["parameters_with_default_value"]
+                f"{param['parameter_default_value']}" for param in element["parameters"]
             )
             file.write(f"    elements.{element_name}({parameters}),\n")
         file.write("]\n")   
@@ -101,8 +95,7 @@ def on_lattice_element_name_change(selectedLattice, **kwargs):
 def on_add_lattice_element_click():
     selectedLattice = state.selectedLattice
     if selectedLattice:
-        selectedLatticeElementWithParameters = add_lattice_element()
-        state.selectedLatticeList.append(selectedLatticeElementWithParameters)
+        add_lattice_element()
         save_elements_to_file()
         state.dirty("selectedLatticeList")
         # print(f"ADD button clicked, added: {selectedLattice}")
@@ -193,11 +186,11 @@ class latticeConfiguration:
                                             classes="mr-2",
                                             style="justify-content: center"
                                         )
-                                    with vuetify.VCol(v_for="(value, parameterIndex) in latticeElement.parameters_with_default_value", cols="auto", classes="pa-2"):
+                                    with vuetify.VCol(v_for="(parameter, parameterIndex) in latticeElement.parameters", cols="auto", classes="pa-2"):
                                         vuetify.VTextField(
-                                            label=("value[0]",),  # value[0] = parameter name
-                                            v_model=("value[1]",),  # value[1] = parameter default value
-                                            change=(ctrl.updateElements, "[index, value[0], $event]"),
+                                            label=("parameter.parameter_name",),
+                                            v_model=("parameter.parameter_default_value",),
+                                            change=(ctrl.updateElements, "[index, parameter.parameter_name, $event]"),
                                             dense=True,
                                             style="width: 75px;"
                                         )
@@ -221,11 +214,11 @@ class latticeConfiguration:
                             classes="mr-2",
                             style="justify-content: center"
                         )
-                    with vuetify.VCol(v_for="(value, parameterIndex) in latticeElement.parameters_with_default_value", cols="auto", classes="pa-2"):
+                    with vuetify.VCol(v_for="(parameter, parameterIndex) in latticeElement.parameters", cols="auto", classes="pa-2"):
                         vuetify.VTextField(
-                            label=("value[0]",),  # value[0] = parameter name
-                            v_model=("value[1]",),  # value[1] = parameter default value
-                            change=(ctrl.updateElements, "[index, value[0], $event]"),
+                            label=("parameter.parameter_name",),
+                            v_model=("parameter.parameter_default_value",),
+                            change=(ctrl.updateElements, "[index, parameter.parameter_name, $event]"),
                             dense=True,
                             style="width: 75px;"
                         )
