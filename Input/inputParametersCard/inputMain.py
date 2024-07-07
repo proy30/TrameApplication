@@ -2,6 +2,7 @@ from trame.app import get_server
 from trame.widgets  import vuetify
 
 from Input.generalFunctions import functions
+from Input.inputParametersCard.inputFunctions import convert_kin_energy
 # -----------------------------------------------------------------------------
 # Trame setup
 # -----------------------------------------------------------------------------
@@ -10,43 +11,30 @@ server = get_server(client_type="vue2")
 state, ctrl = server.state, server.controller
 
 # -----------------------------------------------------------------------------
-# Helpful functions
-# -----------------------------------------------------------------------------
-
-def format_to_scientific():
-    try:
-        value = float(state.npart)
-        state.npart = f"{value:.2e}"
-    except ValueError:
-        state.npart = "Invalid input"
-
-def convert_kin_energy():
-    conversion_factors = {
-        "meV": 1.0e-9,
-        "eV": 1.0e-6,
-        "keV": 1.0e-3,
-        "MeV": 1.0,
-        "GeV": 1.0e3,
-        "TeV": 1.0e6,
-    }
-    state.kin_energy_MeV = float(state.kin_energy_MeV)
-    state.kin_energy_MeV /= conversion_factors["MeV"]
-    state.kin_energy_MeV *= conversion_factors[state.kin_energy_unit]
-
-# -----------------------------------------------------------------------------
 # Callbacks
 # -----------------------------------------------------------------------------
-
 @ctrl.add("on_input_change")
 def validate_and_convert_to_correct_type(value, desired_type, state_name, validation_name):
-    
     validation_result = functions.validate_against(value, desired_type)
     setattr(state, validation_name, validation_result)
+
     if validation_result == []:
         converted_value = functions.convert_to_correct_type(value, desired_type)
         print(f"{state_name} changed to {converted_value} (type: {type(converted_value)})")
         if getattr(state, state_name) != converted_value:
             setattr(state, state_name, converted_value)    
+
+@ctrl.add("kin_energy_unit_change")
+def on_convert_kin_energy_change(new_unit):
+    old_unit = state.old_kin_energy_unit
+    if old_unit != new_unit and float(state.kin_energy_MeV) > 0:
+        state.kin_energy_MeV = convert_kin_energy(old_unit, new_unit, state.kin_energy_MeV)
+        state.kin_energy_unit = new_unit
+        state.old_kin_energy_unit = new_unit
+        # print(f"Units were changed to {new_unit}")
+    # print(f"value is now: {state.kin_energy_MeV}")
+    # print(f"old unit is {old_unit}")
+    # print(f"new unit is {new_unit}")
 
 # -----------------------------------------------------------------------------
 # Content
@@ -58,11 +46,11 @@ class inputParameters:
         state.kin_energy_MeV = 2.0e3
         state.bunch_charge_C = 2e5
         state.kin_energy_unit = "MeV"
-        
+        state.old_kin_energy_unit = "MeV"
+
         state.npart_validation = []
         state.kin_energy_MeV_validation = []
         state.bunch_charge_C_validation = []
-
 
     def card(self):
         with vuetify.VCard(style="width: 340px; height: 300px"):
@@ -107,6 +95,7 @@ class inputParameters:
                             v_model=("kin_energy_unit",),
                             label="Unit",
                             items=(["meV", "eV", "MeV", "GeV", "TeV"],),
+                            change=(ctrl.kin_energy_unit_change, "[$event]"),
                             dense=True,
                         )
                 with vuetify.VRow(classes="my-2"):
