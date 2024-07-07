@@ -112,7 +112,6 @@ class functions:
                 docstrings[name] = docstring
         return docstrings
 
-
     def extractParameters(docstring):
         parameters = []
         docstring = re.search(r'\((.*?)\)', docstring).group(1)  # Return class name and init signature
@@ -134,15 +133,14 @@ class functions:
                     split_by_equals = type_and_default.split('=', 1)
                     parameter_type = split_by_equals[0].strip()
                     default = split_by_equals[1].strip()
-                    if default.isalpha():
-                        default = f"'{default}'"
+                    if (default.startswith("'") and default.endswith("'")):
+                        default = default[1:-1]
                 else:
                     parameter_type = type_and_default
 
             parameters.append((name, default, parameter_type))
 
         return parameters
-
 
     def classAndParametersAndDefaultValueAndType(module_name):
         classes = functions.findAllClasses(module_name)
