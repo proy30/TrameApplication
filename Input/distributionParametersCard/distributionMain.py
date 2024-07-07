@@ -3,6 +3,7 @@ from trame.widgets  import vuetify
 
 from Input.generalFunctions import functions
 from impactx import distribution
+
 # -----------------------------------------------------------------------------
 # Trame setup
 # -----------------------------------------------------------------------------
@@ -13,6 +14,7 @@ state, ctrl = server.state, server.controller
 # -----------------------------------------------------------------------------
 # Helpful
 # -----------------------------------------------------------------------------
+
 DISTRIBUTIONS_MODULE_NAME = distribution
 
 state.listOfDistributions = functions.selectClasses(DISTRIBUTIONS_MODULE_NAME)
@@ -93,6 +95,7 @@ def save_distribution_parameters_to_file():
 @state.change("selectedDistribution")
 def on_lattice_element_name_change(selectedDistribution, **kwargs):
     populate_distribution_parameters(selectedDistribution)
+    # print(f"Current list of selected lattice elements: {state.selectedDistributionParameters}")
 
 @ctrl.add("updateDistributionParameters")
 def on_distribution_parameter_change(parameter_name, parameter_value, parameter_type):

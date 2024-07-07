@@ -1,5 +1,4 @@
 from trame.app import get_server
-from trame.ui.vuetify import SinglePageWithDrawerLayout
 from trame.widgets import vuetify
 
 from Input.generalFunctions import functions
@@ -15,6 +14,7 @@ state, ctrl = server.state, server.controller
 # -----------------------------------------------------------------------------
 # Helpful
 # -----------------------------------------------------------------------------
+
 LATTICE_ELEMENTS_MODULE_NAME = elements
 
 state.listOfLatticeElements = functions.selectClasses(LATTICE_ELEMENTS_MODULE_NAME)
@@ -32,6 +32,9 @@ state.selectedLatticeList = [] # Selected lattice list is Empty by default
 #                                             'CFbend': [('ds', None), ('rc', None), ('k', None), ('dx', '0'), ('dy', '0'), ('rotation', '0'), ('nslice', '1')]
 #                                             }  
 
+# -----------------------------------------------------------------------------
+# Main Functions
+# -----------------------------------------------------------------------------
 
 def add_lattice_element():
     selectedLattice = state.selectedLattice
@@ -70,6 +73,10 @@ def update_parameter(index, parameter_name, value):
     state.selectedLatticeList[index]["parameters_with_default_value"] = updated_parameters
     state.dirty("selectedLatticeList")
 
+# -----------------------------------------------------------------------------
+# Write to file functions
+# -----------------------------------------------------------------------------
+
 def save_elements_to_file():
     with open("output_latticeElements_parameters.txt", "w") as file:
         file.write("latticeElements = [\n")
@@ -80,9 +87,11 @@ def save_elements_to_file():
             )
             file.write(f"    elements.{element_name}({parameters}),\n")
         file.write("]\n")   
+
 # -----------------------------------------------------------------------------
 # Callbacks
 # -----------------------------------------------------------------------------
+
 @state.change("selectedLattice")
 def on_lattice_element_name_change(selectedLattice, **kwargs):
     return
@@ -115,9 +124,11 @@ def on_delete_LatticeElement_click(index):
     state.selectedLatticeList.pop(index)
     state.dirty("selectedLatticeList")
     save_elements_to_file()
+
 # -----------------------------------------------------------------------------
 # ContentSetup
 # -----------------------------------------------------------------------------
+
 class latticeConfiguration:
     def card(self):
         with vuetify.VDialog(v_model=("showDialog", False), width="1200px"):
