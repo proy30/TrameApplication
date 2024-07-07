@@ -49,7 +49,7 @@ def populate_distribution_parameters(selectedDistribution):
 
 def update_distribution_parameters(parameterName, parameterValue, parameterErrorMessage):
     """
-    Updates parameter value and then includes error message if user input is not valid
+    Updates parameter value and includes error message if user input is not valid
     """
     for param in state.selectedDistributionParameters:
         if param["parameter_name"] == parameterName:

@@ -23,14 +23,9 @@ state.listOfLatticeElementParametersAndDefault = functions.classAndParametersAnd
 # -----------------------------------------------------------------------------
 # Default
 # -----------------------------------------------------------------------------
+
 state.selectedLattice = None #  Selected lattice is Empty by default
 state.selectedLatticeList = [] # Selected lattice list is Empty by default
-
-# state.listOfLatticeElementParametersAndDefault = {'Alignment': [], 'Aperture': [('xmax', None), ('ymax', None), ('shape', "'rectangular'"), ('dx', '0'), ('dy', '0'), ('rotation', '0')], 
-#                                             'BeamMonitor': [('name', None), ('backend', "'default'"), ('encoding', "'g'")],
-#                                             'Buncher': [('V', None), ('k', None), ('dx', '0'), ('dy', '0'), ('rotation', '0')],
-#                                             'CFbend': [('ds', None), ('rc', None), ('k', None), ('dx', '0'), ('dy', '0'), ('rotation', '0'), ('nslice', '1')]
-#                                             }  
 
 # -----------------------------------------------------------------------------
 # Main Functions
@@ -58,7 +53,7 @@ def add_lattice_element():
  
 def update_latticeElement_parameters(index, parameterName, parameterValue, parameterErrorMessage):
     """
-    Updates parameter value
+    Updates parameter value and includes error message if user input is not valid
     """
     for param in state.selectedLatticeList[index]["parameters"]:
         if param["parameter_name"] == parameterName:
@@ -67,23 +62,37 @@ def update_latticeElement_parameters(index, parameterName, parameterValue, param
 
 
     state.dirty("selectedLatticeList")
-    print(state.selectedLatticeList)
-    save_elements_to_file()
+    save_latticeElements_to_file()
 # -----------------------------------------------------------------------------
 # Write to file functions
 # -----------------------------------------------------------------------------
+def parameter_input_checker_for_lattice(latticeElement):
+    """
+    Helper function to check if user input is valid, if yes, then will update with value, if not then set to None.
+    """
+    parameter_input = {}
+    for parameter in latticeElement["parameters"]:
+        if parameter["parameter_error_message"] == []:
+            parameter_input[parameter["parameter_name"]] = parameter["parameter_default_value"]
+        else:
+            parameter_input[parameter["parameter_name"]] = None
 
-def save_elements_to_file():
+    return parameter_input
+
+def save_latticeElements_to_file():
+    """
+    Writes users input for lattice element parameters into file in simulation code format
+    """
     with open("output_latticeElements_parameters.txt", "w") as file:
         file.write("latticeElements = [\n")
-        for element in state.selectedLatticeList:
-            element_name = element["name"]
-            parameters = ", ".join(
-                f"{param['parameter_default_value']}" for param in element["parameters"]
-            )
-            file.write(f"    elements.{element_name}({parameters}),\n")
-        file.write("]\n")   
+        for latticeElement in state.selectedLatticeList:
+            latticeElement_name = latticeElement["name"]
+            parameters  =  parameter_input_checker_for_lattice(latticeElement)
 
+            param_values = ", ".join(f"{value}" for value in parameters.values())
+            file.write(f"    elements.{latticeElement_name}({param_values}),\n")
+
+        file.write("]\n")   
 # -----------------------------------------------------------------------------
 # Callbacks
 # -----------------------------------------------------------------------------
@@ -98,7 +107,7 @@ def on_add_lattice_element_click():
     selectedLattice = state.selectedLattice
     if selectedLattice:
         add_lattice_element()
-        save_elements_to_file()
+        save_latticeElements_to_file()
         state.dirty("selectedLatticeList")
         # print(f"ADD button clicked, added: {selectedLattice}")
         # print(f"Current list of selected lattice elements: {state.selectedLatticeList}")
@@ -111,17 +120,16 @@ def on_lattice_element_parameter_change(index, parameter_name, parameter_value, 
     update_latticeElement_parameters(index, parameter_name, parameter_value, error_message)
     print(f"Lattice element {index}, {parameter_name} changed to {parameter_value} (type: {input_type})")
 
-
 @ctrl.add("clear_latticeElements")
 def on_clear_lattice_element_click():
     state.selectedLatticeList = []
-    save_elements_to_file()
+    save_latticeElements_to_file()
 
 @ctrl.add("deleteLatticeElement")
 def on_delete_LatticeElement_click(index):
     state.selectedLatticeList.pop(index)
     state.dirty("selectedLatticeList")
-    save_elements_to_file()
+    save_latticeElements_to_file()
 
 # -----------------------------------------------------------------------------
 # ContentSetup
@@ -198,9 +206,8 @@ class latticeConfiguration:
                                             change=(ctrl.updateLatticeElementParameters, "[index, parameter.parameter_name, $event, parameter.parameter_type]"),
                                             error_messages=("parameter.parameter_error_message",),
                                             dense=True,
-                                            style="width: 75px;"
+                                            style="width: 100px;"
                                         )
-
 
     def dialog_lattice_elementList():
         with vuetify.VCard():
@@ -227,5 +234,5 @@ class latticeConfiguration:
                             change=(ctrl.updateLatticeElementParameters, "[index, parameter.parameter_name, $event, parameter.parameter_type]"),
                             error_messages=("parameter.parameter_error_message",),
                             dense=True,
-                            style="width: 75px;"
+                            style="width: 100px;"
                         )
