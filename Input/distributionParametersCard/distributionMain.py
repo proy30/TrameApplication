@@ -97,7 +97,7 @@ def on_lattice_element_name_change(selectedDistribution, **kwargs):
 @ctrl.add("updateDistributionParameters")
 def on_distribution_parameter_change(parameter_name, parameter_value, parameter_type):
     parameter_value, input_type = functions.determine_input_type(parameter_value)
-    error_message = functions.validate_value(parameter_value, parameter_type)
+    error_message = functions.validate_against(parameter_value, parameter_type)
     
     update_distribution_parameters(parameter_name, parameter_value, error_message)
     print(f"Parameter {parameter_name} was changed to {parameter_value} (type: {input_type})")

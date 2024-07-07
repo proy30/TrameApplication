@@ -65,7 +65,7 @@ class functions:
             except ValueError:
                 return value, str
         
-    def validate_value(input_value, value_type):
+    def validate_against(input_value, value_type):
         if value_type == "int":
             try:
                 value = int(input_value)

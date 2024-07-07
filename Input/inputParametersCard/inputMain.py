@@ -33,9 +33,31 @@ def convert_kin_energy():
     state.kin_energy_MeV /= conversion_factors["MeV"]
     state.kin_energy_MeV *= conversion_factors[state.kin_energy_unit]
 
+def convert_to_correct_type(value, desired_type):
+    if value is None:
+        raise ValueError("Cannot convert NoneType to the desired type")
+    if desired_type == "int":
+        return int(value)
+    elif desired_type == "float":
+        return float(value)
+    elif desired_type == "str":
+        return str(value)
+    else:
+        raise ValueError("Unknown type")
+
 # -----------------------------------------------------------------------------
 # Callbacks
 # -----------------------------------------------------------------------------
+
+def validate_and_convert_to_correct_type(value, parameter_type, state_name, validation_name):
+    validation_result = functions.validate_against(value, parameter_type)
+    setattr(state, validation_name, validation_result)
+    if validation_result == []:
+        converted_value = convert_to_correct_type(value, parameter_type)
+        if getattr(state, state_name) != converted_value:
+            setattr(state, state_name, converted_value)
+            return False
+    return True
 
 @state.change("particle_shape")
 def on_particle_shape_change(particle_shape, **kwargs):
@@ -43,24 +65,24 @@ def on_particle_shape_change(particle_shape, **kwargs):
 
 @state.change("npart")
 def on_npart_change(npart, **kwargs):
-    state.npart, npart_input_type = functions.determine_input_type(npart)
-    state.npart_validation = functions.validate_value(npart, "int")
-
-    print(f"npart changed to {npart} (type: {npart_input_type})")
+    npart_input_type = "int"
+    state_changed = validate_and_convert_to_correct_type(npart, npart_input_type, "npart", "npart_validation")
+    if state_changed:
+        print(f"npart changed to {state.npart} (type: {type(state.npart)})")
 
 @state.change("kin_energy_MeV")
 def on_kin_energy_change(kin_energy_MeV, **kwargs):
-    state.kin_energy_MeV_validation = functions.validate_value(kin_energy_MeV, "float")
-
-    state.kin_energy_MeV, kin_energy_MeV_input_type = functions.determine_input_type(kin_energy_MeV)
-    print(f"Kinetic Energy () changed to {kin_energy_MeV} (type: {kin_energy_MeV_input_type})")
+    kinetic_energy_input_type = "float"
+    state_changed = validate_and_convert_to_correct_type(kin_energy_MeV, kinetic_energy_input_type, "kin_energy_MeV", "kin_energy_MeV_validation")
+    if state_changed:
+        print(f"Kinetic Energy changed to {state.kin_energy_MeV} (type: {type(state.kin_energy_MeV)})")
 
 @state.change("bunch_charge_C")
 def on_bunch_charge_C_change(bunch_charge_C, **kwargs):
-    state.bunch_charge_C_validation = functions.validate(bunch_charge_C, "float")
-
-    state.bunch_charge_C, bunch_charge_C_input_type = functions.determine_input_type(bunch_charge_C)
-    print(f"Bunch Charge (C) changed to {bunch_charge_C} (type: {bunch_charge_C_input_type})")
+    bunch_charge_input_type = "float"
+    state_changed = validate_and_convert_to_correct_type(bunch_charge_C, bunch_charge_input_type, "bunch_charge_C", "bunch_charge_C_validation")
+    if state_changed:
+        print(f"Bunch Charge (C) changed to {state.bunch_charge_C} (type: {type(state.bunch_charge_C)})")
 
 @state.change("kin_energy_unit")
 def on_kin_energy_unit_change(kin_energy_unit, **kwargs):
@@ -74,7 +96,7 @@ class inputParameters:
         state.particle_shape = 1
         state.npart = 100
         state.kin_energy_MeV = 2.0e3
-        state.bunch_charge_C = 1.0e-9
+        state.bunch_charge_C = 2e5
         state.kin_energy_unit = "MeV"
 
     def card(self):
