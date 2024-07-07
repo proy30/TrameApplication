@@ -73,7 +73,10 @@ def parameter_input_checker_for_lattice(latticeElement):
     parameter_input = {}
     for parameter in latticeElement["parameters"]:
         if parameter["parameter_error_message"] == []:
-            parameter_input[parameter["parameter_name"]] = parameter["parameter_default_value"]
+            if parameter["parameter_type"] == "str":
+                parameter_input[parameter["parameter_name"]] = f"'{parameter["parameter_default_value"]}'"
+            else:
+                parameter_input[parameter["parameter_name"]] = parameter["parameter_default_value"]
         else:
             parameter_input[parameter["parameter_name"]] = None
 
