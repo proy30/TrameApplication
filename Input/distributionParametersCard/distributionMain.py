@@ -38,7 +38,7 @@ def populate_distribution_parameters(selectedDistribution):
         {"parameter_name" : parameter[0],
          "parameter_default_value" : parameter[1],
          "parameter_type" : parameter[2],
-         "parameter_error_message": [],
+         "parameter_error_message": generalFunctions.validate_against(parameter[1], parameter[2]),
          }
         for parameter in selectedDistributionParameters
     ]
