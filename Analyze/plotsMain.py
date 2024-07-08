@@ -53,7 +53,7 @@ base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 reducedBeam_data = os.path.join(base_path, 'diags', 'reduced_beam_characteristics.0.0')
 refParticle_data = os.path.join(base_path, 'diags', 'ref_particle.0.0')
 
-default_headers = ["step", "s", "sig_x"]
+default_headers = ["step", "s", "x_mean"]
 state.plot_options = list(PLOTS.keys())
 state.show_table = False
 
@@ -69,6 +69,14 @@ state.all_headers = headers
 state.selected_headers = default_headers
 state.filtered_data = []
 
+def update_data_table():
+    combined_files= Functions.combine_files(reducedBeam_data, refParticle_data)
+    combined_files_data_converted_to_dictionary_format = Functions.convert_to_dict(combined_files)
+    data, headers = combined_files_data_converted_to_dictionary_format
+    
+    state.all_data = data
+    state.all_headers = headers
+    state.filtered_data = Functions.filter_data(state.all_data, state.selected_headers)
 # -----------------------------------------------------------------------------
 # State changes
 # -----------------------------------------------------------------------------
@@ -100,6 +108,7 @@ def update_plot():
 @ctrl.add("run_simulation")
 def run_simulation_and_store():
     state.simulation_data = run_simulation()
+    update_data_table()
     ctrl.update_plot()
 
 ctrl.update_plot = update_plot
