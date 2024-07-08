@@ -1,9 +1,8 @@
 import os
 from trame.app import get_server
-from trame.ui.vuetify import SinglePageWithDrawerLayout
 from trame.widgets import vuetify, plotly, matplotlib
 
-from Analyze.widgets import Functions
+from Analyze.analyzeFunctions import analyzeFunctions
 
 from Analyze.plot_phase_space.phaseSpace import run_simulation
 from Analyze.plot_over_s.overS import line_plot
@@ -60,8 +59,8 @@ state.show_table = False
 firstPlotOption = state.plot_options[1]
 state.active_plot = firstPlotOption
 
-combined_files= Functions.combine_files(reducedBeam_data, refParticle_data)
-combined_files_data_converted_to_dictionary_format = Functions.convert_to_dict(combined_files)
+combined_files= analyzeFunctions.combine_files(reducedBeam_data, refParticle_data)
+combined_files_data_converted_to_dictionary_format = analyzeFunctions.convert_to_dict(combined_files)
 
 data, headers = combined_files_data_converted_to_dictionary_format
 state.all_data = data
@@ -70,21 +69,21 @@ state.selected_headers = default_headers
 state.filtered_data = []
 
 def update_data_table():
-    combined_files= Functions.combine_files(reducedBeam_data, refParticle_data)
-    combined_files_data_converted_to_dictionary_format = Functions.convert_to_dict(combined_files)
+    combined_files= analyzeFunctions.combine_files(reducedBeam_data, refParticle_data)
+    combined_files_data_converted_to_dictionary_format = analyzeFunctions.convert_to_dict(combined_files)
     data, headers = combined_files_data_converted_to_dictionary_format
     
     state.all_data = data
     state.all_headers = headers
-    state.filtered_data = Functions.filter_data(state.all_data, state.selected_headers)
+    state.filtered_data = analyzeFunctions.filter_data(state.all_data, state.selected_headers)
 # -----------------------------------------------------------------------------
 # State changes
 # -----------------------------------------------------------------------------
 
 @state.change("selected_headers")
 def on_header_selection_change(selected_headers, **kwargs):
-    state.filtered_headers = Functions.filter_headers(state.all_headers, selected_headers)
-    state.filtered_data = Functions.filter_data(state.all_data, selected_headers)
+    state.filtered_headers = analyzeFunctions.filter_headers(state.all_headers, selected_headers)
+    state.filtered_data = analyzeFunctions.filter_data(state.all_data, selected_headers)
 
 @state.change("filtered_data")
 def on_filtered_data_change(filtered_data, **kwargs):

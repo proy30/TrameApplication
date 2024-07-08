@@ -12,7 +12,7 @@ from impactx import distribution, elements
 # Code
 # -----------------------------------------------------------------------------
 
-class functions:
+class generalFunctions:
     
     def documentation(section_name):
         if section_name == "LatticeElements":
@@ -144,23 +144,23 @@ class functions:
         return parameters
 
     def classAndParametersAndDefaultValueAndType(module_name):
-        classes = functions.findAllClasses(module_name)
-        docstrings = functions.findInitDocstringForClasses(classes)
+        classes = generalFunctions.findAllClasses(module_name)
+        docstrings = generalFunctions.findInitDocstringForClasses(classes)
 
         result = {}
 
         for class_name, docstring in docstrings.items():
-            parameters = functions.extractParameters(docstring)
+            parameters = generalFunctions.extractParameters(docstring)
             result[class_name] = parameters
 
         return result
 
     def selectClasses(module_name):
-        return list(functions.classAndParametersAndDefaultValueAndType(module_name))
+        return list(generalFunctions.classAndParametersAndDefaultValueAndType(module_name))
 
     def parametersAndDefaults(module_name):
         parameters = {}
-        for key, params in functions.classAndParametersAndDefaultValueAndType(module_name).items():
+        for key, params in generalFunctions.classAndParametersAndDefaultValueAndType(module_name).items():
             param_list = []
             for param, default, _type in params:
                 param_list.append((param, default))

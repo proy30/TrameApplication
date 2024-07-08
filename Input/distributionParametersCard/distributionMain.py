@@ -1,7 +1,7 @@
 from trame.app import get_server
 from trame.widgets  import vuetify
 
-from Input.generalFunctions import functions
+from Input.generalFunctions import generalFunctions
 from impactx import distribution
 
 # -----------------------------------------------------------------------------
@@ -17,8 +17,8 @@ state, ctrl = server.state, server.controller
 
 DISTRIBUTIONS_MODULE_NAME = distribution
 
-state.listOfDistributions = functions.selectClasses(DISTRIBUTIONS_MODULE_NAME)
-state.listOfDistributionsAndParametersAndDefault = functions.classAndParametersAndDefaultValueAndType(DISTRIBUTIONS_MODULE_NAME)
+state.listOfDistributions = generalFunctions.selectClasses(DISTRIBUTIONS_MODULE_NAME)
+state.listOfDistributionsAndParametersAndDefault = generalFunctions.classAndParametersAndDefaultValueAndType(DISTRIBUTIONS_MODULE_NAME)
 
 # -----------------------------------------------------------------------------
 # Default
@@ -100,8 +100,8 @@ def on_lattice_element_name_change(selectedDistribution, **kwargs):
 
 @ctrl.add("updateDistributionParameters")
 def on_distribution_parameter_change(parameter_name, parameter_value, parameter_type):
-    parameter_value, input_type = functions.determine_input_type(parameter_value)
-    error_message = functions.validate_against(parameter_value, parameter_type)
+    parameter_value, input_type = generalFunctions.determine_input_type(parameter_value)
+    error_message = generalFunctions.validate_against(parameter_value, parameter_type)
     
     update_distribution_parameters(parameter_name, parameter_value, error_message)
     print(f"Parameter {parameter_name} was changed to {parameter_value} (type: {input_type})")
@@ -119,7 +119,7 @@ class distributionParameters:
                 vuetify.VIcon(
                     "mdi-information",
                     style="color: #00313C;",
-                    click=lambda: functions.documentation("BeamDistributions"),
+                    click=lambda: generalFunctions.documentation("BeamDistributions"),
                 )
             vuetify.VDivider()
             with vuetify.VCardText():

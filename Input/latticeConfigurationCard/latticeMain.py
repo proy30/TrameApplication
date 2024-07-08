@@ -1,7 +1,7 @@
 from trame.app import get_server
 from trame.widgets import vuetify
 
-from Input.generalFunctions import functions
+from Input.generalFunctions import generalFunctions
 from impactx import elements
 
 # -----------------------------------------------------------------------------
@@ -17,8 +17,8 @@ state, ctrl = server.state, server.controller
 
 LATTICE_ELEMENTS_MODULE_NAME = elements
 
-state.listOfLatticeElements = functions.selectClasses(LATTICE_ELEMENTS_MODULE_NAME)
-state.listOfLatticeElementParametersAndDefault = functions.classAndParametersAndDefaultValueAndType(LATTICE_ELEMENTS_MODULE_NAME)
+state.listOfLatticeElements = generalFunctions.selectClasses(LATTICE_ELEMENTS_MODULE_NAME)
+state.listOfLatticeElementParametersAndDefault = generalFunctions.classAndParametersAndDefaultValueAndType(LATTICE_ELEMENTS_MODULE_NAME)
 
 # -----------------------------------------------------------------------------
 # Default
@@ -119,8 +119,8 @@ def on_add_lattice_element_click():
 
 @ctrl.add("updateLatticeElementParameters")
 def on_lattice_element_parameter_change(index, parameter_name, parameter_value, parameter_type):
-    parameter_value, input_type = functions.determine_input_type(parameter_value)
-    error_message = functions.validate_against(parameter_value, parameter_type)
+    parameter_value, input_type = generalFunctions.determine_input_type(parameter_value)
+    error_message = generalFunctions.validate_against(parameter_value, parameter_type)
 
     update_latticeElement_parameters(index, parameter_name, parameter_value, error_message)
     print(f"Lattice element {index}, {parameter_name} changed to {parameter_value} (type: {input_type})")
@@ -152,7 +152,7 @@ class latticeConfiguration:
                 vuetify.VIcon(
                     "mdi-information",
                     classes="ml-2",
-                    click=lambda: functions.documentation("LatticeElements"),
+                    click=lambda: generalFunctions.documentation("LatticeElements"),
                     style="color: #00313C;",
                 )
             vuetify.VDivider()

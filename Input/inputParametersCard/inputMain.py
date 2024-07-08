@@ -1,8 +1,8 @@
 from trame.app import get_server
 from trame.widgets  import vuetify
 
-from Input.generalFunctions import functions
-from Input.inputParametersCard.inputFunctions import convert_kin_energy
+from Input.generalFunctions import generalFunctions
+from Input.inputParametersCard.inputFunctions import inputFunctions
 
 # -----------------------------------------------------------------------------
 # Trame setup
@@ -17,11 +17,11 @@ state, ctrl = server.state, server.controller
 
 @ctrl.add("on_input_change")
 def validate_and_convert_to_correct_type(value, desired_type, state_name, validation_name):
-    validation_result = functions.validate_against(value, desired_type)
+    validation_result = generalFunctions.validate_against(value, desired_type)
     setattr(state, validation_name, validation_result)
 
     if validation_result == []:
-        converted_value = functions.convert_to_correct_type(value, desired_type)
+        converted_value = generalFunctions.convert_to_correct_type(value, desired_type)
         print(f"{state_name} changed to {converted_value} (type: {type(converted_value)})")
         if getattr(state, state_name) != converted_value:
             setattr(state, state_name, converted_value)    
@@ -30,7 +30,7 @@ def validate_and_convert_to_correct_type(value, desired_type, state_name, valida
 def on_convert_kin_energy_change(new_unit):
     old_unit = state.old_kin_energy_unit
     if old_unit != new_unit and float(state.kin_energy_MeV) > 0:
-        state.kin_energy_MeV = convert_kin_energy(old_unit, new_unit, state.kin_energy_MeV)
+        state.kin_energy_MeV = inputFunctions.convert_kin_energy(old_unit, new_unit, state.kin_energy_MeV)
         state.kin_energy_unit = new_unit
         state.old_kin_energy_unit = new_unit
         # print(f"Units were changed to {new_unit}")
@@ -63,7 +63,7 @@ class inputParameters:
                 vuetify.VIcon(
                     "mdi-information",
                     style="color: #00313C;",
-                    click=lambda: functions.documentation("pythonParameters"),
+                    click=lambda: generalFunctions.documentation("pythonParameters"),
                 )
             vuetify.VDivider()
             with vuetify.VCardText():

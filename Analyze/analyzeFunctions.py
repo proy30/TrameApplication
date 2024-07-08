@@ -1,6 +1,6 @@
 import pandas as pd
 
-class Functions:
+class analyzeFunctions:
     def load_data(file_path):
         df = pd.read_csv(file_path, sep=' ')
         return df
@@ -12,8 +12,8 @@ class Functions:
         return dictionary, headers
 
     def combine_files(file1_name, file2_name):
-        file1 = Functions.load_data(file1_name)
-        file2 = Functions.load_data(file2_name)
+        file1 = analyzeFunctions.load_data(file1_name)
+        file2 = analyzeFunctions.load_data(file2_name)
         return pd.merge(file1, file2, how='outer')
 
     def filter_headers(allHeaders, selected_headers):
