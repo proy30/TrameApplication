@@ -25,16 +25,23 @@ def validate_and_convert_to_correct_type(value, desired_type, state_name, valida
         print(f"{state_name} changed to {converted_value} (type: {type(converted_value)})")
         if getattr(state, state_name) != converted_value:
             setattr(state, state_name, converted_value)    
-
+            if state_name == 'kin_energy':
+                state.kin_energy_MeV = inputFunctions.value_of_kin_energy_MeV(converted_value, state.kin_energy_unit)
+                print(f"Value of - state.kin_energy_MeV: {state.kin_energy_MeV}")
+                
 @ctrl.add("kin_energy_unit_change")
 def on_convert_kin_energy_change(new_unit):
     old_unit = state.old_kin_energy_unit
-    if old_unit != new_unit and float(state.kin_energy_MeV) > 0:
-        state.kin_energy_MeV = inputFunctions.convert_kin_energy(old_unit, new_unit, state.kin_energy_MeV)
+    if old_unit != new_unit and float(state.kin_energy) > 0:
+        state.kin_energy = inputFunctions.update_kin_energy_on_display(old_unit, new_unit, state.kin_energy)
         state.kin_energy_unit = new_unit
         state.old_kin_energy_unit = new_unit
+        state.kin_energy_MeV = inputFunctions.value_of_kin_energy_MeV(float(state.kin_energy), new_unit)
+        print(f"Value of - state.kin_energy_MeV: {state.kin_energy_MeV}")
+        print(f"Value of -  state.kin_energy: {state.kin_energy}")
+
         # print(f"Units were changed to {new_unit}")
-    # print(f"value is now: {state.kin_energy_MeV}")
+    # print(f"value is now: {state.kin_energy}")
     # print(f"old unit is {old_unit}")
     # print(f"new unit is {new_unit}")
 
@@ -47,14 +54,17 @@ class inputParameters:
     def __init__ (self):
         state.particle_shape = 1
         state.npart = 100
-        state.kin_energy_MeV = 2.0e3
+        state.kin_energy = 2.0e9
+        state.kin_energy_MeV = state.kin_energy
         state.bunch_charge_C = 2e5
         state.kin_energy_unit = "MeV"
         state.old_kin_energy_unit = "MeV"
 
         state.npart_validation = []
-        state.kin_energy_MeV_validation = []
+        state.kin_energy_validation = []
         state.bunch_charge_C_validation = []
+
+        print(f"Initial value of - state.kin_energy_MeV: {state.kin_energy_MeV}")
 
     def card(self):
         with vuetify.VCard(style="width: 340px; height: 300px"):
@@ -86,10 +96,10 @@ class inputParameters:
                 with vuetify.VRow(classes="my-2"):
                     with vuetify.VCol(cols=8, classes="py-0"):
                         vuetify.VTextField(
-                            v_model=("kin_energy_MeV",),
+                            v_model=("kin_energy",),
                             label="Kinetic Energy",
-                            error_messages=("kin_energy_MeV_validation",),
-                            change=(ctrl.on_input_change, "[$event, 'float','kin_energy_MeV','kin_energy_MeV_validation']"),
+                            error_messages=("kin_energy_validation",),
+                            change=(ctrl.on_input_change, "[$event, 'float','kin_energy','kin_energy_validation']"),
                             type="number",
                             dense=True,
                             classes="mr-2",
