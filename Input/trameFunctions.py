@@ -33,26 +33,3 @@ class trameFunctions():
                     vuetify.VCardText(title)
                 with vuetify.VExpansionPanelContent():
                     vuetify.VCardText(content)
-
-    def create_slider(label_input, v_model, min_value, max_value, step_value):
-                vuetify.VSlider(
-                    label=label_input,
-                    v_model=(v_model, state),
-                    thumb_label=True,
-                    min=min_value,
-                    max=max_value,
-                    step=step_value,
-                )
-    def lattice_list_dialog():
-        with vuetify.VDialog(v_model=("showDialog", False), width="250px"):
-            with vuetify.VCard():
-                vuetify.VCardTitle("Input Parameters")
-                vuetify.VDivider()
-                with vuetify.VContainer(fluid=True):
-                    with vuetify.VRow(no_gutters=True, v_for="(item, i) in lattice_list", key="i", classes="mb-2"):
-                        with vuetify.VCol():
-                            vuetify.VChip(
-                                    style="width: 150px; justify-content: center",
-                                    dense=True,
-                                    v_text="item"
-                                )
