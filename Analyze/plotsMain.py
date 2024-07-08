@@ -1,3 +1,4 @@
+import os
 from trame.app import get_server
 from trame.ui.vuetify import SinglePageWithDrawerLayout
 from trame.widgets import vuetify, plotly, matplotlib
@@ -47,8 +48,11 @@ PLOTS = {
 # Defaults
 # -----------------------------------------------------------------------------
 
-reducedBeam_data = '/mnt/c/Users/parth/Downloads/vsCode/fixBugs/diags/reduced_beam_characteristics.0.0'
-refParticle_data = '/mnt/c/Users/parth/Downloads/vsCode/fixBugs/diags/ref_particle.0.0'
+base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+reducedBeam_data = os.path.join(base_path, 'diags', 'reduced_beam_characteristics.0.0')
+refParticle_data = os.path.join(base_path, 'diags', 'ref_particle.0.0')
+
 default_headers = ["step", "s", "sig_x"]
 state.plot_options = list(PLOTS.keys())
 state.show_table = False
