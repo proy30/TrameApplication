@@ -67,31 +67,31 @@ class generalFunctions:
                 return value, str
         
     def validate_against(input_value, value_type):
-        if input_value is None or str(input_value).strip() == "":
-            if value_type == "str":
-                return [f"Must be a string"]
-            else:
-                return [f"Must be a {value_type}"]
-
         if value_type == "int":
+            if input_value is None:
+                return ["Must be an integer"]
             try:
                 value = int(input_value)
-                if value <= 0:
+                if value < 0:
                     return ["Must be positive"]
                 return []
             except ValueError:
                 return ["Must be an integer"]
 
         elif value_type == "float":
+            if input_value is None:
+                return ["Must be a float"]
             try:
                 value = float(input_value)
-                if value <= 0:
+                if value < 0:
                     return ["Must be positive"]
                 return []
             except ValueError:
                 return ["Must be a float"]
 
         elif value_type == "str":
+            if input_value is None:
+                return ["Must be a string"]
             return []
 
         else:
