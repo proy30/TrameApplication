@@ -88,6 +88,7 @@ def save_distribution_parameters_to_file():
         for param, value in parameters.items():
             file.write(f"    {param}={value},\n")
         file.write(")\n")
+
 # -----------------------------------------------------------------------------
 # Callbacks
 # -----------------------------------------------------------------------------
@@ -110,6 +111,7 @@ def on_distribution_parameter_change(parameter_name, parameter_value, parameter_
 # -----------------------------------------------------------------------------
 
 class distributionParameters:
+    
     def card():
         with vuetify.VCard(style="width: 340px; height: 300px"):
             with vuetify.VCardTitle("Distribution Parameters"):

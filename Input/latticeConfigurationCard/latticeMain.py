@@ -47,7 +47,6 @@ def add_lattice_element():
         ]
     }
 
-    state.selectedLatticeParaameters = selectedLatticeElement["parameters"]
     state.selectedLatticeList.append(selectedLatticeElement)
     return selectedLatticeElement
  
@@ -63,9 +62,11 @@ def update_latticeElement_parameters(index, parameterName, parameterValue, param
 
     state.dirty("selectedLatticeList")
     save_latticeElements_to_file()
+
 # -----------------------------------------------------------------------------
 # Write to file functions
 # -----------------------------------------------------------------------------
+
 def parameter_input_checker_for_lattice(latticeElement):
     """
     Helper function to check if user input is valid, if yes, then will update with value, if not then set to None.
@@ -96,6 +97,7 @@ def save_latticeElements_to_file():
             file.write(f"    elements.{latticeElement_name}({param_values}),\n")
 
         file.write("]\n")   
+
 # -----------------------------------------------------------------------------
 # Callbacks
 # -----------------------------------------------------------------------------
@@ -139,7 +141,8 @@ def on_delete_LatticeElement_click(index):
 # -----------------------------------------------------------------------------
 
 class latticeConfiguration:
-    def card(self):
+
+    def card():
         with vuetify.VDialog(v_model=("showDialog", False), width="1200px"):
             latticeConfiguration.dialog_lattice_elementList()
             

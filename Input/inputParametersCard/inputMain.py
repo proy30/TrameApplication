@@ -3,6 +3,7 @@ from trame.widgets  import vuetify
 
 from Input.generalFunctions import functions
 from Input.inputParametersCard.inputFunctions import convert_kin_energy
+
 # -----------------------------------------------------------------------------
 # Trame setup
 # -----------------------------------------------------------------------------
@@ -13,6 +14,7 @@ state, ctrl = server.state, server.controller
 # -----------------------------------------------------------------------------
 # Callbacks
 # -----------------------------------------------------------------------------
+
 @ctrl.add("on_input_change")
 def validate_and_convert_to_correct_type(value, desired_type, state_name, validation_name):
     validation_result = functions.validate_against(value, desired_type)
@@ -39,7 +41,9 @@ def on_convert_kin_energy_change(new_unit):
 # -----------------------------------------------------------------------------
 # Content
 # -----------------------------------------------------------------------------
+
 class inputParameters:
+    
     def __init__ (self):
         state.particle_shape = 1
         state.npart = 100

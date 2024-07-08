@@ -23,9 +23,8 @@ state, ctrl = server.state, server.controller
 # -----------------------------------------------------------------------------
 # ContentSetup
 # -----------------------------------------------------------------------------
+
 inputParameters = inputParameters()
-latticeConfiguration = latticeConfiguration()
-runSimulation = runSimulation()
 
 with RouterViewLayout(server, "/Input"):
     with vuetify.VContainer(fluid=True):
@@ -50,6 +49,7 @@ with RouterViewLayout(server, "/Analyze"):
 # -----------------------------------------------------------------------------
 # GUI
 # -----------------------------------------------------------------------------
+
 with SinglePageWithDrawerLayout(server) as layout:
     with layout.toolbar:
         with vuetify.Template(v_if="$route.path == '/Input'"):
@@ -71,5 +71,6 @@ with SinglePageWithDrawerLayout(server) as layout:
 # -----------------------------------------------------------------------------
 # Main
 # -----------------------------------------------------------------------------
+
 if __name__ == "__main__":
     server.start()
