@@ -136,6 +136,19 @@ def on_delete_LatticeElement_click(index):
     state.dirty("selectedLatticeList")
     save_latticeElements_to_file()
 
+@ctrl.add("move_latticeElementIndex_up")
+def on_move_latticeElementIndex_up_click(index):
+    if index > 0:
+        state.selectedLatticeList[index], state.selectedLatticeList[index - 1] = state.selectedLatticeList [index - 1], state.selectedLatticeList [index]
+        state.dirty("selectedLatticeList")
+        save_latticeElements_to_file()
+
+@ctrl.add("move_latticeElementIndex_down")
+def on_move_latticeElementIndex_up_click(index):
+    if index < len(state.selectedLatticeList) - 1:
+        state.selectedLatticeList[index], state.selectedLatticeList[index + 1] = state.selectedLatticeList [index + 1], state.selectedLatticeList [index]
+        state.dirty("selectedLatticeList")
+        save_latticeElements_to_file()
 # -----------------------------------------------------------------------------
 # ContentSetup
 # -----------------------------------------------------------------------------
@@ -195,6 +208,14 @@ class latticeConfiguration:
                             with vuetify.VContainer(fluid=True):
                                 with vuetify.VRow(v_for="(latticeElement, index) in selectedLatticeList", align="center", no_gutters=True, style="min-width: 1500px;"):
                                     with vuetify.VCol(cols="auto", classes="pa-2"):
+                                        vuetify.VIcon(
+                                            "mdi-menu-up",
+                                            click=(ctrl.move_latticeElementIndex_up, "[index]"),
+                                        )
+                                        vuetify.VIcon(
+                                            "mdi-menu-down",
+                                            click=(ctrl.move_latticeElementIndex_down, "[index]"),
+                                        )
                                         vuetify.VIcon(
                                             "mdi-delete",
                                             click=(ctrl.deleteLatticeElement,"[index]"),
