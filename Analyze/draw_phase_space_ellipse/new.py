@@ -1,3 +1,8 @@
+import warnings
+
+# Ignore mpld3 warning
+warnings.filterwarnings("ignore", message="Blended transforms not yet supported. Zoom behavior may not work as expected.", category=UserWarning, module="mpld3.mplexporter.exporter")
+
 from trame.app import get_server
 from trame.ui.vuetify import SinglePageLayout
 from trame.widgets import vuetify, matplotlib
