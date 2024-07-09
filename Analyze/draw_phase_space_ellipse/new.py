@@ -68,6 +68,9 @@ def draw_phase_space_ellipse(alpha, beta, epsilon, n_points=100):
     q = q0 * np.cos(theta) - p0 * np.sin(theta)
     p = q0 * np.sin(theta) + p0 * np.cos(theta)
 
+    #Close all plotso to avoid RuntimeWarning
+    plt.close("all")
+    
     # Create the plot
     fig, ax = plt.subplots()
     ax.plot(q, p, label=f'Ellipse: ε={epsilon}, α={alpha}, β={beta}, γ={gamma}')
