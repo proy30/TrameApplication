@@ -68,15 +68,15 @@ def draw_phase_space_ellipse(alpha, beta, epsilon, n_points=100):
     q = q0 * np.cos(theta) - p0 * np.sin(theta)
     p = q0 * np.sin(theta) + p0 * np.cos(theta)
 
-    #Close all plotso to avoid RuntimeWarning
-    plt.close("all")
-    
+    # Apply a Matplotlib style for better aesthetics
+    plt.style.use('fast')
+
     # Create the plot
     fig, ax = plt.subplots()
-    ax.plot(q, p, label=f'Ellipse: ε={epsilon}, α={alpha}, β={beta}, γ={gamma}')
-    ax.set_xlabel('Position (q)')
-    ax.set_ylabel('Momentum (p)')
-    ax.set_title('Phase Space Ellipse with Twiss Parameters')
+    ax.plot(q, p, label=f'Ellipse: ε={epsilon}, α={alpha}, β={beta}, γ={gamma}', linestyle='-', marker='o')
+    ax.set_xlabel('Position (q)', fontsize=12)
+    ax.set_ylabel('Momentum (p)', fontsize=12)
+    ax.set_title('Phase Space Ellipse with Twiss Parameters', fontsize=14)
     ax.legend()
     ax.grid(True)
     ax.axis('equal')  # Ensure the aspect ratio is equal
@@ -101,13 +101,13 @@ def draw_phase_space_ellipse(alpha, beta, epsilon, n_points=100):
 
     return fig
 
-
 def update_plot(**kwargs):
     alpha = state.alpha
     beta = state.beta
     epsilon = state.epsilon
     fig = draw_phase_space_ellipse(alpha, beta, epsilon)
     ctrl.matplotlib_figure_update(fig)
+    plt.close(fig)
 
 # -----------------------------------------------------------------------------
 # Callbacks
@@ -122,17 +122,17 @@ def on_params_change(**kwargs):
 # -----------------------------------------------------------------------------
 
 with SinglePageLayout(server) as layout:
-
+    layout.title.set_text("Particle Accelerator Phase Space Visualization")
     with layout.content:
-        with vuetify.VRow():
-            with vuetify.VCol(cols="4"):
-                vuetify.VSlider(v_model=("alpha", 0.5), min=-2, max=2, step=0.1, label="Alpha")
-            with vuetify.VCol(cols="4"):
-                vuetify.VSlider(v_model=("beta", 2.0), min=0.1, max=5, step=0.1, label="Beta")
-            with vuetify.VCol(cols="4"):
-                vuetify.VSlider(v_model=("epsilon", 1.0), min=0.1, max=5, step=0.1, label="Epsilon")
-        with vuetify.VRow():
-            matplotlib_figure = matplotlib.Figure(style="position: absolute")
+        with vuetify.VContainer():
+            with vuetify.VRow():
+                with vuetify.VCol(cols="4"):
+                    vuetify.VSlider(v_model=("alpha",), min=-2, max=2, step=0.1, label="Alpha", hide_details=True)
+                with vuetify.VCol(cols="4"):
+                    vuetify.VSlider(v_model=("beta",), min=0.1, max=5, step=0.1, label="Beta", hide_details=True)
+                with vuetify.VCol(cols="4"):
+                    vuetify.VSlider(v_model=("epsilon",), min=0.1, max=5, step=0.1, label="Epsilon", hide_details=True)
+            matplotlib_figure = matplotlib.Figure()
             ctrl.matplotlib_figure_update = matplotlib_figure.update
 
 # -----------------------------------------------------------------------------
