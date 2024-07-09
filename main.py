@@ -5,7 +5,7 @@ from trame.ui.router import RouterViewLayout
 
 from Input.trameFunctions import trameFunctions
 
-from Toolbar.content import toolbar
+from Toolbar.content import toolbars
 
 from Input.inputParametersCard.inputMain import inputParameters
 from Input.distributionParametersCard.distributionMain import distributionParameters
@@ -53,7 +53,7 @@ with RouterViewLayout(server, "/Analyze"):
 with SinglePageWithDrawerLayout(server) as layout:
     with layout.toolbar:
         with vuetify.Template(v_if="$route.path == '/Input'"):
-            toolbar.toolbar()
+            toolbars.latticeToolbar()
         with vuetify.Template(v_if="$route.path == '/Analyze'"):
             AnalyzeSimulation.toolbar()
         

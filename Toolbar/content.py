@@ -13,9 +13,19 @@ state, ctrl = server.state, server.controller
 # Content
 # -----------------------------------------------------------------------------
 
-class toolbar:
-    def toolbar():
+class toolbars:
+    def latticeToolbar():
         vuetify.VSpacer()
+        vuetify.VFileInput(
+            #Allows users to upload file, but nothing more than that.
+            label="Upload Input File",
+            clearable=True,
+            chips=True,
+            show_size=True,
+            dense=True,
+            hide_details=True,
+            style="max-width: 300px;",
+        )
         vuetify.VBtn(
             "Run Simulation",
             style="background-color: #00313C; color: white; margin: 0 20px;",
