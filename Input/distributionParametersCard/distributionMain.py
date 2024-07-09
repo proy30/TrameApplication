@@ -2,6 +2,7 @@ from trame.app import get_server
 from trame.widgets  import vuetify
 
 from Input.generalFunctions import generalFunctions
+from Input.distributionParametersCard.distributionFunctions import distributionFunctions
 from impactx import distribution
 
 # -----------------------------------------------------------------------------
@@ -19,12 +20,14 @@ DISTRIBUTIONS_MODULE_NAME = distribution
 
 state.listOfDistributions = generalFunctions.selectClasses(DISTRIBUTIONS_MODULE_NAME)
 state.listOfDistributionsAndParametersAndDefault = generalFunctions.classAndParametersAndDefaultValueAndType(DISTRIBUTIONS_MODULE_NAME)
+state.listOfDistributionsAndParametersAndDefault_Twiss = distributionFunctions.classAndParametersAndDefaultValueAndType_Twiss()
 
 # -----------------------------------------------------------------------------
 # Default
 # -----------------------------------------------------------------------------
 
-state.selectedDistribution = "Waterbag" #  Selected distribution is Empty by default
+state.selectedDistribution = "Waterbag" 
+state.selectedDistributionType = "Native"
 state.selectedDistributionParameters = [] 
 
 # -----------------------------------------------------------------------------
@@ -32,8 +35,11 @@ state.selectedDistributionParameters = []
 # -----------------------------------------------------------------------------
 
 def populate_distribution_parameters(selectedDistribution):
-    selectedDistributionParameters = state.listOfDistributionsAndParametersAndDefault.get(selectedDistribution, [])
-
+    if state.selectedDistributionType == "Twiss":
+        selectedDistributionParameters = state.listOfDistributionsAndParametersAndDefault_Twiss.get(selectedDistribution, [])
+    else:
+        selectedDistributionParameters = state.listOfDistributionsAndParametersAndDefault.get(selectedDistribution, [])
+    
     state.selectedDistributionParameters = [
         {"parameter_name" : parameter[0],
          "parameter_default_value" : parameter[1],
@@ -45,7 +51,6 @@ def populate_distribution_parameters(selectedDistribution):
     
     save_distribution_parameters_to_file()
     return selectedDistributionParameters
-
 
 def update_distribution_parameters(parameterName, parameterValue, parameterErrorMessage):
     """
@@ -94,9 +99,12 @@ def save_distribution_parameters_to_file():
 # -----------------------------------------------------------------------------
 
 @state.change("selectedDistribution")
-def on_lattice_element_name_change(selectedDistribution, **kwargs):
+def on_distribution_name_change(selectedDistribution, **kwargs):
     populate_distribution_parameters(selectedDistribution)
-    # print(f"Current list of selected lattice elements: {state.selectedDistributionParameters}")
+
+@state.change("selectedDistributionType")
+def on_distribution_type_change(selectedDistributionType, **kwargs):
+    populate_distribution_parameters(state.selectedDistribution)
 
 @ctrl.add("updateDistributionParameters")
 def on_distribution_parameter_change(parameter_name, parameter_value, parameter_type):
@@ -123,12 +131,22 @@ class distributionParameters:
                 )
             vuetify.VDivider()
             with vuetify.VCardText():
-                vuetify.VCombobox(
-                    label="Select Distribution",
-                    v_model=("selectedDistribution",),
-                    items=("listOfDistributions",),
-                    dense=True,
-                )
+                with vuetify.VRow():
+                    with vuetify.VCol(cols=8):
+                        vuetify.VCombobox(
+                            label="Select Distribution",
+                            v_model=("selectedDistribution",),
+                            items=("listOfDistributions",),
+                            dense=True,
+                        )
+                    with vuetify.VCol(cols=4):
+                        vuetify.VSelect(
+                            v_model=("selectedDistributionType",),
+                            label="Type",
+                            items=(["Native", "Twiss"],),
+                            # change=(ctrl.kin_energy_unit_change, "[$event]"),
+                            dense=True,
+                            )
                 with vuetify.VRow(classes="my-2"):
                     for i in range(3):
                         with vuetify.VCol(cols=4, classes="py-0"):
