@@ -54,7 +54,7 @@ class inputParameters:
     def __init__ (self):
         state.particle_shape = 1
         state.npart = 100
-        state.kin_energy = 2.0e9
+        state.kin_energy = 2.0e3
         state.kin_energy_MeV = state.kin_energy
         state.bunch_charge_C = 2e5
         state.kin_energy_unit = "MeV"

@@ -30,6 +30,7 @@ class toolbars:
             "Run Simulation",
             style="background-color: #00313C; color: white; margin: 0 20px;",
             # click=ctrl.run_simulation,
+            disabled=True,
         )
         vuetify.VSwitch(
                 v_model="$vuetify.theme.dark",
