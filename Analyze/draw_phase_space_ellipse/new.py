@@ -87,14 +87,14 @@ def draw_phase_space_ellipse(alpha, beta, epsilon, n_points=100):
     extent_q = np.sqrt(epsilon * beta)
     extent_p = np.sqrt(epsilon * gamma)
 
-    ax.axvline(x=intercept_q,c='C1',ls="--",alpha=0.5)
-    ax.axhline(y=intercept_p,c='C1',ls="--",alpha=0.5)
+    # ax.axvline(x=intercept_q,c='C1',ls="--",alpha=0.5)
+    # ax.axhline(y=intercept_p,c='C1',ls="--",alpha=0.5)
     
-    ax.axvline(x=extent_q,c='C2',ls="--",alpha=0.5)
-    ax.axhline(y=extent_p,c='C2',ls="--",alpha=0.5) 
+    # ax.axvline(x=extent_q,c='C2',ls="--",alpha=0.5)
+    # ax.axhline(y=extent_p,c='C2',ls="--",alpha=0.5) 
     
-    ax.axvline(x=0,c='k',lw=2)
-    ax.axhline(y=0,c='k',lw=2)
+    # ax.axvline(x=0,c='k',lw=2)
+    # ax.axhline(y=0,c='k',lw=2)
 
     # Show the plot
     # plt.show()
