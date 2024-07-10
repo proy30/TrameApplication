@@ -13,6 +13,14 @@ state, ctrl = server.state, server.controller
 # Content
 # -----------------------------------------------------------------------------
 
+INPUT_CONTENTS = """a,b,c
+1,2,3
+4,5,6
+7,8,9
+"""
+state.inputFile_export = INPUT_CONTENTS
+
+
 class toolbars:
     def latticeToolbar():
         vuetify.VSpacer()
@@ -29,6 +37,7 @@ class toolbars:
         vuetify.VBtn(
             "Export Inputs",
             style="margin: 0 20px; width: 150px",
+            click="utils.download('input.in', inputFile_export, 'text/plain')",
         )
         vuetify.VBtn(
             "Run Simulation",
