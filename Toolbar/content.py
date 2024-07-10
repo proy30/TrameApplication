@@ -27,8 +27,12 @@ class toolbars:
             style="max-width: 300px;",
         )
         vuetify.VBtn(
+            "Export Inputs",
+            style="margin: 0 20px; width: 150px",
+        )
+        vuetify.VBtn(
             "Run Simulation",
-            style="background-color: #00313C; color: white; margin: 0 20px;",
+            style="background-color: #00313C; color: white; margin: 0 20px; width: 150px",
             # click=ctrl.run_simulation,
         )
         vuetify.VSwitch(
