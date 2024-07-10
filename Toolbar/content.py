@@ -1,7 +1,7 @@
 
 from trame.app import get_server
 from trame.widgets  import vuetify
-
+from Toolbar.exportTemplate import retrieve_state_content
 # -----------------------------------------------------------------------------
 # Trame setup
 # -----------------------------------------------------------------------------
@@ -10,16 +10,16 @@ server = get_server(client_type="vue2")
 state, ctrl = server.state, server.controller
 
 # -----------------------------------------------------------------------------
-# Content
+# Trigger
 # -----------------------------------------------------------------------------
 
-INPUT_CONTENTS = """a,b,c
-1,2,3
-4,5,6
-7,8,9
-"""
-state.inputFile_export = INPUT_CONTENTS
+@ctrl.trigger("export")
+def on_export_click():
+    return retrieve_state_content()
 
+# -----------------------------------------------------------------------------
+# Content
+# -----------------------------------------------------------------------------
 
 class toolbars:
     def latticeToolbar():
@@ -37,7 +37,7 @@ class toolbars:
         vuetify.VBtn(
             "Export Inputs",
             style="margin: 0 20px; width: 150px",
-            click="utils.download('input.in', inputFile_export, 'text/plain')",
+            click="utils.download('input.in', trigger('export'), 'text/plain')",
         )
         vuetify.VBtn(
             "Run Simulation",
@@ -48,5 +48,3 @@ class toolbars:
                 v_model="$vuetify.theme.dark",
                 hide_details=True,
             )
-
-    
