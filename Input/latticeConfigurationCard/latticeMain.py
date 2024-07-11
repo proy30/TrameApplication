@@ -48,6 +48,7 @@ def add_lattice_element():
     }
 
     state.selectedLatticeList.append(selectedLatticeElement)
+    generalFunctions.update_runSimulation_validation_checking()
     return selectedLatticeElement
  
 def update_latticeElement_parameters(index, parameterName, parameterValue, parameterErrorMessage):
@@ -59,7 +60,7 @@ def update_latticeElement_parameters(index, parameterName, parameterValue, param
             param["parameter_default_value"] = parameterValue
             param["parameter_error_message"] = parameterErrorMessage
 
-
+    generalFunctions.update_runSimulation_validation_checking()
     state.dirty("selectedLatticeList")
     save_latticeElements_to_file()
 
@@ -101,6 +102,13 @@ def save_latticeElements_to_file():
 # -----------------------------------------------------------------------------
 # Callbacks
 # -----------------------------------------------------------------------------
+@state.change("selectedLatticeList")
+def on_selectedLatticeList_change(selectedLatticeList, **kwargs):
+    if selectedLatticeList == []:
+        state.isSelectedLatticeListEmpty = "Please select a lattice element"
+        generalFunctions.update_runSimulation_validation_checking()
+    else:
+        state.isSelectedLatticeListEmpty = ""
 
 @state.change("selectedLattice")
 def on_lattice_element_name_change(selectedLattice, **kwargs):
@@ -176,6 +184,7 @@ class latticeConfiguration:
                             label="Select Accelerator Lattice",
                             v_model=("selectedLattice", None),
                             items=("listOfLatticeElements",),
+                            error_messages=("isSelectedLatticeListEmpty",),
                             dense=True,
                             classes="mr-2 pt-6"
                         )

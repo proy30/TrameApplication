@@ -1,6 +1,15 @@
 import pandas as pd
+from impactx import distribution, elements
+
+distribution_parameters_file_path = "output_distribution_parameters.txt"
+latticeElement_parameters_file_path = "output_latticeElements_parameters.txt"
 
 class analyzeFunctions:
+
+# -----------------------------------------------------------------------------
+# Functions for Beam Characteristic and Ref particle data table
+# -----------------------------------------------------------------------------
+
     def load_data(file_path):
         df = pd.read_csv(file_path, sep=' ')
         return df
@@ -32,3 +41,31 @@ class analyzeFunctions:
                     filtered_row[key] = value
             filtered_data.append(filtered_row)
         return filtered_data
+    
+# -----------------------------------------------------------------------------
+# Helper functions to read lattice elements and distribution parameter list
+# -----------------------------------------------------------------------------
+
+    def read_latticeElements_file():
+        file_path = latticeElement_parameters_file_path
+        elements_list = []
+        with open(file_path, "r") as file:
+            lines = file.readlines()
+            for line in lines:
+                line = line.strip()
+                if line.startswith("elements."):
+                    element_code = line.replace("elements.", "").rstrip(",")
+                    elements_list.append(eval(f"elements.{element_code}"))
+        return elements_list
+
+    def read_distribution_file():
+        file_path = distribution_parameters_file_path
+        safe_env = {
+            "distribution": distribution,
+            "distr": None
+        }
+
+        with open(file_path, "r") as file:
+            exec(file.read(), safe_env)
+        
+        return safe_env["distr"]
