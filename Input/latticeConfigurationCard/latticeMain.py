@@ -105,7 +105,10 @@ def save_latticeElements_to_file():
 @state.change("selectedLatticeList")
 def on_selectedLatticeList_change(selectedLatticeList, **kwargs):
     if selectedLatticeList == []:
+        state.isSelectedLatticeListEmpty = "Please select a lattice element"
         generalFunctions.update_runSimulation_validation_checking()
+    else:
+        state.isSelectedLatticeListEmpty = ""
 
 @state.change("selectedLattice")
 def on_lattice_element_name_change(selectedLattice, **kwargs):
@@ -181,6 +184,7 @@ class latticeConfiguration:
                             label="Select Accelerator Lattice",
                             v_model=("selectedLattice", None),
                             items=("listOfLatticeElements",),
+                            error_messages=("isSelectedLatticeListEmpty",),
                             dense=True,
                             classes="mr-2 pt-6"
                         )
