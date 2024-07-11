@@ -19,6 +19,7 @@ state, ctrl = server.state, server.controller
 def validate_and_convert_to_correct_type(value, desired_type, state_name, validation_name):
     validation_result = generalFunctions.validate_against(value, desired_type)
     setattr(state, validation_name, validation_result)
+    generalFunctions.update_runSimulation_validation_checking()
 
     if validation_result == []:
         converted_value = generalFunctions.convert_to_correct_type(value, desired_type)

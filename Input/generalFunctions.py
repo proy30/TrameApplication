@@ -6,7 +6,15 @@ import os
 import inspect
 import re
 
+from trame.app import get_server
 from impactx import distribution, elements
+
+# -----------------------------------------------------------------------------
+# Server setup
+# -----------------------------------------------------------------------------
+
+server = get_server(client_type="vue2")
+state, ctrl = server.state, server.controller
 
 # -----------------------------------------------------------------------------
 # Code
@@ -96,7 +104,39 @@ class generalFunctions:
 
         else:
             return ["Unknown type"]
+        
+    def update_runSimulation_validation_checking():
+        error_details = []
 
+        # Check for errors in distribution parameters
+        for param in state.selectedDistributionParameters:
+            if param["parameter_error_message"]:
+                error_details.append(f"{param['parameter_name']}: {param['parameter_error_message']}")
+
+        # Check for errors in lattice parameters
+        for lattice in state.selectedLatticeList:
+            for param in lattice['parameters']:
+                if param['parameter_error_message']:
+                    error_details.append(f"Lattice {lattice['name']} - {param['parameter_name']}: {param['parameter_error_message']}")
+
+        # Check for errors in input card
+        if state.npart_validation:
+            error_details.append(f"Number of Particles: {state.npart_validation}")
+        if state.kin_energy_validation:
+            error_details.append(f"Kinetic Energy: {state.kin_energy_validation}")
+        if state.bunch_charge_C_validation:
+            error_details.append(f"Bunch Charge: {state.bunch_charge_C_validation}")
+        if state.selectedLatticeList == []:
+            error_details.append("LatticeListIsEmpty")
+
+        # Print all collected error messages
+        if error_details:
+            print("Errors detected in the following parameters:")
+            for error in error_details:
+                print(error)
+
+        state.disableRunSimulationButton = bool(error_details)
+        
 # -----------------------------------------------------------------------------
 # Class, parameter, default value, and default type retrievals
 # -----------------------------------------------------------------------------
