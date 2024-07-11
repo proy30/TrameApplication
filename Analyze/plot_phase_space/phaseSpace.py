@@ -9,10 +9,10 @@
 
 from trame.app import get_server
 
-
 server = get_server(client_type="vue2")
 state, ctrl = server.state, server.controller
-
+from Analyze.plot_phase_space.phaseSpaceSettings import adjusted_settings_plot
+from Analyze.analyzeFunctions import analyzeFunctions
 
 import importlib
 
@@ -20,38 +20,10 @@ import matplotlib.pyplot as plt
 import pytest
 
 from impactx import ImpactX, amr, distribution, elements
-from Analyze.plot_phase_space.phaseSpaceSettings import adjusted_settings_plot
 
 from mpi4py import MPI
 
 import os
-
-###
-distribution_parameters_file_path = "output_distribution_parameters.txt"
-
-def read_elements_from_file(file_path):
-    elements_list = []
-    with open(file_path, "r") as file:
-        lines = file.readlines()
-        for line in lines:
-            line = line.strip()
-            if line.startswith("elements."):
-                element_code = line.replace("elements.", "").rstrip(",")
-                elements_list.append(eval(f"elements.{element_code}"))
-    return elements_list
-
-def load_distribution_from_file(file_path):
-    # Define a safe environment for exec
-    safe_env = {
-        "distribution": distribution,
-        "distr": None
-    }
-
-    with open(file_path, "r") as file:
-        exec(file.read(), safe_env)
-    
-    return safe_env["distr"]
-###
 
 @pytest.mark.skipif(
     importlib.util.find_spec("pandas") is None, reason="pandas is not available"
@@ -89,7 +61,7 @@ def run_simulation(save_png=True):
     #     muypy=0.846574929020762,
     #     mutpt=0.0,
     # )
-    distr = load_distribution_from_file(distribution_parameters_file_path)
+    distr = analyzeFunctions.read_distribution_file()
     sim.add_particles(bunch_charge_C, distr, npart)
 
     assert pc.total_number_of_particles() == npart
@@ -102,17 +74,7 @@ def run_simulation(save_png=True):
     #     elements.Quad(1.0, -1.0),
     #     elements.Drift(0.25),
     # ]
-    file_path = "output_latticeElements_parameters.txt"
-    if os.path.exists(file_path):
-        fodo = read_elements_from_file(file_path)
-    else:
-        fodo = [
-            elements.Drift(0.25),
-            elements.Quad(1.0, 1.0),
-            elements.Drift(0.5),
-            elements.Quad(1.0, -1.0),
-            elements.Drift(0.25),
-        ]
+    fodo = analyzeFunctions.read_latticeElements_file()
 
     sim.lattice.extend(fodo)
 
