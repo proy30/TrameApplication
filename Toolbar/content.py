@@ -35,13 +35,14 @@ class toolbars:
             style="max-width: 300px;",
         )
         vuetify.VBtn(
-            "Export Inputs",
-            style="margin: 0 20px; width: 150px",
+            "Export",
+            style="margin: 0 10px;",
             click="utils.download('input.in', trigger('export'), 'text/plain')",
+            disabled=("disableRunSimulationButton",True),
         )
         vuetify.VBtn(
             "Run Simulation",
-            style="background-color: #00313C; color: white; margin: 0 20px; width: 150px",
+            style="background-color: #00313C; color: white; margin: 0 10px;",
             click=ctrl.run_simulation,
             disabled=("disableRunSimulationButton",True),
         )
