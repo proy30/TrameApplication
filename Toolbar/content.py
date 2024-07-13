@@ -9,6 +9,9 @@ from Toolbar.exportTemplate import retrieve_state_content
 server = get_server(client_type="vue2")
 state, ctrl = server.state, server.controller
 
+state.selectedWorkflow = "Optimize Triplet"
+state.isSelectedWorkflow = ""
+
 # -----------------------------------------------------------------------------
 # Trigger
 # -----------------------------------------------------------------------------
@@ -17,13 +20,17 @@ state, ctrl = server.state, server.controller
 def on_export_click():
     return retrieve_state_content()
 
+@state.change("selectedWorkflow")
+def on_selectedWorkflow_change(selectedWorkflow, **kwargs):
+    print(f"Selected workflow is {selectedWorkflow}")
+    if selectedWorkflow == None:
+        state.isSelectedWorkflow = "Please select a workflow"
 # -----------------------------------------------------------------------------
 # Content
 # -----------------------------------------------------------------------------
 
 class toolbars:
     def latticeToolbar():
-        vuetify.VSpacer()
         vuetify.VFileInput(
             #Allows users to upload file, but nothing more than that.
             label="Upload Input File",
@@ -32,7 +39,18 @@ class toolbars:
             show_size=True,
             dense=True,
             hide_details=True,
-            style="max-width: 300px;",
+            style="max-width: 175px;",
+        )
+        vuetify.VSpacer()
+        vuetify.VCombobox(
+            placeholder="Select Workflow",
+            v_model=("selectedWorkflow",),
+            items=(["DataFrameTest", "Optimize Triplet"],),
+            clearable=True,
+            error_messages=("isSelectedWorkflow",),
+            dense=True,
+            hide_details=True,
+            style="max-width: 175px",
         )
         vuetify.VBtn(
             "Export",

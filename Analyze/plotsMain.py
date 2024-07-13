@@ -106,9 +106,13 @@ def update_plot():
 
 @ctrl.add("run_simulation")
 def run_simulation_and_store():
-    state.simulation_data = run_simulation()
-    update_data_table()
-    ctrl.update_plot()
+    workflow = state.selectedWorkflow
+    if workflow  == "DataFrameTest":
+        state.simulation_data = run_simulation()
+        update_data_table()
+        ctrl.update_plot()
+    elif workflow  == "Optimize Triplet":
+        print("Optimize Triplet selected, replace this with script call")
 
 ctrl.update_plot = update_plot
 
