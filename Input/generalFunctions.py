@@ -82,7 +82,7 @@ class generalFunctions:
                 return ["Must be an integer"]
             try:
                 value = int(input_value)
-                if value < 0:
+                if value < -10000000000:
                     return ["Must be positive"]
                 return []
             except ValueError:
@@ -93,7 +93,7 @@ class generalFunctions:
                 return ["Must be a float"]
             try:
                 value = float(input_value)
-                if value < 0:
+                if value < -1000000000:
                     return ["Must be positive"]
                 return []
             except ValueError:
