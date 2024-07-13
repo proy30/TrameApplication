@@ -6,6 +6,7 @@ from Analyze.analyzeFunctions import analyzeFunctions
 
 from Analyze.plot_phase_space.phaseSpace import run_simulation
 from Analyze.plot_over_s.overS import line_plot
+from Run.optimize_triplet.run_triplet import run_optimize_triplet
 
 # -----------------------------------------------------------------------------
 # Start server
@@ -112,7 +113,7 @@ def run_simulation_and_store():
         update_data_table()
         ctrl.update_plot()
     elif workflow  == "Optimize Triplet":
-        print("Optimize Triplet selected, replace this with script call")
+        run_optimize_triplet()
 
 ctrl.update_plot = update_plot
 

@@ -177,7 +177,9 @@ def objective(parameters: tuple) -> float:
     return error
 
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
+
+def run_optimize_triplet():
     # Initial guess for the quadrople strengths
     initial_quad_strengths = np.array([-3, 3])
 
