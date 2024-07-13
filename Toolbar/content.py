@@ -53,15 +53,15 @@ class toolbars:
             style="max-width: 175px",
         )
         vuetify.VBtn(
-            "Export",
-            style="margin: 0 10px;",
-            click="utils.download('input.in', trigger('export'), 'text/plain')",
-            disabled=("disableRunSimulationButton",True),
-        )
-        vuetify.VBtn(
             "Run Simulation",
             style="background-color: #00313C; color: white; margin: 0 10px;",
             click=ctrl.run_simulation,
+            disabled=("disableRunSimulationButton",True),
+        )
+        vuetify.VIcon(
+            "mdi-download",
+            style="color: #00313C; margin: 0 10px;",
+            click="utils.download('input.in', trigger('export'), 'text/plain')",
             disabled=("disableRunSimulationButton",True),
         )
         vuetify.VSwitch(
