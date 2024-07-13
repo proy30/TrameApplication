@@ -1,3 +1,28 @@
+# -----------------------------------------------------------------------------
+# Trame setup
+# -----------------------------------------------------------------------------
+from trame.app import get_server
+
+server = get_server(client_type="vue2")
+state, ctrl = server.state, server.controller
+
+# -----------------------------------------------------------------------------
+# Trame Code
+# -----------------------------------------------------------------------------
+from Analyze.analyzeFunctions import analyzeFunctions # to load in distribution and lattice inputs
+### state.npart
+### state.particle_shape - yet to be added
+### state.space_charge - yet to be added
+### state.slice_step_diagnostics - yet to be added
+### state.bunch_charge_C
+### state.kin_energy_MeV
+### distr
+### line (latticeElements) - not added because doesnt work if dynamically going to be changed
+
+# -----------------------------------------------------------------------------
+# Optimize Triplet Code
+# -----------------------------------------------------------------------------
+
 #!/usr/bin/env python3
 #
 # Copyright 2022-2023 ImpactX contributors
@@ -51,7 +76,7 @@ def build_lattice(parameters: tuple, write_particles: bool) -> list:
         elements.Quad(ds=0.1, k=q1_k, nslice=ns),
         elements.Drift(ds=2.7, nslice=ns),
     ]
-
+    # line = analyzeFunctions.read_latticeElements_file()
     if write_particles:
         monitor = elements.BeamMonitor("monitor", backend="h5")
         line = [monitor] + line + [monitor]
@@ -99,26 +124,27 @@ def run(parameters: tuple, write_particles=False, write_reduced=False) -> dict:
 
     # load a 2 GeV electron beam with an initial
     # unnormalized rms emittance of 5 nm
-    kin_energy_MeV = 2.0e3  # reference energy
-    bunch_charge_C = 100.0e-12  # used with space charge
-    npart = 10000  # number of macro particles
+    kin_energy_MeV = state.kin_energy_MeV  # reference energy
+    bunch_charge_C = state.bunch_charge_C  # used with space charge
+    npart = state.npart  # number of macro particles
 
     #   reference particle
     ref = sim.particle_container().ref_particle()
     ref.set_charge_qe(1.0).set_mass_MeV(0.510998950).set_kin_energy_MeV(kin_energy_MeV)
 
     #   particle bunch
-    distr = distribution.Waterbag(
-        lambdaX=2.0e-4,
-        lambdaY=2.0e-4,
-        lambdaT=3.1622776602e-5,
-        lambdaPx=1.1180339887e-5,
-        lambdaPy=1.1180339887e-5,
-        lambdaPt=3.1622776602e-5,
-        muxpx=0.894427190999916,
-        muypy=-0.894427190999916,
-        mutpt=0.0,
-    )
+    # distr = distribution.Waterbag(
+    #     lambdaX=2.0e-4,
+    #     lambdaY=2.0e-4,
+    #     lambdaT=3.1622776602e-5,
+    #     lambdaPx=1.1180339887e-5,
+    #     lambdaPy=1.1180339887e-5,
+    #     lambdaPt=3.1622776602e-5,
+    #     muxpx=0.894427190999916,
+        # muypy=-0.894427190999916,
+        # mutpt=0.0,
+    # )
+    distr = analyzeFunctions.read_distribution_file()
     sim.add_particles(bunch_charge_C, distr, npart)
 
     # design the accelerator lattice
