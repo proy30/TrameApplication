@@ -6,6 +6,7 @@ from Analyze.analyzeFunctions import analyzeFunctions
 
 from Analyze.plot_phase_space.phaseSpace import run_simulation
 from Analyze.plot_over_s.overS import line_plot
+from Run.optimize_triplet.run_triplet import run_optimize_triplet
 
 # -----------------------------------------------------------------------------
 # Start server
@@ -106,9 +107,13 @@ def update_plot():
 
 @ctrl.add("run_simulation")
 def run_simulation_and_store():
-    state.simulation_data = run_simulation()
-    update_data_table()
-    ctrl.update_plot()
+    workflow = state.selectedWorkflow
+    if workflow  == "DataFrameTest":
+        state.simulation_data = run_simulation()
+        update_data_table()
+        ctrl.update_plot()
+    elif workflow  == "Optimize Triplet":
+        run_optimize_triplet()
 
 ctrl.update_plot = update_plot
 
@@ -131,6 +136,7 @@ class AnalyzeSimulation:
             "Run Simulation",
             style="background-color: #00313C; color: white; margin: 0 20px;",
             click=ctrl.run_simulation,
+            disabled=("disableRunSimulationButton",True),
         )
         vuetify.VSwitch(
                 v_model="$vuetify.theme.dark",

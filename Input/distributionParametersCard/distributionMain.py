@@ -50,6 +50,7 @@ def populate_distribution_parameters(selectedDistribution):
     ]
     
     save_distribution_parameters_to_file()
+    generalFunctions.update_runSimulation_validation_checking()
     return selectedDistributionParameters
 
 def update_distribution_parameters(parameterName, parameterValue, parameterErrorMessage):
@@ -61,6 +62,7 @@ def update_distribution_parameters(parameterName, parameterValue, parameterError
             param["parameter_default_value"] = parameterValue
             param["parameter_error_message"] = parameterErrorMessage
     
+    generalFunctions.update_runSimulation_validation_checking()
     state.dirty("selectedDistributionParameters")
     save_distribution_parameters_to_file()
 

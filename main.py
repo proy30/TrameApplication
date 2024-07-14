@@ -51,6 +51,7 @@ with RouterViewLayout(server, "/Analyze"):
 # -----------------------------------------------------------------------------
 
 with SinglePageWithDrawerLayout(server) as layout:
+    layout.title.hide()
     with layout.toolbar:
         with vuetify.Template(v_if="$route.path == '/Input'"):
             toolbars.latticeToolbar()

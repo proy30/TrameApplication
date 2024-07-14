@@ -26,6 +26,7 @@ state.listOfLatticeElementParametersAndDefault = generalFunctions.classAndParame
 
 state.selectedLattice = None #  Selected lattice is Empty by default
 state.selectedLatticeList = [] # Selected lattice list is Empty by default
+state.nsliceDefaultValue = None
 
 # -----------------------------------------------------------------------------
 # Main Functions
@@ -48,6 +49,7 @@ def add_lattice_element():
     }
 
     state.selectedLatticeList.append(selectedLatticeElement)
+    generalFunctions.update_runSimulation_validation_checking()
     return selectedLatticeElement
  
 def update_latticeElement_parameters(index, parameterName, parameterValue, parameterErrorMessage):
@@ -59,7 +61,7 @@ def update_latticeElement_parameters(index, parameterName, parameterValue, param
             param["parameter_default_value"] = parameterValue
             param["parameter_error_message"] = parameterErrorMessage
 
-
+    generalFunctions.update_runSimulation_validation_checking()
     state.dirty("selectedLatticeList")
     save_latticeElements_to_file()
 
@@ -101,6 +103,13 @@ def save_latticeElements_to_file():
 # -----------------------------------------------------------------------------
 # Callbacks
 # -----------------------------------------------------------------------------
+@state.change("selectedLatticeList")
+def on_selectedLatticeList_change(selectedLatticeList, **kwargs):
+    if selectedLatticeList == []:
+        state.isSelectedLatticeListEmpty = "Please select a lattice element"
+        generalFunctions.update_runSimulation_validation_checking()
+    else:
+        state.isSelectedLatticeListEmpty = ""
 
 @state.change("selectedLattice")
 def on_lattice_element_name_change(selectedLattice, **kwargs):
@@ -149,6 +158,17 @@ def on_move_latticeElementIndex_up_click(index):
         state.selectedLatticeList[index], state.selectedLatticeList[index + 1] = state.selectedLatticeList [index + 1], state.selectedLatticeList [index]
         state.dirty("selectedLatticeList")
         save_latticeElements_to_file()
+
+@ctrl.add("nsliceDefaultChange")
+def update_default_value(parameter_name, new_value):
+    data = generalFunctions.classAndParametersAndDefaultValueAndType(elements)
+    
+    for key, parameters in data.items():
+        for i, param in enumerate(parameters):
+            if param[0] == parameter_name:
+                parameters[i] = (param[0], new_value, param[2])
+    
+    state.listOfLatticeElementParametersAndDefault = data
 # -----------------------------------------------------------------------------
 # ContentSetup
 # -----------------------------------------------------------------------------
@@ -158,6 +178,9 @@ class latticeConfiguration:
     def card():
         with vuetify.VDialog(v_model=("showDialog", False), width="1200px"):
             latticeConfiguration.dialog_lattice_elementList()
+        
+        with vuetify.VDialog(v_model=("showDialog_settings", False), width="300px"):
+            latticeConfiguration.dialog_lattice_settings()
             
         with vuetify.VCard(style="width: 696px;"):
             with vuetify.VCardTitle("Lattice Configuration"):
@@ -176,6 +199,7 @@ class latticeConfiguration:
                             label="Select Accelerator Lattice",
                             v_model=("selectedLattice", None),
                             items=("listOfLatticeElements",),
+                            error_messages=("isSelectedLatticeListEmpty",),
                             dense=True,
                             classes="mr-2 pt-6"
                         )
@@ -192,7 +216,13 @@ class latticeConfiguration:
                             "CLEAR",
                             color="secondary",
                             dense=True,
+                            classes="mr-2",
                             click=ctrl.clear_latticeElements,
+                        )
+                    with vuetify.VCol(cols="auto"):
+                        vuetify.VIcon(
+                            "mdi-cog",
+                            click="showDialog_settings = true",
                         )
                 with vuetify.VRow():
                     with vuetify.VCol():       
@@ -262,4 +292,28 @@ class latticeConfiguration:
                             error_messages=("parameter.parameter_error_message",),
                             dense=True,
                             style="width: 100px;"
+                        )
+
+    def dialog_lattice_settings():
+        with vuetify.VCard():
+            with vuetify.VCardTitle("Settings", classes="text-subtitle-2 pa-3"):
+                vuetify.VSpacer()
+            vuetify.VDivider()
+            with vuetify.VContainer(fluid=True):
+                with vuetify.VRow(no_gutters=True, align="center"):
+                    with vuetify.VCol(no_gutters=True, cols="auto"):
+                        vuetify.VListItem(
+                            "nslice",
+                            classes="ma-0 pl-0 font-weight-bold"
+                        )
+                    with vuetify.VCol(no_gutters=True):
+                        vuetify.VTextField(
+                            v_model=("nsliceDefaultValue",),
+                            change=(ctrl.nsliceDefaultChange, "['nslice', $event]"),
+                            placeholder="Value",
+                            dense=True,
+                            outlined=True,
+                            hide_details=True,
+                            style="max-width: 75px",
+                            classes="ma-0 pa-0"
                         )
