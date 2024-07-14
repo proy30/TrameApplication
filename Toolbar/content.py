@@ -11,7 +11,7 @@ state, ctrl = server.state, server.controller
 
 state.selectedWorkflow = "Optimize Triplet"
 state.isSelectedWorkflow = ""
-
+state.selectedVisualization = "Twist Phase Space Ellipses"
 # -----------------------------------------------------------------------------
 # Trigger
 # -----------------------------------------------------------------------------
@@ -51,6 +51,16 @@ class toolbars:
             dense=True,
             hide_details=True,
             style="max-width: 175px",
+            classes="mr-2",
+        )
+        vuetify.VCombobox(
+            placeholder="Select Visualization",
+            v_model=("selectedVisualization",),
+            items=(["Twiss Phase Space Ellipses", "Lattice Visualization"],),
+            clearable=True,
+            dense=True,
+            hide_details=True,
+            style="max-width: 250px",
         )
         vuetify.VBtn(
             "Run Simulation",

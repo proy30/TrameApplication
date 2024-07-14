@@ -103,7 +103,8 @@ def update_plot():
     if state.active_plot == "1D plots over s":
         ctrl.plotly_figure_update(plot_over_s())
     elif state.active_plot == "Phase Space Plots" and state.simulation_data:
-        ctrl.matplotlib_figure_update(state.simulation_data)
+        # ctrl.matplotlib_figure_update(state.simulation_data)
+        ctrl.plotly_figure_update(plot_over_s())
 
 @ctrl.add("run_simulation")
 def run_simulation_and_store():
@@ -166,6 +167,6 @@ class AnalyzeSimulation:
         with vuetify.VContainer(v_if="active_plot === '1D plots over s'"):
             plotly_figure = plotly.Figure(display_mode_bar="true")
             ctrl.plotly_figure_update = plotly_figure.update
-        with vuetify.VLayout(v_if="active_plot === 'Phase Space Plots'"):
-            matplotlib_figure = matplotlib.Figure(style="position: absolute")
-            ctrl.matplotlib_figure_update = matplotlib_figure.update
+        # with vuetify.VLayout(v_if="active_plot === 'Phase Space Plots'"):
+            # matplotlib_figure = matplotlib.Figure(style="position: absolute")
+            # ctrl.matplotlib_figure_update = matplotlib_figure.update
