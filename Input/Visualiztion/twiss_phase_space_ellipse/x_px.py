@@ -24,16 +24,33 @@ state.alpha_x = 1
 state.beta_x = 1
 state.epsilon_x = 1
 
+state.alpha_y = 1
+state.beta_y = 1
+state.epsilon_y = 1
+
+state.alpha_t = 1
+state.beta_t = 1
+state.epsilon_t = 1
+
+# Update plots on parameter change
 @state.change("alpha_x", "beta_x", "epsilon_x")
-def on_params_change(**kwargs):
-    temporaryClass.update_plot()
+def on_params_change_x(**kwargs):
+    visualizeTwiss.update_plot_x()
+
+@state.change("alpha_y", "beta_y", "epsilon_y")
+def on_params_change_y(**kwargs):
+    visualizeTwiss.update_plot_y()
+
+@state.change("alpha_t", "beta_t", "epsilon_t")
+def on_params_change_t(**kwargs):
+    visualizeTwiss.update_plot_t()
 
 # -----------------------------------------------------------------------------
 # Functions
 # -----------------------------------------------------------------------------
 
-class temporaryClass:
-    def draw_phase_space_ellipse(alpha, beta, epsilon, n_points=100):
+class visualizeTwiss:
+    def draw_phase_space_ellipse(alpha, beta, epsilon, title, xlabel, ylabel, n_points=100):
         """
         Draw a phase space ellipse using Twiss parameters and beam emittance.
 
@@ -41,6 +58,9 @@ class temporaryClass:
         alpha (float): Twiss parameter alpha
         beta (float): Twiss parameter beta
         epsilon (float): Beam emittance
+        title (str): Title of the plot
+        xlabel (str): Label for the x-axis
+        ylabel (str): Label for the y-axis
         n_points (int): Number of points used to draw the ellipse
         """
         # Calculate gamma from alpha and beta
@@ -74,9 +94,10 @@ class temporaryClass:
 
         # Create the plot with a smaller size
         fig, ax = plt.subplots(figsize=(3.25, 2.25)) 
+        
         ax.plot(q, p, label=f'ε={epsilon}, α={alpha}, β={beta}', linestyle='-', marker='o')
-        ax.set_xlabel('Position (q)')
-        ax.set_ylabel('Momentum (p)')
+        ax.set_xlabel(xlabel)
+        ax.set_ylabel(ylabel)
         legend = ax.legend(loc='upper right')
         legend.get_frame().set_facecolor('lightgray') 
         legend.get_frame().set_alpha(0.8)
@@ -93,60 +114,73 @@ class temporaryClass:
 
         return fig
 
-    def update_plot(**kwargs):
+    def update_plot_x(**kwargs):
         alpha = state.alpha_x
         beta = state.beta_x
         epsilon = state.epsilon_x
-        fig = temporaryClass.draw_phase_space_ellipse(alpha, beta, epsilon)
-        ctrl.matplotlib_figure_update(fig)
+        fig = visualizeTwiss.draw_phase_space_ellipse(alpha, beta, epsilon, title='Phase Space Ellipse (x-px)', xlabel='x', ylabel='p_x')
+        ctrl.matplotlib_figure_update_x(fig)
         plt.close(fig)
 
-    def card():
+    def update_plot_y(**kwargs):
+        alpha = state.alpha_y
+        beta = state.beta_y
+        epsilon = state.epsilon_y
+        fig = visualizeTwiss.draw_phase_space_ellipse(alpha, beta, epsilon, title='Phase Space Ellipse (y-py)', xlabel='y', ylabel='p_y')
+        ctrl.matplotlib_figure_update_y(fig)
+        plt.close(fig)
+
+    def update_plot_t(**kwargs):
+        alpha = state.alpha_t
+        beta = state.beta_t
+        epsilon = state.epsilon_t
+        fig = visualizeTwiss.draw_phase_space_ellipse(alpha, beta, epsilon, title='Phase Space Ellipse (t-pt)', xlabel='t', ylabel='p_t')
+        ctrl.matplotlib_figure_update_t(fig)
+        plt.close(fig)
+
+    def card_x():
         with vuetify.VCard(style="width: 340px; height: 300px"):
             with vuetify.VCardText():
                 with vuetify.VRow(classes="pl-1"):
                     vuetify.VIcon("mdi-chart-arc")
-                    vuetify.VCardTitle("Phase Space Ellipse w/Twiss Parameters", classes="text-subtitle-2", style="color: black;")
+                    vuetify.VCardTitle("Phase Space Ellipse (x-px)", classes="text-subtitle-2", style="color: black;")
             vuetify.VDivider()
             matplotlib_figure = matplotlib.Figure()
-            ctrl.matplotlib_figure_update = matplotlib_figure.update
-        # with vuetify.VContainer():
-        #     with vuetify.VRow():
-        #         with vuetify.VCol(cols="4"):
-        #             vuetify.VSlider(v_model=("alpha_x",), min=-2, max=2, step=0.1, label="Alpha x", hide_details=True)
-        #         with vuetify.VCol(cols="4"):
-        #             vuetify.VSlider(v_model=("beta_x",), min=0.1, max=5, step=0.1, label="Beta x", hide_details=True)
-        #         with vuetify.VCol(cols="4"):
-        #             vuetify.VSlider(v_model=("epsilon_x",), min=0.1, max=5, step=0.1, label="Epsilon x", hide_details=True)
+            ctrl.matplotlib_figure_update_x = matplotlib_figure.update
 
-# -----------------------------------------------------------------------------
-# Callbacks
-# -----------------------------------------------------------------------------
+    def card_y():
+        with vuetify.VCard(style="width: 340px; height: 300px"):
+            with vuetify.VCardText():
+                with vuetify.VRow(classes="pl-1"):
+                    vuetify.VIcon("mdi-chart-arc")
+                    vuetify.VCardTitle("Phase Space Ellipse (y-py)", classes="text-subtitle-2", style="color: black;")
+            vuetify.VDivider()
+            matplotlib_figure = matplotlib.Figure()
+            ctrl.matplotlib_figure_update_y = matplotlib_figure.update
 
-# @state.change("alpha_x", "beta_x", "epsilon_x")
-# def on_params_change(**kwargs):
-#     temporaryClass.update_plot()
+    def card_t():
+        with vuetify.VCard(style="width: 340px; height: 300px"):
+            with vuetify.VCardText():
+                with vuetify.VRow(classes="pl-1"):
+                    vuetify.VIcon("mdi-chart-arc")
+                    vuetify.VCardTitle("Phase Space Ellipse (t-pt)", classes="text-subtitle-2", style="color: black;")
+            vuetify.VDivider()
+            matplotlib_figure = matplotlib.Figure()
+            ctrl.matplotlib_figure_update_t = matplotlib_figure.update
 
 # -----------------------------------------------------------------------------
 # Layout
 # -----------------------------------------------------------------------------
 
 # with SinglePageWithDrawerLayout(server) as layout:
-    # with layout.content:
-        # temporaryClass.card()
-        # with vuetify.VContainer():
-        #     with vuetify.VCard(style="width: 360px; height: 310px"):
-        #         with vuetify.VCardText(classes="pt-0 pb-1"):
-        #             with vuetify.VRow(classes="pl-1"):
-        #                 vuetify.VIcon("mdi-chart-arc")
-        #                 vuetify.VCardTitle("Phase Space Ellipse w/Twiss Parameters", classes="text-subtitle-2", style="color: black;")
-        #         vuetify.VDivider()
-        #         matplotlib_figure = matplotlib.Figure()
-        #         ctrl.matplotlib_figure_update = matplotlib_figure.update
 
-# -----------------------------------------------------------------------------
-# Startup
-# -----------------------------------------------------------------------------
+#     with layout.content:
+#         with vuetify.VContainer(fluid=True):
+#             with vuetify.VRow():
+#                 with vuetify.VCol(cols=4):
+#                     visualizeTwiss.card_x()
+#                 with vuetify.VCol(cols=4):
+#                     visualizeTwiss.card_y()
+#                 with vuetify.VCol(cols=4):
+#                     visualizeTwiss.card_t()
 
-# if __name__ == "__main__":
-#     server.start()

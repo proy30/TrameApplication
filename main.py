@@ -12,7 +12,7 @@ from Input.distributionParametersCard.distributionMain import distributionParame
 from Input.latticeConfigurationCard.latticeMain import latticeConfiguration
 from Input.runSimulationCard.content import runSimulation
 from Analyze.plotsMain import AnalyzeSimulation
-from Analyze.draw_phase_space_ellipse.phaseSpaceEllipse import temporaryClass
+from Input.Visualiztion.twiss_phase_space_ellipse.x_px import visualizeTwiss
 
 # -----------------------------------------------------------------------------
 # Trame setup
@@ -29,18 +29,29 @@ inputParameters = inputParameters()
 
 with RouterViewLayout(server, "/Input"):
     with vuetify.VContainer(fluid=True):
-        with vuetify.VRow(no_gutters=True):
+        with vuetify.VRow():
             with vuetify.VCol(cols="auto", classes="pa-2"):
-                inputParameters.card()
-            with vuetify.VCol(cols="auto", classes="pa-2"):
-                distributionParameters.card()
-            vuetify.VDivider(vertical=True, style="border-right-width: 3px;")
-            with vuetify.VCol(cols="auto", classes="pa-2"):
-                temporaryClass.card()
-        with vuetify.VRow(no_gutters=True):
-            with vuetify.VCol(cols="auto", classes="pa-2"):
-                latticeConfiguration.card() 
-            vuetify.VDivider(vertical=True, style="border-right-width: 3px;")
+                with vuetify.VRow(no_gutters=True):
+                    with vuetify.VCol(cols="auto", classes="pa-2"):
+                        inputParameters.card()
+                    with vuetify.VCol(cols="auto", classes="pa-2"):
+                        distributionParameters.card()
+                with vuetify.VRow(no_gutters=True):
+                    with vuetify.VCol(cols="auto", classes="pa-2"):
+                        latticeConfiguration.card()
+            with vuetify.VCol(cols="auto", classes="pa-2", v_if="selectedVisualization == 'Twiss Phase Space Ellipses'"):
+                with vuetify.VRow(no_gutters=True):
+                    with vuetify.VCol(cols="auto", classes="pa-2"):
+                        visualizeTwiss.card_x()
+                    with vuetify.VCol(cols="auto", classes="pa-2"):
+                        visualizeTwiss.card_t()
+                with vuetify.VRow(no_gutters=True):
+                    with vuetify.VCol(cols="auto", classes="pa-2"):
+                        visualizeTwiss.card_y()
+                # with vuetify.VRow(no_gutters=True):
+                    # with vuetify.VCol(cols="auto", classes="pa-2"):
+                        # visualizeTwiss.card_t()
+
 
 with RouterViewLayout(server, "/Analyze"):
         with vuetify.VContainer(fluid=True):

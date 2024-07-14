@@ -11,7 +11,7 @@ state, ctrl = server.state, server.controller
 
 state.selectedWorkflow = "Optimize Triplet"
 state.isSelectedWorkflow = ""
-state.selectedVisualization = "Twist Phase Space Ellipses"
+state.selectedVisualization = "Twiss Phase Space Ellipses"
 # -----------------------------------------------------------------------------
 # Trigger
 # -----------------------------------------------------------------------------
