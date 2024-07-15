@@ -44,6 +44,12 @@ PLOTS = {
     "Phase Space Plots": None,  # Placeholder, handled by run_simulation
 }
 
+def validPlotOptions(simulationClicked):
+    if simulationClicked:
+        return list(PLOTS.keys())
+    else:
+        return ["Run Simulation To See Options"]
+    
 # -----------------------------------------------------------------------------
 # Defaults
 # -----------------------------------------------------------------------------
@@ -54,11 +60,9 @@ reducedBeam_data = os.path.join(base_path, 'diags', 'reduced_beam_characteristic
 refParticle_data = os.path.join(base_path, 'diags', 'ref_particle.0.0')
 
 default_headers = ["step", "s", "x_mean"]
-state.plot_options = list(PLOTS.keys())
+state.plot_options = validPlotOptions(simulationClicked=False)
 state.show_table = False
-
-firstPlotOption = state.plot_options[1]
-state.active_plot = firstPlotOption
+state.active_plot = None
 
 combined_files= analyzeFunctions.combine_files(reducedBeam_data, refParticle_data)
 combined_files_data_converted_to_dictionary_format = analyzeFunctions.convert_to_dict(combined_files)
@@ -109,6 +113,7 @@ def update_plot():
 @ctrl.add("run_simulation")
 def run_simulation_and_store():
     workflow = state.selectedWorkflow
+    state.plot_options = validPlotOptions(simulationClicked=True)
     if workflow  == "DataFrameTest":
         state.simulation_data = run_simulation()
         update_data_table()
@@ -131,7 +136,8 @@ class AnalyzeSimulation:
             label="Select plot to view",
             hide_details=True,
             dense=True,
-            style="width: 100px;"
+            style="width: 100px;",
+            disabled=("disableRunSimulationButton",True),
         )
         vuetify.VBtn(
             "Run Simulation",
