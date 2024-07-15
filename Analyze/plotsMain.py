@@ -28,34 +28,38 @@ PLOTS = {
     "Phase Space Plots": None,
 }
 
+# -----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
+
 def validPlotOptions(simulationClicked):
     if simulationClicked:
         return list(PLOTS.keys())
     else:
         return ["Run Simulation To See Options"]
-    
+
+def load_dataTable_data():
+    combined_files= analyzeFunctions.combine_files(REDUCED_BEAM_DATA, REF_PARTICLE_DATA)
+    combined_files_data_converted_to_dictionary_format = analyzeFunctions.convert_to_dict(combined_files)
+    data, headers = combined_files_data_converted_to_dictionary_format
+    state.all_data = data
+    state.all_headers = headers
+
 # -----------------------------------------------------------------------------
 # Defaults
 # -----------------------------------------------------------------------------
 
-base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+REDUCED_BEAM_DATA = os.path.join(BASE_PATH, 'diags', 'reduced_beam_characteristics.0.0')
+REF_PARTICLE_DATA= os.path.join(BASE_PATH, 'diags', 'ref_particle.0.0')
+DEFAULT_HEADERS = ["step", "s", "x_mean"]
 
-reducedBeam_data = os.path.join(base_path, 'diags', 'reduced_beam_characteristics.0.0')
-refParticle_data = os.path.join(base_path, 'diags', 'ref_particle.0.0')
-
-default_headers = ["step", "s", "x_mean"]
+state.selected_headers = DEFAULT_HEADERS
 state.plot_options = validPlotOptions(simulationClicked=False)
 state.show_table = False
 state.active_plot = None
-
-combined_files= analyzeFunctions.combine_files(reducedBeam_data, refParticle_data)
-combined_files_data_converted_to_dictionary_format = analyzeFunctions.convert_to_dict(combined_files)
-
-data, headers = combined_files_data_converted_to_dictionary_format
-state.all_data = data
-state.all_headers = headers
-state.selected_headers = default_headers
 state.filtered_data = []
+state.all_data = []
+state.all_headers = []
 
 # -----------------------------------------------------------------------------
 # Functions to update table/plot
@@ -64,15 +68,11 @@ state.filtered_data = []
 def update_data_table():
     """
     Combines reducedBeam and refParticle files
-    and updates upon column selection by user
+    and updates data table upon column selection by user
     """
-    combined_files= analyzeFunctions.combine_files(reducedBeam_data, refParticle_data)
-    combined_files_data_converted_to_dictionary_format = analyzeFunctions.convert_to_dict(combined_files)
-    data, headers = combined_files_data_converted_to_dictionary_format
-    
-    state.all_data = data
-    state.all_headers = headers
+    load_dataTable_data()
     state.filtered_data = analyzeFunctions.filter_data(state.all_data, state.selected_headers)
+    state.filtered_headers = analyzeFunctions.filter_headers(state.all_headers, state.selected_headers)
 
 def update_plot():
     """
@@ -109,7 +109,8 @@ def run_simulation_and_store():
         update_plot()
     elif workflow == "Optimize Triplet":
         run_optimize_triplet()
-
+    load_dataTable_data()
+    
 # -----------------------------------------------------------------------------
 # GUI
 # -----------------------------------------------------------------------------
