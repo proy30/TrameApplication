@@ -10,7 +10,6 @@ from Toolbar.toolbarMain import toolbars
 from Input.inputParametersCard.inputMain import inputParameters
 from Input.distributionParametersCard.distributionMain import distributionParameters
 from Input.latticeConfigurationCard.latticeMain import latticeConfiguration
-from Input.runSimulationCard.content import runSimulation
 from Analyze.plotsMain import AnalyzeSimulation
 from Input.Visualiztion.twiss_phase_space_ellipse.x_px import visualizeTwiss
 
@@ -22,7 +21,7 @@ server = get_server(client_type="vue2")
 state, ctrl = server.state, server.controller
 
 # -----------------------------------------------------------------------------
-# ContentSetup
+# Router Views
 # -----------------------------------------------------------------------------
 
 inputParameters = inputParameters()
@@ -48,10 +47,6 @@ with RouterViewLayout(server, "/Input"):
                 with vuetify.VRow(no_gutters=True):
                     with vuetify.VCol(cols="auto", classes="pa-2"):
                         visualizeTwiss.card_y()
-                # with vuetify.VRow(no_gutters=True):
-                    # with vuetify.VCol(cols="auto", classes="pa-2"):
-                        # visualizeTwiss.card_t()
-
 
 with RouterViewLayout(server, "/Analyze"):
         with vuetify.VContainer(fluid=True):

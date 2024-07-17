@@ -16,11 +16,14 @@ state, ctrl = server.state, server.controller
 import re
 
 def retrieve_state_content():
-    # Read the file contents
+    """
+    This function builds the output file based on user inputs
+    """
+
     with open('output_distribution_parameters.txt', 'r') as file:
         file_content = file.read()
 
-    # Regular expression to extract lambda and mu values
+    
     lambdaX = re.search(r'lambdaX=(\d+)', file_content).group(1)
     lambdaY = re.search(r'lambdaY=(\d+)', file_content).group(1)
     lambdaT = re.search(r'lambdaT=(\d+)', file_content).group(1)
@@ -31,7 +34,7 @@ def retrieve_state_content():
     muypy = re.search(r'muypy=(\d+\.\d+)', file_content).group(1)
     mutpt = re.search(r'mutpt=(\d+\.\d+)', file_content).group(1)
 
-    # Build the content string with extracted values
+    
     content = f"""###############################################################################
 # Particle Beam(s)
 ###############################################################################

@@ -38,11 +38,10 @@ def on_convert_kin_energy_change(new_unit):
         state.kin_energy_unit = new_unit
         state.old_kin_energy_unit = new_unit
         state.kin_energy_MeV = inputFunctions.value_of_kin_energy_MeV(float(state.kin_energy), new_unit)
-        print(f"Value of - state.kin_energy_MeV: {state.kin_energy_MeV}")
-        print(f"Value of -  state.kin_energy: {state.kin_energy}")
+        # print(f"Value of - state.kin_energy_MeV (back-end value): {state.kin_energy_MeV}")
+        # print(f"Value of - state.kin_energy (front-end value): {state.kin_energy}")
 
         # print(f"Units were changed to {new_unit}")
-    # print(f"value is now: {state.kin_energy}")
     # print(f"old unit is {old_unit}")
     # print(f"new unit is {new_unit}")
 

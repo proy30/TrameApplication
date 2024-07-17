@@ -58,9 +58,6 @@ class visualizeTwiss:
         alpha (float): Twiss parameter alpha
         beta (float): Twiss parameter beta
         epsilon (float): Beam emittance
-        title (str): Title of the plot
-        xlabel (str): Label for the x-axis
-        ylabel (str): Label for the y-axis
         n_points (int): Number of points used to draw the ellipse
         """
         # Calculate gamma from alpha and beta

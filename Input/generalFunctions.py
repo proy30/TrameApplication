@@ -25,6 +25,9 @@ ANSI_RESET = "\033[0m"
 class generalFunctions:
     
     def documentation(section_name):
+        """
+        Function that opens tab to section_name link
+        """
         if section_name == "LatticeElements":
             url = "https://impactx.readthedocs.io/en/latest/usage/python.html#lattice-elements"
         elif section_name == "BeamDistributions":
@@ -39,35 +42,14 @@ class generalFunctions:
         else:
             webbrowser.open_new_tab(url)
 
-    def validate(value, validation_type):
-        error_messages = []
-
-        if value is None:
-            error_messages.append("Field is required")
-        else:
-            try:
-                num_value = float(value)
-                if num_value < 0:
-                    error_messages.append("Must be positive")
-                else:
-                    if validation_type == "int":
-                        if not float(value).is_integer():
-                            error_messages.append("Must be an integer")
-                    elif validation_type == "float":
-                        try:
-                            float(value)
-                        except ValueError:
-                            error_messages.append("Must be a float")
-            except ValueError:
-                error_messages.append("Must be a number")
-
-        return error_messages
-    
 # -----------------------------------------------------------------------------
 # Validation functions
 # -----------------------------------------------------------------------------
 
     def determine_input_type(value):
+        """"
+        Used to help find out the value type
+        """
         try:
             return int(value), int
         except ValueError:
@@ -77,6 +59,11 @@ class generalFunctions:
                 return value, str
         
     def validate_against(input_value, value_type):
+        """
+        Function which returns error message if
+        input value type does not match desired
+        type.
+        """
         if value_type == "int":
             if input_value is None:
                 return ["Must be an integer"]
@@ -108,6 +95,11 @@ class generalFunctions:
             return ["Unknown type"]
         
     def update_runSimulation_validation_checking():
+        """
+        Function to check if any input fields are not
+        provided with the correct input type.
+        Updates states as True or False given result.
+        """
         error_details = []
 
         # Check for errors in distribution parameters
@@ -144,6 +136,9 @@ class generalFunctions:
 # -----------------------------------------------------------------------------
 
     def findAllClasses(module_name):
+        """
+        Returns list of all classes in given module_name
+        """
         results = []
         for name in dir(module_name):
             attr = getattr(module_name, name)
@@ -153,6 +148,9 @@ class generalFunctions:
 
 
     def findInitDocstringForClasses(classes):
+        """
+        Retrieves the __init__ docstring of given classes
+        """
         docstrings = {}
         for name, cls in classes:
             init_method = getattr(cls, '__init__', None)
@@ -162,6 +160,10 @@ class generalFunctions:
         return docstrings
 
     def extractParameters(docstring):
+        """
+        Parses specific information from docstrings.
+        Aimed to retrieve parameter names/values/types.
+        """
         parameters = []
         docstring = re.search(r'\((.*?)\)', docstring).group(1)  # Return class name and init signature
         docstring = docstring.split(',')
@@ -190,8 +192,15 @@ class generalFunctions:
             parameters.append((name, default, parameter_type))
 
         return parameters
-
+    
     def classAndParametersAndDefaultValueAndType(module_name):
+        """
+        Given module_name, outputs a dictionary.
+        Keys are each class name of the module_name
+        Values are dictionaries of parameter information,
+        such as default name/value/type.
+        """
+        
         classes = generalFunctions.findAllClasses(module_name)
         docstrings = generalFunctions.findInitDocstringForClasses(classes)
 
@@ -204,18 +213,17 @@ class generalFunctions:
         return result
 
     def selectClasses(module_name):
+        """
+        Given module_name, outputs a list
+        of all class names in module_name.
+        """
         return list(generalFunctions.classAndParametersAndDefaultValueAndType(module_name))
 
-    def parametersAndDefaults(module_name):
-        parameters = {}
-        for key, params in generalFunctions.classAndParametersAndDefaultValueAndType(module_name).items():
-            param_list = []
-            for param, default, _type in params:
-                param_list.append((param, default))
-            parameters[key] = param_list
-        return parameters
-
     def convert_to_correct_type(value, desired_type):
+        """
+        Converts given value to the desired_type.
+        Used for input parameters.
+        """
         if value is None:
             raise ValueError("Cannot convert to desired type")
         if desired_type == "int":

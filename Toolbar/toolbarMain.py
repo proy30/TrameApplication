@@ -10,8 +10,8 @@ server = get_server(client_type="vue2")
 state, ctrl = server.state, server.controller
 
 state.selectedWorkflow = "Optimize Triplet"
-state.isSelectedWorkflow = ""
-state.selectedVisualization = ""
+state.isSelectedWorkflow = None
+state.selectedVisualization = None
 # -----------------------------------------------------------------------------
 # Trigger
 # -----------------------------------------------------------------------------
@@ -22,7 +22,7 @@ def on_export_click():
 
 @state.change("selectedWorkflow")
 def on_selectedWorkflow_change(selectedWorkflow, **kwargs):
-    print(f"Selected workflow is {selectedWorkflow}")
+    # print(f"Selected workflow is {selectedWorkflow}")
     if selectedWorkflow == None:
         state.isSelectedWorkflow = "Please select a workflow"
 

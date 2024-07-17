@@ -11,21 +11,35 @@ class analyzeFunctions:
 # -----------------------------------------------------------------------------
 
     def load_data(file_path):
+        """
+        Function to read provided file_path
+        """
         df = pd.read_csv(file_path, sep=' ')
         return df
 
     def convert_to_dict(combined_data):
+        """
+        Function to convert data into dictionary format.
+        Used to have correct dataType in Vuetify data table.
+        """
         dictionary = combined_data.to_dict(orient='records')
         columns = combined_data.columns
         headers = [{"text": column.strip(), "value": column.strip()} for column in columns]
         return dictionary, headers
 
     def combine_files(file1_name, file2_name):
+        """
+        Function to merge two files together.
+        """
         file1 = analyzeFunctions.load_data(file1_name)
         file2 = analyzeFunctions.load_data(file2_name)
         return pd.merge(file1, file2, how='outer')
 
     def filter_headers(allHeaders, selected_headers):
+        """
+        Function to retrieve only retrieve
+        user selected headers
+        """
         filtered_headers = []
         for selectedHeader in allHeaders:
             if selectedHeader['value'] in selected_headers:
@@ -33,6 +47,10 @@ class analyzeFunctions:
         return filtered_headers
 
     def filter_data(allData, selected_headers):
+        """
+        Function to retrieve only retrieve data for
+        user selected headers
+        """
         filtered_data = []
         for row in allData:
             filtered_row = {}
@@ -47,6 +65,10 @@ class analyzeFunctions:
 # -----------------------------------------------------------------------------
 
     def read_latticeElements_file():
+        """
+        Function to help run impactX simulation
+        Returns a list in correct format to read latticeElements.
+        """
         file_path = latticeElement_parameters_file_path
         elements_list = []
         with open(file_path, "r") as file:
@@ -59,6 +81,10 @@ class analyzeFunctions:
         return elements_list
 
     def read_distribution_file():
+        """
+        Function to help run impactX simulation
+        Reads distribution file path line by line.
+        """
         file_path = distribution_parameters_file_path
         safe_env = {
             "distribution": distribution,
