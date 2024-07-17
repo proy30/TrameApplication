@@ -12,6 +12,7 @@ from Input.distributionParametersCard.distributionMain import distributionParame
 from Input.latticeConfigurationCard.latticeMain import latticeConfiguration
 from Analyze.plotsMain import AnalyzeSimulation
 from Input.Visualiztion.twiss_phase_space_ellipse.x_px import visualizeTwiss
+from Optimize.optimizeMain import Optimize
 
 # -----------------------------------------------------------------------------
 # Trame setup
@@ -56,6 +57,12 @@ with RouterViewLayout(server, "/Analyze"):
                 with vuetify.VCol(classes="pa-2 d-flex align-center justify-center fill-height"):
                     AnalyzeSimulation.plot()
 
+with RouterViewLayout(server, "/Optimize"):
+        with vuetify.VContainer(fluid=True):
+            with vuetify.VRow(no_gutters=True, classes="fill-height"):
+                with vuetify.VCol(cols="auto", classes="pa-2 fill-height"):
+                    Optimize.card()
+
 # -----------------------------------------------------------------------------
 # GUI
 # -----------------------------------------------------------------------------
@@ -73,6 +80,7 @@ with SinglePageWithDrawerLayout(server) as layout:
         with vuetify.VList():
             vuetify.VSubheader("Simulation")
         trameFunctions.create_route("Input","mdi-file-edit")
+        trameFunctions.create_route("Optimize","mdi-trending-up")
         trameFunctions.create_route("Run", "mdi-play")
         trameFunctions.create_route("Analyze", "mdi-chart-box-multiple")
 
