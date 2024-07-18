@@ -4,7 +4,7 @@ from trame.widgets import vuetify, plotly, matplotlib
 
 from Analyze.analyzeFunctions import analyzeFunctions
 from Analyze.plot_phase_space.phaseSpace import run_simulation
-from Analyze.plot_over_s.overS import line_plot
+from Analyze.plot_over_s.overS import line_plot_1d
 from Run.optimize_triplet.run_triplet import run_optimize_triplet
 
 # -----------------------------------------------------------------------------
@@ -20,7 +20,7 @@ state, ctrl = server.state, server.controller
 
 # Call plot_over_s
 def plot_over_s():
-    fig = line_plot(state.selected_headers, state.filtered_data)
+    fig = line_plot_1d(state.selected_headers, state.filtered_data)
     ctrl.plotly_figure_update(fig)
 
 PLOTS = {
