@@ -67,29 +67,52 @@ with RouterViewLayout(server, "/Optimize"):
 # GUI
 # -----------------------------------------------------------------------------
 
-with SinglePageWithDrawerLayout(server) as layout:
-    layout.title.hide()
-    with layout.toolbar:
-        with vuetify.Template(v_if="$route.path == '/Input'"):
-            toolbars.latticeToolbar()
-        with vuetify.Template(v_if="$route.path == '/Analyze'"):
-            toolbars.analyzeToolbar()
-        
-    with layout.drawer as drawer:
-        drawer.width = 200
-        with vuetify.VList():
-            vuetify.VSubheader("Simulation")
-        trameFunctions.create_route("Input","mdi-file-edit")
-        trameFunctions.create_route("Optimize","mdi-trending-up")
-        trameFunctions.create_route("Run", "mdi-play")
-        trameFunctions.create_route("Analyze", "mdi-chart-box-multiple")
+def application():
+    with SinglePageWithDrawerLayout(server) as layout:
+        layout.title.hide()
+        with layout.toolbar:
+            with vuetify.Template(v_if="$route.path == '/Input'"):
+                toolbars.latticeToolbar()
+            with vuetify.Template(v_if="$route.path == '/Analyze'"):
+                toolbars.analyzeToolbar()
+            
+        with layout.drawer as drawer:
+            drawer.width = 200
+            with vuetify.VList():
+                vuetify.VSubheader("Simulation")
+            trameFunctions.create_route("Input","mdi-file-edit")
+            trameFunctions.create_route("Optimize","mdi-trending-up")
+            trameFunctions.create_route("Run", "mdi-play")
+            trameFunctions.create_route("Analyze", "mdi-chart-box-multiple")
 
-    with layout.content:
-        router.RouterView()
+        with layout.content:
+            router.RouterView()
+    return layout
 
+class JupyterMainApplication:
+    def __init__(self):
+        self.ui = self.generate_ui()
+
+    def generate_ui(self):
+        return application()
+
+application()
 # -----------------------------------------------------------------------------
 # Main
 # -----------------------------------------------------------------------------
 
 if __name__ == "__main__":
     server.start()
+
+'''
+from main import JupyterMainApplication
+
+# Create new application instance
+app = JupyterMainApplication()
+
+# Let's start the server by waiting for its UI to be ready
+await app.ui.ready
+
+# Put the UI into the resulting cell
+app.ui
+'''
