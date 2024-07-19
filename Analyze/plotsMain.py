@@ -137,8 +137,8 @@ class AnalyzeSimulation:
                     )
 
     def plot():
-        with vuetify.VContainer(v_if="active_plot === 'Plot Over S'"):
-            plotly_figure = plotly.Figure(display_mode_bar="true")
+        with vuetify.VContainer(v_if="active_plot === 'Plot Over S'", style="height: 90vh; width: 100vh;"):
+            plotly_figure = plotly.Figure(display_mode_bar="true", config={"responsive": True})
             ctrl.plotly_figure_update = plotly_figure.update
         # with vuetify.VLayout(v_if="active_plot === 'Phase Space Plots'"):
             # matplotlib_figure = matplotlib.Figure(style="position: absolute")

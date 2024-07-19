@@ -1,6 +1,6 @@
 
 from trame.app import get_server
-from trame.widgets  import vuetify
+from trame.widgets import vuetify
 from Toolbar.exportTemplate import retrieve_state_content
 # -----------------------------------------------------------------------------
 # Trame setup
@@ -101,14 +101,58 @@ class toolbarElements:
             style="max-width: 175px;",
         )
     
+    def kill_button():
+        return vuetify.VBtn(
+            "Kill",
+            style="background-color: #808080; color: white; margin: 0 20px;",
+            classes="mx-auto",
+        )
+        
+    def stop_button():
+        return vuetify.VBtn(
+            "Stop",
+            style="background-color: #808080; color: white; margin: 0 20px;",
+            classes="mx-auto",
+        )
+
+    def start_button():
+        return vuetify.VBtn(
+            "Start",
+            style="background-color: #808080; color: white; margin: 0 20px;",
+            classes="mx-auto",
+        )
+    def checkbox_2d():
+        vuetify.VCheckbox(
+            label="2D",
+            hide_details=True,
+        )
+    def checkbox_3d():
+        vuetify.VCheckbox(
+            label="3D", 
+            classes="px-2",
+            hide_details=True)
+    
 # -----------------------------------------------------------------------------
 # Content
 # -----------------------------------------------------------------------------
 
 class toolbars:
+
+    def runToolbar():
+        vuetify.VSpacer(),
+        toolbarElements.stop_button(),
+        toolbarElements.start_button(),
+        toolbarElements.kill_button(),
+        vuetify.VSpacer(),
+        toolbarElements.select_workflow(),
+        toolbarElements.run_simulation_button(),
+        toolbarElements.export_input_data(),
+        toolbarElements.switch_theme(),
     
     def analyzeToolbar():
         vuetify.VSpacer()
+        toolbarElements.checkbox_2d()
+        toolbarElements.checkbox_3d()
         toolbarElements.select_workflow()
         toolbarElements.plot_options()
         toolbarElements.run_simulation_button()

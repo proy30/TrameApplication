@@ -1,6 +1,6 @@
 from trame.app import get_server
 from trame.ui.vuetify import SinglePageWithDrawerLayout
-from trame.widgets import vuetify, router
+from trame.widgets import vuetify, router, xterm
 from trame.ui.router import RouterViewLayout
 
 from Input.trameFunctions import trameFunctions
@@ -75,6 +75,8 @@ def application():
                 toolbars.latticeToolbar()
             with vuetify.Template(v_if="$route.path == '/Analyze'"):
                 toolbars.analyzeToolbar()
+            with vuetify.Template(v_if="$route.path == '/Run'"):
+                toolbars.runToolbar()
             
         with layout.drawer as drawer:
             drawer.width = 200
@@ -87,6 +89,8 @@ def application():
 
         with layout.content:
             router.RouterView()
+            with xterm.XTerm(shell=["/bin/bash"], v_if="$route.path == '/Run'") as term:
+                ctrl.clear = term.clear
     return layout
 
 class JupyterMainApplication:
