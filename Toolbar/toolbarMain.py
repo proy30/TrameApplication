@@ -2,6 +2,8 @@
 from trame.app import get_server
 from trame.widgets import vuetify
 from Toolbar.exportTemplate import retrieve_state_content
+
+from Input.trameFunctions import trameFunctions
 # -----------------------------------------------------------------------------
 # Trame setup
 # -----------------------------------------------------------------------------
@@ -12,6 +14,7 @@ state, ctrl = server.state, server.controller
 state.selectedWorkflow = "Optimize Triplet"
 state.isSelectedWorkflow = None
 state.selectedVisualization = None
+
 # -----------------------------------------------------------------------------
 # Trigger
 # -----------------------------------------------------------------------------
@@ -100,27 +103,16 @@ class toolbarElements:
             hide_details=True,
             style="max-width: 175px;",
         )
-    
+
     def kill_button():
-        return vuetify.VBtn(
-            "Kill",
-            style="background-color: #808080; color: white; margin: 0 20px;",
-            classes="mx-auto",
-        )
-        
+        return trameFunctions.create_button("Kill")
+            
     def stop_button():
-        return vuetify.VBtn(
-            "Stop",
-            style="background-color: #808080; color: white; margin: 0 20px;",
-            classes="mx-auto",
-        )
+        return trameFunctions.create_button("Stop")
 
     def start_button():
-        return vuetify.VBtn(
-            "Start",
-            style="background-color: #808080; color: white; margin: 0 20px;",
-            classes="mx-auto",
-        )
+        return trameFunctions.create_button("Start")
+
     def checkbox_2d():
         vuetify.VCheckbox(
             label="2D",
@@ -139,7 +131,7 @@ class toolbarElements:
 class toolbars:
 
     def runToolbar():
-        vuetify.VSpacer(),
+
         toolbarElements.stop_button(),
         toolbarElements.start_button(),
         toolbarElements.kill_button(),

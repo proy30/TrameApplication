@@ -12,6 +12,12 @@ state, ctrl = server.state, server.controller
 # Code
 # -----------------------------------------------------------------------------
 
+terminal_button_styles = {
+    "background-color": "#2E86C1",
+    "color": "white",
+    "margin": "0 20px",
+}
+
 class trameFunctions():
 
     def create_route(route_title, mdi_icon):
@@ -33,3 +39,10 @@ class trameFunctions():
                     vuetify.VCardText(title)
                 with vuetify.VExpansionPanelContent():
                     vuetify.VCardText(content)
+                        
+    def create_button(label):
+        return vuetify.VBtn(
+            label,
+            style=terminal_button_styles,
+            classes="mx-1",
+        )
